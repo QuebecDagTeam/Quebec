@@ -2,17 +2,18 @@ import { ethers } from "hardhat";
 
 async function main() {
   const [deployer] = await ethers.getSigners();
-  console.log("Deploying contracts with account:", deployer.address);
+  console.log("Deploying contracts with account:", await deployer.getAddress());
 
-  const balance = await ethers.provider.getBalance(deployer.address);
+  const balance = await ethers.provider.getBalance(await deployer.getAddress());
   console.log("Account balance:", ethers.formatEther(balance), "BDAG");
+console.log (await ethers.provider.getBalance("0x68c9313f05d95Ed6A0D3715EadDcCd35A81FDEc8"))
 
-  const KYCRegistry = await ethers.getContractFactory("Greeter");
-  const KYCApp = await KYCRegistry.deploy("Hello BlockDAG!");
-  await KYCApp.waitForDeployment();
+  // use the correct contract name
+  const KYCFactory = await ethers.getContractFactory("KYCRegistry");
+  const kyc = await KYCFactory.deploy();         // no constructor args
+  await kyc.waitForDeployment();
 
-  const address = await KYCApp.getAddress();
-  console.log("Greeter deployed to:", address);
+  console.log("KYCRegistry deployed to:", await kyc.getAddress());
 }
 
 main()
