@@ -1,12 +1,27 @@
-import express from "express"
-import {Register, Verify} 
-from "../controllers/KYC"
-import multer from "multer";
+// routes/kycRoutes.ts
+import express from "express";
+import {
+  onchainCallback,
+  onchainGrant,
+  onchainRevoke,
+  getKycRecord,
+  getUserDashboard,
+  getThirdPartyDashboard,
+  registerThirdParty,
+  onchainRequestAccessCallback
+} from "../controllers/KYC";
 
-const KYCRoute = express.Router()
-const upload = multer(); // Memory storage (no disk)
+const router = express.Router();
 
-KYCRoute.post("/register", upload.single("image"), Register);
-KYCRoute.get("/verify/:kycId", Verify);
+router.post("/onchain-callback", onchainCallback);
+router.post("/grant", onchainGrant);
+router.post("/revoke", onchainRevoke);
+router.get("/:kycId", getKycRecord);
 
-export default KYCRoute
+router.get("/user/:walletAddress", getUserDashboard);
+router.get("/thirdparty/:walletAddress", getThirdPartyDashboard);
+
+router.post("/thirdparty/register", registerThirdParty);
+router.post("/request-access-callback", onchainRequestAccessCallback);
+
+export default router;

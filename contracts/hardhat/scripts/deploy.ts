@@ -9,11 +9,11 @@ async function main() {
 console.log (await ethers.provider.getBalance("0x68c9313f05d95Ed6A0D3715EadDcCd35A81FDEc8"))
 
   // use the correct contract name
-  const KYCFactory = await ethers.getContractFactory("KYCRegistry");
+  const KYCFactory = await ethers.getContractFactory("DAGKYC");
   const kyc = await KYCFactory.deploy();         // no constructor args
   await kyc.waitForDeployment();
 
-  console.log("KYCRegistry deployed to:", await kyc.getAddress());
+  console.log("DAGKYC deployed to:", await kyc.getAddress());
 }
 
 main()
