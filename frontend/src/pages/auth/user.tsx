@@ -5,7 +5,7 @@ import { abi } from "../../constants/abi";
 import { encryptData } from "../../components/encrypt";
 import { Input } from "../../components/input";
 
-const DAGKYC_CONTRACT = "0x1011a9BBe451b13A98796616dd0F445a12cbFf3A";
+const DAGKYC_CONTRACT = import.meta.env.VITE_.CONTRACT_ADDRESS
 
 function base64ToHex(base64: string): `0x${string}` {
   const raw = atob(base64);
