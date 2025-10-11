@@ -15,6 +15,7 @@ import UserImg from "../../assets/user.jpg";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import KYCComponent from "../../components/kycdata";
+import KYCDelete from "../../components/deleteKYC";
 
 const navItems = [
   { name: "Dashboard", icon: <MdDashboard size={24} />, path: "dashboard" },
@@ -123,7 +124,7 @@ export const Dash = () => {
   </table>
 </div>
 <KYCComponent userAddress="0x68c9313f05d95Ed6A0D3715EadDcCd35A81FDEc8"/>
-
+<KYCDelete walletAddress="0x68c9313f05d95Ed6A0D3715EadDcCd35A81FDEc8"/>
         </section>
       </main>
     </div>
