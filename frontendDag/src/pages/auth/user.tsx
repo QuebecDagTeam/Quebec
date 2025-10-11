@@ -63,10 +63,10 @@ export const UserAuth: React.FC = () => {
   const checkWalletRegistration = async (walletAddress: string) => {
     try {
       setCheckingRegistration(true);
-      const response = await fetch(`http://localhost:5000/api/kyc/isRegistered/${walletAddress}`);
+      const response = await fetch(`https://quebec-ur3w.onrender.com/api/kyc/isRegistered/${walletAddress}`);
       const data = await response.json();
       setIsRegistered(data?.registered);
-      console.log("Wallet registration status:", data);
+      console
     } catch (err) {
       console.error("Failed to check wallet registration:", err);
       setIsRegistered(false);
@@ -102,7 +102,7 @@ export const UserAuth: React.FC = () => {
 
       setTxHash(hash);
 
-      const response = await fetch("http://localhost:5000/api/kyc/register", {
+      const response = await fetch("https://quebec-ur3w.onrender.com/api/kyc/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
