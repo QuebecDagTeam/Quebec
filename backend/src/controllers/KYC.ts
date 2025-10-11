@@ -21,7 +21,7 @@ function toto(addr: string) {
   }
 }
 
-/**
+/**git pus
  * POST /api/kyc/register
  * body: { walletAddress, encryptedData, transactionHash, NIN?, email? }
  * Registers the user’s KYC data and creates a new user entry if required.
@@ -265,7 +265,7 @@ export const getRecordByUniqueId = async (req: Request, res: Response) => {
 export const getRecordByAddress = async (req: Request, res: Response) => {
   try {
     const { walletAdress } = req.params;
-    const doc = await KycRecord.findOne({ walletAdress:toto(walletAdress) });
+    const doc = await KycRecord.findOne({ walletAdress });
     if (!doc) return res.status(404).json({ error: "KYC record not found" });
 
     return res.json({
