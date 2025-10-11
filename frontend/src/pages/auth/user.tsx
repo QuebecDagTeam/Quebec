@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAccount, useWriteContract } from "wagmi";
 import axios from "axios";
 import { abi } from "../../constants/abi";
 import { encryptData } from "../../components/encrypt";
 import { Input } from "../../components/input";
 
-const DAGKYC_CONTRACT = import.meta.env.VITE_CONTRACT_ADDRESS
+const DAGKYC_CONTRACT = import.meta.env.VITE_CONTRACT_ADDRESS as `0x${string}`;
 
 function base64ToHex(base64: string): `0x${string}` {
   const raw = atob(base64);
@@ -14,14 +14,25 @@ function base64ToHex(base64: string): `0x${string}` {
     const h = raw.charCodeAt(i).toString(16).padStart(2, "0");
     hex += h;
   }
-  return `0x${hex}` as `0x${string}`;
+  return `0x${hex}`;
 }
 
-export const UserAuth = () => {
+interface FormData {
+  fullName: string;
+  email: string;
+  dob: string;
+  govIdType: string;
+  govIdNumber: string;
+  phone: string;
+  walletAddress: string;
+  residentialAddress: string;
+}
+
+export const UserAuth: React.FC = () => {
   const { address } = useAccount();
   const { writeContractAsync } = useWriteContract();
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     fullName: "",
     email: "",
     dob: "",
@@ -35,13 +46,24 @@ export const UserAuth = () => {
   const [txHash, setTxHash] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    if (address) {
+      setFormData((prev) => ({ ...prev, walletAddress: address }));
+    }
+  }, [address]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value || '' });
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value || "" }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!address) return alert("Please connect your wallet first.");
+
+    if (!address) {
+      alert("Please connect your wallet first.");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -49,7 +71,7 @@ export const UserAuth = () => {
       const encryptedHex = base64ToHex(encryptedBase64);
 
       const hash = await writeContractAsync({
-        address: DAGKYC_CONTRACT as `0x${string}`,
+        address: DAGKYC_CONTRACT,
         abi,
         functionName: "registerKyc",
         args: [address, encryptedHex],
@@ -73,104 +95,89 @@ export const UserAuth = () => {
   };
 
   return (
-    <section className="bg-[#000306] text-white p-20  w-full ">
-      <form onSubmit={handleSubmit}>
-        <p className="text-gray-400 mb-2">Step 1 of 2</p>
-        <aside className="py-5 border-1 border-[#71627A] px-5 rounded-[35px] flex gap-5 flex-col mb-5">
-        <h2 className="text-2xl font-semibold mb-4">Personal Details</h2>
+    <div className="min-h-screen bg-[#000306] p-4 sm:p-8 md:p-12 lg:p-20 flex justify-center items-center font-inter">
+      <section className="text-white w-full max-w-4xl">
+        <h1 className="text-3xl sm:text-4xl font-extrabold mb-8 text-center text-blue-400">
+          Decentralized KYC Registration
+        </h1>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <p className="text-gray-400 text-lg mb-4">Step 1 of 2: Enter Personal & Contact Details</p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* <Input
-            label="Date of Birth"
-            placeholder="mm/dd/yyyy"
-            value={formData.dob}
-            action={()=>handleChange}
-          /> */}
-          <Input
-            label="Full Name"
-            placeholder="Enter your full name"
-            value={formData.fullName}
-            action={()=>handleChange}
-          />
-
-          {/* Government ID with Select */}
-          <div className="flex flex-col">
-            <label className="text-sm mb-5">Government ID</label>
-            <div className="flex gap-2">
-              <select
-                name="govIdType"
-                value={formData.govIdType}
-                onChange={handleChange}
-                className="w-[586px] bg-[#424242] py-5 rounded-full px-5"
-              >
-                <option value="">Select ID Type</option>
-                <option value="NIN">NIN</option>
-                <option value="Driver’s License">Driver’s License</option>
-                <option value="Voter’s Card">Voter’s Card</option>
-                <option value="Passport">Passport</option>
-              </select>
-             
+          <aside className="p-6 border border-[#71627A] rounded-2xl flex flex-col gap-5">
+            <h2 className="text-xl font-semibold">Personal Details</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Input label="Full Name" name="fullName" placeholder="Enter your full name" value={formData.fullName} action={handleChange} />
+              <Input label="Date of Birth" name="dob" type="date" placeholder="mm/dd/yyyy" value={formData.dob} action={handleChange} />
+              <div className="flex flex-col w-full">
+                <label htmlFor="govIdType" className="text-sm mb-2 text-gray-300">Government ID Type</label>
+                <select
+                  id="govIdType"
+                  name="govIdType"
+                  value={formData.govIdType}
+                  onChange={handleChange}
+                  className="w-full bg-[#424242] text-white py-3 px-5 rounded-full appearance-none focus:outline-none focus:ring-2 focus:ring-[#71627A] transition duration-150"
+                >
+                  <option value="" disabled>Select ID Type</option>
+                  <option value="NIN">NIN (National ID)</option>
+                  <option value="Driver’s License">Driver’s License</option>
+                  <option value="Voter’s Card">Voter’s Card</option>
+                  <option value="Passport">Passport</option>
+                </select>
+              </div>
+              <Input label="ID Number" name="govIdNumber" placeholder="Enter Government ID number" value={formData.govIdNumber} action={handleChange} />
             </div>
-          </div>
+          </aside>
 
-          <Input
-            label="ID Number"
-                placeholder="Enter ID number"
-                value={formData.govIdNumber || ''}
-                action={()=>{handleChange}}
-          />
-           <Input
-            label="Date of Birth"
-            placeholder="mm/dd/yyyy"
-            value={formData.dob}
-            action={()=>handleChange}
-          />
-        </div>
-       <div className="w-full">
-        
-       </div>
-      </aside>
-        {/* Contact Info */}
-        <aside className="py-5 border-1 border-[#71627A] px-5 rounded-[35px] flex gap-5 flex-col">
-        <h2 className="text-2xl font-semibold mt-8 mb-4">Contact Information</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Input
-            label="Email Address"
-            placeholder="Enter your email"
-            value={formData.email}
-            action={()=>handleChange}
-          />
-          <Input
-            label="Phone Number"
-            placeholder="+234..."
-            value={formData.phone}
-            action={()=>handleChange}
-          />
-          
-        </div>
-        <div className="w-full">
-            <Input
-            label="Residential Address"
-            placeholder="Enter your home address"
-            value={formData.residentialAddress}
-            action={()=>handleChange}
-          />
-        </div>
-        </aside>
-        <button
-          type="submit"
-          disabled={loading}
-          className="mt-8 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg w-full"
-        >
-          {loading ? "Submitting..." : "Submit KYC"}
-        </button>
+          <aside className="p-6 border border-[#71627A] rounded-2xl flex flex-col gap-5">
+            <h2 className="text-xl font-semibold">Contact Information</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Input label="Email Address" name="email" type="email" placeholder="Enter your email" value={formData.email} action={handleChange} />
+              <Input label="Phone Number" name="phone" type="tel" placeholder="+234..." value={formData.phone} action={handleChange} />
+            </div>
+            <Input label="Residential Address" name="residentialAddress" placeholder="Enter your full home address" value={formData.residentialAddress} action={handleChange} />
+            <Input label="Wallet Address (Detected)" name="walletAddress" placeholder="Connect wallet to display address" value={formData.walletAddress} action={handleChange} />
+          </aside>
 
-        {txHash && (
-          <p className="mt-4 text-sm text-green-400">
-            ✅ Transaction submitted: {txHash}
+          <button
+            type="submit"
+            disabled={loading || !address}
+            className={`mt-8 px-6 py-4 rounded-xl w-full text-lg font-bold transition duration-300 
+              ${loading || !address
+                ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
+                : 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/50'}`}
+          >
+            {loading ? (
+              <div className="flex items-center justify-center">
+                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+                Submitting...
+              </div>
+            ) : (
+              'Submit KYC & Encrypt Data to Blockchain'
+            )}
+          </button>
+
+          {/* {statusMessage && (
+            <div className={`mt-4 p-3 rounded-lg text-center font-medium ${statusMessage.startsWith('✅') ? 'bg-green-900/50 text-green-300' : 'bg-red-900/50 text-red-300'}`}>
+              {statusMessage}
+            </div>
+          )} */}
+
+          {txHash && (
+            <p className="mt-4 text-sm text-center text-green-400 break-all">
+              Mock Transaction Hash: <span className="font-mono">{txHash}</span>
+            </p>
+          )}
+
+          <p className="text-xs text-center text-gray-500 mt-4">
+            Current Wallet Address: {address || 'Not Connected'}
           </p>
-        )}
-      </form>
-    </section>
+        </form>
+      </section>
+    </div>
   );
 };
+
+export default UserAuth;
