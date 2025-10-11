@@ -29,7 +29,6 @@ interface FormData {
   residentialAddress: string;
 }
 
-const [progress, setProgress] = useState(1);
 export const UserAuth: React.FC = () => {
   const { address } = useAccount();
   const { writeContractAsync } = useWriteContract();
@@ -44,6 +43,7 @@ export const UserAuth: React.FC = () => {
     walletAddress: "",
     residentialAddress: "",
   });
+const [progress, setProgress] = useState(1);
 
   const [txHash, setTxHash] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
