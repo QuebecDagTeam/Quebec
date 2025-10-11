@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import * as faceapi from "face-api.js";
-
+import Camera from "../assets/camera.svg";
 const FaceCapture: React.FC = () => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -95,11 +95,12 @@ const FaceCapture: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[1/2] w-full bg-[#2F2F2F] border-[18px] border-dashed border-[#F697F959] text-white">
+    <div className="flex flex-col items-center justify-center min-h-full w-full bg-[#2F2F2F] border-[18px] border-dashed border-[#F697F959] text-white">
       {/* <h1 className="text-2xl font-semibold mb-4">Face Capture (face-api.js)</h1> */}
 
       {loading ? (
-        <p>Loading models...</p>
+        <img src={Camera} className="w-[236px] h-[236px]"/>
+        // <p>Loading models...</p>
       ) : (
         <>
           <div className="relative">
