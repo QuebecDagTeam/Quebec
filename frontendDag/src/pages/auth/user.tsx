@@ -140,7 +140,7 @@ export const UserAuth: React.FC = () => {
         {(checkingRegistration || isRegistered === null) && isConnected && (
           <div className="fixed inset-0 bg-black bg-opacity-80 text-white z-50 flex items-center justify-center">
             <div className="text-center space-y-4">
-              <div className="animate-spin rounded-full h-10 w-10 border-t-4 border-blue-400 mx-auto" />
+              <div className="animate-spin rounded-full h-10 w-10 border-t-4 border-[bg-[#8C2A8F] mx-auto" />
               <p className="text-xl font-semibold">Checking registration status...</p>
             </div>
           </div>
