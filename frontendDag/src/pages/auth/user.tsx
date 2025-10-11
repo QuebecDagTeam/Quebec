@@ -97,9 +97,12 @@ export const UserAuth: React.FC = () => {
       setLoading(false);
     }
   };
-
+  const width = progress === 1 ? '50%' : '100%';
   return (
     <>
+    <div className="bg-white w-full border-full h-3 w-2">
+      <div className={`h-full w-[${width}]`}></div>
+    </div>
     <div className="min-h-screen bg-[#000306] p-4 sm:p-8 md:p-12 lg:p-20 flex justify-center items-center font-inter">
       <section className="text-white w-full max-w-4xl">
         <h1 className="text-3xl sm:text-4xl font-extrabold mb-8 text-center text-blue-400">
@@ -144,7 +147,7 @@ export const UserAuth: React.FC = () => {
           </aside>
 
           <div className="flex justify-between items-center">
-            <button className="px-[24px] py-[10px] bg-[#BDBDBD] rounded-full" >
+            <button className="px-[24px] py-[10px] bg-[#BDBDBD] rounded-full"  disabled={progress === 1} onClick={()=>handleProgress(1)}>
               Back
             </button>
             <button className="bg-[#8C2A8F] px-[24px] py-[10px] rounded-full" disabled={progress === 2} onClick={()=>handleProgress(2)}>Next</button>
@@ -189,7 +192,13 @@ export const UserAuth: React.FC = () => {
       </section>
 
     </div>
-          <FaceCapture/>
+    {
+      progress === 2 &&
+    <div className="min-h-screen bg-[#000306] p-4 sm:p-8 md:p-12 lg:p-20 flex justify-center items-center font-inter">
+                <FaceCapture/>
+
+      </div>
+    }
 </>
   );
 };
