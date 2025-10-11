@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useAccount, useWriteContract } from "wagmi";
-import axios from "axios";
+// import axios from "axios";
 import { abi } from "../../constants/abi";
 import { encryptData } from "../../../../frontendDag/src/components/encrypt";
 import { Input } from "../../../../frontendDag/src/components/input";
@@ -59,44 +59,55 @@ const [progress, setProgress] = useState(1);
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value || "" }));
   };
+const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  if (!address) {
+    alert("Please connect your wallet first.");
+    return;
+  }
 
-    if (!address) {
-      alert("Please connect your wallet first.");
-      return;
-    }
+  setLoading(true);
 
-    setLoading(true);
+  try {
+    const encryptedBase64 = encryptData(formData);
+    const encryptedHex = base64ToHex(encryptedBase64);
 
-    try {
-      const encryptedBase64 = encryptData(formData);
-      const encryptedHex = base64ToHex(encryptedBase64);
+    const hash = await writeContractAsync({
+      address: DAGKYC_CONTRACT,
+      abi,
+      functionName: "registerKyc",
+      args: [address, encryptedHex],
+    });
 
-      const hash = await writeContractAsync({
-        address: DAGKYC_CONTRACT,
-        abi,
-        functionName: "registerKyc",
-        args: [address, encryptedHex],
-      });
+    setTxHash(hash);
 
-      setTxHash(hash);
-
-      await axios.post("http://localhost:5000/api/kyc/register", {
+    const response = await fetch("http://localhost:5000/api/kyc/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
         walletAddress: address,
         encryptedData: encryptedBase64,
         transactionHash: hash,
-      });
+      }),
+    });
 
-      alert("✅ KYC submitted successfully!");
-    } catch (err) {
-      console.error("KYC submission failed:", err);
-      alert("❌ Error submitting KYC");
-    } finally {
-      setLoading(false);
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Server error: ${response.status} - ${errorText}`);
     }
-  };
+
+    alert("✅ KYC submitted successfully!");
+  } catch (err) {
+    console.error("KYC submission failed:", err);
+    alert("❌ Error submitting KYC");
+  } finally {
+    setLoading(false);
+  }
+};
+
   const width = progress === 1 ? '50%' : '100%';
   return (
     <section className="min-h-screen bg-[#000306] p-4 sm:p-8 md:p-12 lg:p-20 font-inter">
