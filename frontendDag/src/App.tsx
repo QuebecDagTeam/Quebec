@@ -12,7 +12,7 @@ function App() {
          <Routes>
            <Route path="/" element={<Home />} />
            <Route path="/reg/user" element={<UserAuth />} />
-           <Route path="/user" element={<Dash />} />
+           <Route path="/dashboard" element={<Dash />} />
          </Routes>
        </BrowserRouter>
   )

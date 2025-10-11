@@ -235,3 +235,31 @@ export const getRecordByUniqueId = async (req: Request, res: Response) => {
 //     return res.status(500).json({ error: "Server error" });
 //   }
 // };
+
+// controllers/kycController.ts
+
+export const getRecordByAdress= async (req: Request, res: Response) => {
+  try {
+    const { address } = req.params;
+    
+    // Find the KYC record from the database
+    const doc = await KycRecord.findOne({ address: toChecksum(address) });
+    
+    if (!doc) {
+      return res.status(404).json({ error: "KYC record not found" });
+    }
+    
+    // If found, return the data
+    return res.json({
+      kycId: doc.kycId,
+      encryptedDataHash: doc.encryptedDataHash,
+      encryptedSymKeys: doc.encryptedSymKeys,
+      accessHistory: doc.accessHistory,
+      status: doc.status,
+      createdAt: doc.createdAt
+    });
+  } catch (err) {
+    console.error("getRecordByUniqueId err:", err);
+    return res.status(500).json({ error: "Server error" });
+  }
+};
