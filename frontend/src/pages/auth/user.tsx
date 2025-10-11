@@ -138,6 +138,12 @@ export const UserAuth: React.FC = () => {
             <Input label="Wallet Address (Detected)" name="walletAddress" placeholder="Connect wallet to display address" value={formData.walletAddress} action={handleChange} />
           </aside>
 
+          <div className="flex justify-between items-center">
+            <button className="px-[24px] py-[10px] bg-[#BDBDBD] rounded-full" >
+              Back
+            </button>
+            <button className="bg-[#8C2A8F] px-[24px] py-[10px] rounded-full">Next</button>
+          </div>
           <button
             type="submit"
             disabled={loading || !address}
