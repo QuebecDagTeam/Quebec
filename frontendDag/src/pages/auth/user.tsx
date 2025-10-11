@@ -99,23 +99,26 @@ const [progress, setProgress] = useState(1);
   };
   const width = progress === 1 ? '50%' : '100%';
   return (
-    <>
-  
-
-    <div className="min-h-screen bg-[#000306] p-4 sm:p-8 md:p-12 lg:p-20 flex justify-center items-center font-inter">
-      <section className="text-white w-full max-w-4xl">
-        <h1 className="text-3xl sm:text-4xl font-extrabold mb-8 text-center text-blue-400">
+    <section className="min-h-screen bg-[#000306] p-4 sm:p-8 md:p-12 lg:p-20 font-inter">
+      <h1 className="text-3xl sm:text-4xl font-extrabold mb-8 text-center text-blue-400">
           Decentralized KYC Registration
         </h1>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <p className="text-gray-400 text-lg mb-4">Step 1 of 2: Enter Personal & Contact Details</p>
+           <p className="text-gray-400 text-lg mb-4">Step 1 of 2: Enter Personal & Contact Details</p>
   <div className="w-full h-4 bg-gray-200 rounded-full overflow-hidden">
   <div
     className="h-full bg-[#8C2A8F] transition-all duration-300"
     style={{ width }} // ← set progress dynamically
   ></div>
 </div>
-          <aside className="p-6 border border-[#71627A] rounded-2xl flex flex-col gap-5">
+         <form onSubmit={handleSubmit} className="space-y-6">
+       
+{
+  progress ===  1 && (
+
+    <div >
+      <section className="text-white w-full max-w-4xl">
+        
+   <aside className="p-6 border border-[#71627A] rounded-2xl flex flex-col gap-5">
             <h2 className="text-xl font-semibold">Personal Details</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Input label="Full Name" name="fullName" placeholder="Enter your full name" value={formData.fullName} action={handleChange} />
@@ -150,7 +153,24 @@ const [progress, setProgress] = useState(1);
             <Input label="Wallet Address (Detected)" name="walletAddress" placeholder="Connect wallet to display address" value={formData.walletAddress} action={handleChange} />
           </aside>
 
-          <div className="flex justify-between items-center">
+          
+
+          <p className="text-xs text-center text-gray-500 mt-4">
+            Current Wallet Address: {address || 'Not Connected'}
+          </p>
+      </section>
+
+    </div>
+    
+  )}
+    {
+      progress === 2 &&
+    <div >
+                <FaceCapture/>
+
+      </div>
+    }
+    <div className="flex justify-between items-center">
             <button className="px-[24px] py-[10px] bg-[#BDBDBD] rounded-full"  disabled={progress === 1} onClick={()=>handleProgress(1)}>
               Back
             </button>
@@ -188,22 +208,9 @@ const [progress, setProgress] = useState(1);
               Mock Transaction Hash: <span className="font-mono">{txHash}</span>
             </p>
           )}
+                  </form>
 
-          <p className="text-xs text-center text-gray-500 mt-4">
-            Current Wallet Address: {address || 'Not Connected'}
-          </p>
-        </form>
-      </section>
-
-    </div>
-    {
-      progress === 2 &&
-    <div className="min-h-screen bg-[#000306] p-4 sm:p-8 md:p-12 lg:p-20 flex justify-center items-center font-inter">
-                <FaceCapture/>
-
-      </div>
-    }
-</>
+</section>
   );
 };
 

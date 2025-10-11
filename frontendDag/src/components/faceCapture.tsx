@@ -95,8 +95,8 @@ const FaceCapture: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-[#2F2F2F] border-[18px] border-dashed border-[#F697F959] text-white">
-      <h1 className="text-2xl font-semibold mb-4">Face Capture (face-api.js)</h1>
+    <div className="flex flex-col items-center justify-center min-h-[1/2] w-full bg-[#2F2F2F] border-[18px] border-dashed border-[#F697F959] text-white">
+      {/* <h1 className="text-2xl font-semibold mb-4">Face Capture (face-api.js)</h1> */}
 
       {loading ? (
         <p>Loading models...</p>
