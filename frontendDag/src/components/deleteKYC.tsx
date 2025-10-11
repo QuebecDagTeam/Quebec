@@ -13,7 +13,7 @@ const KYCDelete: React.FC<KYCDeleteProps> = ({ walletAddress }) => {
     setStatusMessage('');
     
     try {
-      const response = await fetch(`https://quebec-ur3w.onrender.com/api/kyc/user/${walletAddress}`, {
+      const response = await fetch(`https://quebec-ur3w.onrender.com/api/kyc/delete-user/${walletAddress}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

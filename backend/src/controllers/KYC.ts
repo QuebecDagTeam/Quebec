@@ -270,12 +270,10 @@ export const getRecordByAddress = async (req: Request, res: Response) => {
     if (!doc) return res.status(404).json({ error: "KYC record not found" });
 
     return res.json({
+      NIN: doc.NIN,
+      email: doc.email,
       ownerAddress: doc.walletAddress,
-      kycId: doc.uniqueId,
-      encryptedData: doc.encryptedData,
-      encryptedSymKeys: doc.encryptedSymKeys,
-      accessHistory: doc.accessHistory,
-      status: doc.status,
+      kycDetails: doc.kyc,
       createdAt: doc.createdAt,
     });
   } catch (err) {
