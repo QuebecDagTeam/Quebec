@@ -1,14 +1,20 @@
-// models/User.ts
 import mongoose, { Document, Schema } from "mongoose";
 
+// User Interface
 export interface IUser extends Document {
   walletAddress: string;
-  fullName?: string;
   email?: string;
-  kycIds: number[]; // list of on-chain kyc ids owned by user
+  NIN?: number;
+  kyc: {
+    encryptedData: string;
+    uniqueId: string;
+    transactionHash: string;
+    userType: "user" | "thirdParty";
+    timestamp: Date;
+  };
   whitelistedThirdParties: Array<{
     thirdPartyAddress: string;
-    kycId: number;
+    kycId: string; // KYC unique ID that the third party has access to
     status: "granted" | "revoked";
     grantedAt?: Date;
     revokedAt?: Date | null;
@@ -17,12 +23,30 @@ export interface IUser extends Document {
   updatedAt: Date;
 }
 
-const UserSchema = new Schema<IUser>({
-  walletAddress: { type: String, required: true, index: true, unique: true },
-  fullName: { type: String },
-  email: { type: String },
-  kycIds: { type: [Number], default: [] },
-  whitelistedThirdParties: { type: Schema.Types.Mixed, default: [] },
-}, { timestamps: true });
+// User Schema with embedded KYC details
+const UserSchema = new Schema<IUser>(
+  {
+    walletAddress: { type: String, required: true, index: true, unique: true },
+    NIN: { type:  Number},
+    email: { type: String },
+    kyc: {
+      encryptedData: { type: String, required: true },
+      uniqueId: { type: String, required: true, index: true },
+      transactionHash: { type: String, required: true, unique: true },
+      userType: { type: String, enum: ["user", "thirdParty"], default: "user" },
+      timestamp: { type: Date, default: Date.now },
+    },
+    whitelistedThirdParties: [
+      {
+        thirdPartyAddress: { type: String, required: true },
+        kycId: { type: String, required: true }, // Reference to KYC unique ID
+        status: { type: String, enum: ["granted", "revoked"], required: true },
+        grantedAt: { type: Date },
+        revokedAt: { type: Date, default: null },
+      },
+    ],
+  },
+  { timestamps: true }
+);
 
 export default mongoose.models.User || mongoose.model<IUser>("User", UserSchema);
