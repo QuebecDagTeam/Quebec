@@ -26,7 +26,7 @@ function toChecksum(addr: string) {
 
 import KYCSchema from "../models/kyc";
 
-export const saveKYC = async (req: Request, res: Response) => {
+export const Register = async (req: Request, res: Response) => {
   try {
     const { walletAddress, encryptedData, transactionHash } = req.body;
 

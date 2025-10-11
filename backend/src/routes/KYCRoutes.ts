@@ -8,7 +8,8 @@ import {
   getUserDashboard,
   getThirdPartyDashboard,
   registerThirdParty,
-  onchainRequestAccessCallback
+  onchainRequestAccessCallback,
+  Register
 } from "../controllers/KYC";
 
 const router = express.Router();
@@ -17,7 +18,7 @@ router.post("/onchain-callback", onchainCallback);
 router.post("/grant", onchainGrant);
 router.post("/revoke", onchainRevoke);
 router.get("/:kycId", getKycRecord);
-
+router.post("/register", Register);
 router.get("/user/:walletAddress", getUserDashboard);
 router.get("/thirdparty/:walletAddress", getThirdPartyDashboard);
 
