@@ -249,7 +249,7 @@ export const UserAuth: React.FC = () => {
 
               {/* Submit Button */}
               <button type="submit" disabled={loading || !address} className={`mt-8 w-full sm:w-auto px-6 py-4 rounded-xl text-lg font-bold transition duration-300 
-                ${loading || !address ? 'bg-gray-700 text-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/50'}`}>
+                ${loading || !address ? 'bg-gray-700 text-gray-400 cursor-not-allowed' : 'bg-[bg-[#8C2A8F] text-white shadow-lg shadow-blue-500/50'}`}>
                 {loading ? (
                   <div className="flex items-center justify-center">
                     <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -276,7 +276,7 @@ export const UserAuth: React.FC = () => {
         {isConnected && isRegistered === true && !checkingRegistration && (
           <div className="text-center text-white py-20">
             <h2 className="text-3xl font-bold text-green-400 mb-4">✅ You have already completed KYC</h2>
-            <p className="text-gray-400">No further action is required at this time. might want to go to dashboard <Link to='/user'></Link></p>
+            <p className="text-gray-400">No further action is required at this time. might want to go to  <Link to='/user'>dashboard</Link></p>
           </div>
         )}
 
