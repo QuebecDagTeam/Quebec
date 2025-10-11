@@ -95,15 +95,17 @@ const FaceCapture: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-full w-full bg-[#2F2F2F] border-[18px] border-dashed border-[#F697F959] text-white">
+    <div className="flex flex-col items-center justify-center h-full w-2/3 bg-[#2F2F2F] border-[18px] border-dashed border-[#F697F959] text-white">
       {/* <h1 className="text-2xl font-semibold mb-4">Face Capture (face-api.js)</h1> */}
 
       {loading ? (
+        <div className="flex flex-col items-center">
         <img src={Camera} className="w-[236px] h-[236px]"/>
+        </div>
         // <p>Loading models...</p>
       ) : (
         <>
-          <div className="relative">
+          <div className="relative mt-3 mb-3">
             <video
               ref={videoRef}
               autoPlay
@@ -127,7 +129,7 @@ const FaceCapture: React.FC = () => {
 
           <button
             onClick={captureFace}
-            className="mt-4 px-6 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg"
+            className="mt-4 px-6 py-2 bg-[#F697F959] mb-2 rounded-lg"
             disabled={!faceDetected}
           >
             Capture Face

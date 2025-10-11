@@ -3,6 +3,7 @@ import mongoose, { Schema, Document } from "mongoose";
 export interface IKYC extends Document {
   walletAddress: string;
   encryptedData: string;
+  uniqueId:string;
   transactionHash: string;
   userType: "user" | "thirdParty";
   timestamp: Date;
@@ -16,6 +17,11 @@ export interface IKYC extends Document {
 const KYCSchema: Schema = new Schema<IKYC>({
   walletAddress: {
     type: String,
+    required: true,
+    index: true,
+  },
+  uniqueId:{
+ type: String,
     required: true,
     index: true,
   },
