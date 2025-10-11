@@ -1,6 +1,6 @@
 // routes/kycRoutes.ts
 import express from "express";
-import {
+import deleteKYC, {
   getRecordByAddress,
   grantAccess,
   isWalletRegistered,
@@ -14,5 +14,5 @@ router.get("/isRegistered/:walletAddress", isWalletRegistered);
 router.get('/user/:walletAddress', getRecordByAddress);
 router.get('/user/grant-access/:walletAddress', grantAccess);
 router.get('/user/revoke-access/:walletAddress', revokeAccess);
-
+router.delete('/user/:walletAddress', deleteKYC);
 export default router;

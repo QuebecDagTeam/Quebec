@@ -284,3 +284,27 @@ export const getRecordByAddress = async (req: Request, res: Response) => {
   }
 };
 
+
+
+// Delete KYC Data by Wallet Address
+const deleteKYC = async (req: Request, res: Response): Promise<Response> => {
+  const { walletAddress } = req.params; // Get wallet address from the URL parameter
+  
+  try {
+    // Find and delete the KYC document by wallet address
+    const result = await User.findOneAndDelete({ walletAddress });
+
+    // If no KYC document is found, return an error message
+    if (!result) {
+      return res.status(404).json({ message: 'KYC data not found for the given wallet address' });
+    }
+
+    // Successfully deleted KYC data
+    return res.status(200).json({ message: 'KYC data successfully deleted' });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'An error occurred while deleting the KYC data', error });
+  }
+};
+
+export default deleteKYC;
