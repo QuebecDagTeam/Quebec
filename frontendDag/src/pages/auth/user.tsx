@@ -66,6 +66,10 @@ export const UserAuth: React.FC = () => {
       const response = await fetch(`https://quebec-ur3w.onrender.com/api/kyc/isRegistered/${walletAddress}`);
       const data = await response.json();
       setIsRegistered(data?.registered);
+      if(!data){
+        alert("Error checking registration status, check your connection and try again.");
+        return
+      }
       console
     } catch (err) {
       console.error("Failed to check wallet registration:", err);
