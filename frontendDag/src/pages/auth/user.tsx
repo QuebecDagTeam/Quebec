@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useAccount, useWriteContract } from "wagmi";
 // import axios from "axios";
 import { abi } from "../../constants/abi";
-import { encryptData } from "../../../../frontendDag/src/components/encrypt";
-import { Input } from "../../../../frontendDag/src/components/input";
-import FaceCapture from "../../../../frontendDag/src/components/faceCapture";
+import { encryptData } from "../../components/encrypt";
+import { Input } from "../../components/input";
+import FaceCapture from "../../components/faceCapture";
 
 const DAGKYC_CONTRACT = import.meta.env.VITE_CONTRACT_ADDRESS as `0x${string}`;
 
@@ -121,7 +121,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     style={{ width }} // ← set progress dynamically
   ></div>
 </div>
-         <form onSubmit={handleSubmit} className="space-y-6">
+         <form onSubmit={handleSubmit} className="mt-10 space-y-6 flex flex-col gap-5">
        
 {
   progress ===  1 && (
@@ -129,7 +129,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     <div >
       <section className="text-white w-full max-w-4xl">
         
-   <aside className="p-6 border border-[#71627A] rounded-2xl flex flex-col gap-5">
+   <aside className="p-6 border border-[#71627A] rounded-2xl flex flex-col gap-5 mb-5">
             <h2 className="text-xl font-semibold">Personal Details</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Input label="Full Name" name="fullName" placeholder="Enter your full name" value={formData.fullName} action={handleChange} />
