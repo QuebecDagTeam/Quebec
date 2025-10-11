@@ -46,6 +46,22 @@ export const Register = async (req: Request, res: Response) => {
   }
 };
 /**
+ * GET /api/kyc/is-registered/:walletAddress
+ * Returns { registered: true | false }
+ */
+
+export const isWalletRegistered = async (req: Request, res: Response) => {
+  try {
+    const wallet = toChecksum(req.params.walletAddress);
+    const user = await KYCSchema.findOne({ walletAddress: wallet });
+
+    return res.json({ registered: !!user });
+  } catch (err) {
+    console.error("isWalletRegistered err:", err);
+    return res.status(500).json({ error: "Server error" });
+  }
+};
+/**
  * POST /api/kyc/grant
  * Body: { ownerAddress, kycId, recipient, txHash, recipientEncryptedSymKey }
  */
@@ -152,21 +168,7 @@ export const revokeAccess = async (req: Request, res: Response) => {
   }
 };
 
-/**
- * GET /api/kyc/is-registered/:walletAddress
- * Returns { registered: true | false }
- */
-export const isWalletRegistered = async (req: Request, res: Response) => {
-  try {
-    const wallet = toChecksum(req.params.walletAddress);
-    const user = await User.findOne({ walletAddress: wallet });
 
-    return res.json({ registered: !!user });
-  } catch (err) {
-    console.error("isWalletRegistered err:", err);
-    return res.status(500).json({ error: "Server error" });
-  }
-};
 
 /**
  * GET /api/kyc/record/:uniqueId
