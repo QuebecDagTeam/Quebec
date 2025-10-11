@@ -266,7 +266,7 @@ export const getRecordByUniqueId = async (req: Request, res: Response) => {
 export const getRecordByAddress = async (req: Request, res: Response) => {
   try {
     const { walletAdress } = req.params;
-    const doc = await users.findOne({ walletAdress });
+    const doc = await User.findOne({ walletAdress });
     if (!doc) return res.status(404).json({ error: "KYC record not found" });
 
     return res.json({
