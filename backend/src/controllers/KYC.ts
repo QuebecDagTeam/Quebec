@@ -6,6 +6,7 @@ dotenv.config();
 import User from "../models/users";  // Updated model import based on the new schema
 import KycRecord from "../models/KYCRecord";  // Assuming you have the KYCRecord model
 import { DAGKYC_ABI } from "../config/ABI";
+import users from "../models/users";
 
 const RPC = process.env.RPC_URL;
 const CONTRACT_ADDRESS = (process.env.DAGKYC_ADDRESS || "").toLowerCase();
@@ -244,7 +245,7 @@ export const revokeAccess = async (req: Request, res: Response) => {
 export const getRecordByUniqueId = async (req: Request, res: Response) => {
   try {
     const { uniqueId } = req.params;
-    const doc = await KycRecord.findOne({ uniqueId });
+    const doc = await User.findOne({ uniqueId });
     if (!doc) return res.status(404).json({ error: "KYC record not found" });
 
     return res.json({
@@ -265,7 +266,7 @@ export const getRecordByUniqueId = async (req: Request, res: Response) => {
 export const getRecordByAddress = async (req: Request, res: Response) => {
   try {
     const { walletAdress } = req.params;
-    const doc = await KycRecord.findOne({ walletAdress });
+    const doc = await users.findOne({ walletAdress });
     if (!doc) return res.status(404).json({ error: "KYC record not found" });
 
     return res.json({
