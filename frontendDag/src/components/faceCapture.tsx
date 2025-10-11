@@ -95,12 +95,12 @@ const FaceCapture: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-full w-2/3 bg-[#2F2F2F] border-[18px] border-dashed border-[#F697F959] text-white">
+    <div className="flex flex-col items-center justify-center h-full w-full md:w-2/3 bg-[#2F2F2F] border-[18px] border-dashed border-[#F697F959] text-white">
       {/* <h1 className="text-2xl font-semibold mb-4">Face Capture (face-api.js)</h1> */}
 
       {loading ? (
         <div className="flex flex-col items-center">
-        <img src={Camera} className="w-[236px] h-[236px]"/>
+        <img src={Camera} className="md:w-[236px] md:h-[236px]"/>
         </div>
         // <p>Loading models...</p>
       ) : (

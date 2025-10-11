@@ -45,13 +45,13 @@ export const Register = async (req: Request, res: Response) => {
     const uniqueId = `KYC-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
 
     // Create a new KYC record
-    const newKYC = new KycRecord({
-      walletAddress: toto(walletAddress),
-      encryptedData,
-      transactionHash,
-      uniqueId,
-      timestamp: new Date(),
-    });
+    // const newKYC = new KycRecord({
+    //   walletAddress: toto(walletAddress),
+    //   encryptedData,
+    //   transactionHash,
+    //   uniqueId,
+    //   timestamp: new Date(),
+    // });
 
     // Create a new user entry
     const newUser = new User({
@@ -68,7 +68,7 @@ export const Register = async (req: Request, res: Response) => {
     });
 
     // Save KYC record and user
-    await newKYC.save();
+    // await newKYC.save();
     await newUser.save();
 
     return res.status(201).json({ message: "User and KYC registered successfully" });
