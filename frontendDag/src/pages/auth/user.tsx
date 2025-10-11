@@ -223,18 +223,18 @@ export const UserAuth: React.FC = () => {
                   </div>
                   <div className="flex gap-8 md:flex-row flex-col items-center justify-center">
                     <FaceCapture />
-                    <div className="bg-[#2F2F2F] gap-8 w-1/3 px-[30px] py-[20px] flex-col rounded-[8px] flex items-center justify-center">
-                      <div className="bg-[#424242] w-full h-auto text-white p-5">
-                        <p className="text-[18px]">Good Lighting</p>
-                        <p>Ensure you’re in a well lit area</p>
+                    <div className="md:bg-[#2F2F2F] gap-2 md:gap-8 w-full md:w-1/3 px-[10px] md:px-[30px] py-[20px] flex-col rounded-[8px] flex items-center justify-center">
+                      <div className="bg-[#424242] w-full h-auto text-white p-5 rounded-[15px]">
+                        <p className="md:text-[18px] text-center">Good Lighting</p>
+                        <p className="md:text-[14px] text-[12px] text-center ">Ensure you’re in a well lit area</p>
                       </div>
-                      <div className="bg-[#424242] w-full h-auto text-white p-5">
-                        <p className="text-[18px]">Stay Still</p>
-                        <p>Minimize movement while scanning</p>
+                      <div className="bg-[#424242] w-full h-auto text-white p-5 rounded-[15px]">
+                        <p className="md:text-[18px] text-center">Stay Still</p>
+                        <p className="md:text-[14px] text-[12px] text-center ">Minimize movement while scanning</p>
                       </div>
-                      <div className="bg-[#424242] w-full h-auto text-white p-5">
-                        <p className="text-[18px]">Face Visibility</p>
-                        <p>Ensure your face is fully visible</p>
+                      <div className="bg-[#424242] w-full h-auto text-white p-5 rounded-[15px]">
+                        <p className="md:text-[18px] text-center">Face Visibility</p>
+                        <p className="md:text-[14px] text-[12px] text-center ">Ensure your face is fully visible</p>
                       </div>
                     </div>
                   </div>
@@ -242,14 +242,14 @@ export const UserAuth: React.FC = () => {
               )}
 
               {/* Navigation Buttons */}
-              <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+              <div className="flex justify-between items-center md:gap-4">
                 <button type="button" className="px-6 py-3 bg-[#BDBDBD] rounded-full text-black font-medium" disabled={progress === 1} onClick={() => handleProgress(1)}>Back</button>
                 <button type="button" className="px-6 py-3 bg-[#8C2A8F] rounded-full text-white font-medium" disabled={progress === 2} onClick={() => handleProgress(2)}>Next</button>
               </div>
 
               {/* Submit Button */}
               <button type="submit" disabled={loading || !address} className={`mt-8 w-full sm:w-auto px-6 py-4 rounded-xl text-lg font-bold transition duration-300 
-                ${loading || !address ? 'bg-gray-700 text-gray-400 cursor-not-allowed' : 'bg-[bg-[#8C2A8F] text-white shadow-lg shadow-blue-500/50'}`}>
+                ${loading || !address ? 'bg-gray-700 text-gray-400 cursor-not-allowed' : 'bg-[#8C2A8F] text-white shadow-lg shadow-bg-[#8C2A8F] '}`}>
                 {loading ? (
                   <div className="flex items-center justify-center">
                     <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
