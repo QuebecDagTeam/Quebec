@@ -53,7 +53,7 @@ export const Overlay = () => {
         <aside className="bg-[#000000] text-white flex flex-col justify-center gap-6 p-6 md:p-10 md:w-1/2">
           {/* Continue as User */}
           <Link
-            to="/user"
+            to="/reg/user"
             className="flex items-start gap-4 border border-[#2F2F2F] rounded-lg p-4 hover:bg-[#111111] transition"
           >
             <div className="text-[#8C2A8F] mt-1">

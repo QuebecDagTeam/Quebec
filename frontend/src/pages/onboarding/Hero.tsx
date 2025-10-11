@@ -3,7 +3,7 @@ import { MdSecurity, MdWorkOutline } from "react-icons/md";
 import Hero from "../../assets/hero.jpg";
 import ConnectButton from "../../components/connectBTN";
 import { Overlay } from "./overlay";
-import { useAccount, useDisconnect } from 'wagmi'
+import { useAccount } from 'wagmi'
 
 export const HeroSection = () => {
   const { isConnected } = useAccount()

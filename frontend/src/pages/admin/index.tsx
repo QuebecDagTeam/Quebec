@@ -1,5 +1,3 @@
-import ConnectButton from "../../components/connectBTN"
-import UserKYCForm from "../../components/form"
 import UserDashboard from "../../components/userDash"
 import { Header } from "../../nav/header"
 import { Nav } from "../../nav/nav"
@@ -38,8 +36,6 @@ export const Admin = () =>{
                     </tr>
                 </tbody>
              </table>
-            <UserKYCForm/>
-                        <UserDashboard/>
 
             </main>
         </section>
