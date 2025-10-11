@@ -23,7 +23,7 @@ interface FormData {
   email: string;
   dob: string;
   govIdType: string;
-  govIdNumber: string;
+  NIN: string;
   phone: string;
   walletAddress: string;
   residentialAddress: string;
@@ -38,7 +38,7 @@ export const UserAuth: React.FC = () => {
     email: "",
     dob: "",
     govIdType: "",
-    govIdNumber: "",
+    NIN: "",
     phone: "",
     walletAddress: "",
     residentialAddress: "",
@@ -111,6 +111,8 @@ export const UserAuth: React.FC = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          email:formData.email,
+          NIN:formData.NIN,
           walletAddress: address,
           encryptedData: encryptedBase64,
           transactionHash: hash,
@@ -191,7 +193,7 @@ export const UserAuth: React.FC = () => {
                           <option value="Passport">Passport</option>
                         </select>
                       </div>
-                      <Input label="ID Number" name="govIdNumber" placeholder="Enter Government ID number" value={formData.govIdNumber} action={handleChange} />
+                      <Input label="ID Number" name="govIdNumber" placeholder="Enter Government ID number" value={formData.NIN} action={handleChange} />
                     </div>
                   </aside>
 
