@@ -29,6 +29,7 @@ interface FormData {
   residentialAddress: string;
 }
 
+const [progress, setProgress] = useState(1);
 export const UserAuth: React.FC = () => {
   const { address } = useAccount();
   const { writeContractAsync } = useWriteContract();
@@ -46,7 +47,9 @@ export const UserAuth: React.FC = () => {
 
   const [txHash, setTxHash] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-
+  const handleProgress = (step: number) => {
+    setProgress(step);
+  }
   useEffect(() => {
     if (address) {
       setFormData((prev) => ({ ...prev, walletAddress: address }));
@@ -96,6 +99,7 @@ export const UserAuth: React.FC = () => {
   };
 
   return (
+    <>
     <div className="min-h-screen bg-[#000306] p-4 sm:p-8 md:p-12 lg:p-20 flex justify-center items-center font-inter">
       <section className="text-white w-full max-w-4xl">
         <h1 className="text-3xl sm:text-4xl font-extrabold mb-8 text-center text-blue-400">
@@ -143,7 +147,7 @@ export const UserAuth: React.FC = () => {
             <button className="px-[24px] py-[10px] bg-[#BDBDBD] rounded-full" >
               Back
             </button>
-            <button className="bg-[#8C2A8F] px-[24px] py-[10px] rounded-full">Next</button>
+            <button className="bg-[#8C2A8F] px-[24px] py-[10px] rounded-full" disabled={progress === 2} onClick={()=>handleProgress(2)}>Next</button>
           </div>
           <button
             type="submit"
@@ -183,10 +187,12 @@ export const UserAuth: React.FC = () => {
           </p>
         </form>
       </section>
+
     </div>
+          <FaceCapture/>
+</>
   );
 };
 
-<FaceCapture/>
 
 export default UserAuth;
