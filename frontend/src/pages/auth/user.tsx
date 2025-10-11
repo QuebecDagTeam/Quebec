@@ -36,7 +36,7 @@ export const UserAuth = () => {
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData({ ...formData, [e.target.name]: e.target.value || '' });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -80,12 +80,12 @@ export const UserAuth = () => {
         <h2 className="text-2xl font-semibold mb-4">Personal Details</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Input
+          {/* <Input
             label="Date of Birth"
             placeholder="mm/dd/yyyy"
             value={formData.dob}
             action={()=>handleChange}
-          />
+          /> */}
           <Input
             label="Full Name"
             placeholder="Enter your full name"
@@ -116,17 +116,18 @@ export const UserAuth = () => {
           <Input
             label="ID Number"
                 placeholder="Enter ID number"
-                value={formData.govIdNumber}
-                action={()=>handleChange}
+                value={formData.govIdNumber || ''}
+                action={()=>{handleChange}}
           />
-        </div>
-       <div className="w-full">
-         <Input
+           <Input
             label="Date of Birth"
             placeholder="mm/dd/yyyy"
             value={formData.dob}
             action={()=>handleChange}
           />
+        </div>
+       <div className="w-full">
+        
        </div>
       </aside>
         {/* Contact Info */}
