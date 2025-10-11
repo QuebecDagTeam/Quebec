@@ -4,6 +4,7 @@ import { abi } from "../../constants/abi";
 import { encryptData } from "../../components/encrypt";
 import { Input } from "../../components/input";
 import FaceCapture from "../../components/faceCapture";
+import { Link } from "react-router-dom";
 
 const DAGKYC_CONTRACT = import.meta.env.VITE_CONTRACT_ADDRESS as `0x${string}`;
 
@@ -275,7 +276,7 @@ export const UserAuth: React.FC = () => {
         {isConnected && isRegistered === true && !checkingRegistration && (
           <div className="text-center text-white py-20">
             <h2 className="text-3xl font-bold text-green-400 mb-4">✅ You have already completed KYC</h2>
-            <p className="text-gray-400">No further action is required at this time.</p>
+            <p className="text-gray-400">No further action is required at this time. might want to go to dashboard <Link to='/user'></Link></p>
           </div>
         )}
 
