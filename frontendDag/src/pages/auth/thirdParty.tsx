@@ -100,7 +100,7 @@ const tx = await writeContractAsync({
 // Optionally store tx for UI
 setTxHash(tx);
 
-const response = await fetch("https://quebec-ur3w.onrender.com/api/kyc/register_thirdparty", {
+const response = await fetch("https://quebec-ur3w.onrender.com/api/kyc/register_thirdParty", {
   method: "POST",
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
