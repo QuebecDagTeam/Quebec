@@ -61,7 +61,7 @@ export const Notify: React.FC = () => {
   }, [uniqueId]);
 
   return (
-    <section className="bg-[#000000] min-h-screen text-white p-6">
+    <section className="bg-[#000000] min-h-screen text-white p-6 max-w-3xl mx-auto font-inter flex flex-col Items-start justify-start">
       <div>
         <p className="text-[18px] font-[600] mb-3">Notifications</p>
       </div>
