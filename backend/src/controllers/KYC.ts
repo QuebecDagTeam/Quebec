@@ -132,112 +132,101 @@ export const isEmailRegistered = async (req: Request, res: Response) => {
  * Body: { ownerAddress, kycId, recipient, txHash, recipientEncryptedSymKey }
  * Grants access to encrypted KYC data for a third-party recipient
  */
-export const grantAccess = async (req: Request, res: Response) => {
+
+// Grant access
+
+// Grant access
+export const grantAccess = async (req: Request, res: Response): Promise<Response> => {
   try {
-    const { ownerAddress, uniqueId, recipient, txHash, recipientEncryptedSymKey } = req.body;
+    // Destructure request body
+    const { uniqueId, recipient, txHash, ownerAddress } = req.body;
 
-    if (!ownerAddress || !uniqueId || !recipient || !txHash || !recipientEncryptedSymKey) {
-      return res.status(400).json({ error: "Missing fields" });
+    // Validate required fields
+    if (!uniqueId || !recipient || !txHash || !ownerAddress) {
+      return res.status(400).json({ error: 'Missing fields' });
     }
 
-    const receipt = await provider.getTransactionReceipt(txHash);
-    if (!receipt || !receipt.blockNumber) return res.status(400).json({ error: "Transaction not mined" });
+    // Find user document by uniqueId
+    const userDoc = await User.findOne({ 'kyc.uniqueId': uniqueId });
+    if (!userDoc) return res.status(404).json({ error: 'KYC record not found' });
 
-    const iface = new ethers.utils.Interface(DAGKYC_ABI);
-    let verified = false;
+    // Check if recipient is already whitelisted and has access granted
+    const existingEntry = userDoc.whitelistedThirdParties.find(
+      (party:any) => party.kycId === uniqueId && party.thirdPartyAddress === recipient
+    );
 
-    for (const log of receipt.logs) {
-      if (log.address.toLowerCase() !== CONTRACT_ADDRESS) continue;
-      try {
-        const parsed = iface.parseLog(log);
-        if (parsed.name === "AccessGranted") {
-          const parsedOwner = parsed.args[0];
-          const parsedRecipient = parsed.args[1];
-          const parsedKycId = Number(parsed.args[2].toString());
+    if (existingEntry) {
+      if (existingEntry.status === 'granted') {
+        return res.status(400).json({ error: 'Access already granted' });
+      }
 
-          if (
-            parsedOwner.toLowerCase() === ownerAddress.toLowerCase() &&
-            parsedRecipient.toLowerCase() === recipient.toLowerCase() &&
-            parsedKycId === (uniqueId)
-          ) {
-            verified = true;
-            break;
-          }
-        }
-      } catch {}
+      // Update status and grantedAt timestamp if revoked
+      existingEntry.status = 'granted';
+      existingEntry.grantedAt = new Date();
+      existingEntry.revokedAt = null;
+    } else {
+      // If no existing entry, create a new one
+      userDoc.whitelistedThirdParties.push({
+        thirdPartyAddress: recipient,
+        kycId: uniqueId,
+        status: 'granted',
+        grantedAt: new Date(),
+      });
     }
 
-    if (!verified) return res.status(400).json({ error: "Could not verify on-chain grant" });
+    // Push the access event to the history (for logging purposes)
+    userDoc.kyc.transactionHash = txHash;
 
-    const doc = await User.findOne({ uniqueId });
-    if (!doc) return res.status(404).json({ error: "KYC record not found" });
-
-    doc.encryptedSymKeys[toto(recipient)] = recipientEncryptedSymKey;
-    doc.accessHistory.push({ recipient: toto(recipient), action: "granted", timestamp: new Date() });
-    await doc.save();
+    // Save the document
+    await userDoc.save();
 
     return res.json({ success: true });
   } catch (err) {
-    console.error("grantAccess error:", err);
-    return res.status(500).json({ error: "Server error" });
+    console.error('grantAccess error:', err);
+    return res.status(500).json({ error: 'Server error' });
   }
 };
 
-/**
- * POST /api/kyc/revoke
- * Body: { ownerAddress, kycId, recipient, txHash }
- * Revokes access to encrypted KYC data for a third-party recipient
- */
-export const revokeAccess = async (req: Request, res: Response) => {
+// Revoke access
+export const revokeAccess = async (req: Request, res: Response): Promise<Response> => {
   try {
-    const { ownerAddress, kycId, recipient, txHash } = req.body;
+    const { uniqueId, recipient, txHash, ownerAddress } = req.body;
 
-    if (!ownerAddress || !kycId || !recipient || !txHash) {
-      return res.status(400).json({ error: "Missing fields" });
+    // Validate required fields
+    if (!uniqueId || !recipient || !txHash || !ownerAddress) {
+      return res.status(400).json({ error: 'Missing fields' });
     }
 
-    const receipt = await provider.getTransactionReceipt(txHash);
-    if (!receipt || !receipt.blockNumber) return res.status(400).json({ error: "Transaction not mined" });
+    // Find user document by uniqueId
+    const userDoc = await User.findOne({ 'kyc.uniqueId': uniqueId });
+    if (!userDoc) return res.status(404).json({ error: 'KYC record not found' });
 
-    const iface = new ethers.utils.Interface(DAGKYC_ABI);
-    let verified = false;
+    // Find the recipient in the whitelistedThirdParties array
+    const existingEntry = userDoc.whitelistedThirdParties.find(
+      (party:any) => party.kycId === uniqueId && party.thirdPartyAddress === recipient
+    );
 
-    for (const log of receipt.logs) {
-      if (log.address.toLowerCase() !== CONTRACT_ADDRESS) continue;
-      try {
-        const parsed = iface.parseLog(log);
-        if (parsed.name === "AccessRevoked") {
-          const parsedOwner = parsed.args[0];
-          const parsedRecipient = parsed.args[1];
-          const parsedKycId = Number(parsed.args[2].toString());
-
-          if (
-            parsedOwner.toLowerCase() === ownerAddress.toLowerCase() &&
-            parsedRecipient.toLowerCase() === recipient.toLowerCase() &&
-            parsedKycId === Number(kycId)
-          ) {
-            verified = true;
-            break;
-          }
-        }
-      } catch {}
+    if (!existingEntry || existingEntry.status === 'revoked') {
+      return res.status(400).json({ error: 'Access is already revoked or never granted' });
     }
 
-    if (!verified) return res.status(400).json({ error: "Could not verify on-chain revoke" });
+    // Update the status to revoked and set the revokedAt timestamp
+    existingEntry.status = 'revoked';
+    existingEntry.revokedAt = new Date();
 
-    const doc = await KycRecord.findOne({ kycId });
-    if (!doc) return res.status(404).json({ error: "KYC record not found" });
+    // Push the access revocation event to the history (for logging purposes)
+    userDoc.kyc.transactionHash = txHash;
 
-    delete doc.encryptedSymKeys[toto(recipient)];
-    doc.accessHistory.push({ recipient: toto(recipient), action: "revoked", timestamp: new Date() });
-    await doc.save();
+    // Save the document
+    await userDoc.save();
 
     return res.json({ success: true });
   } catch (err) {
-    console.error("revokeAccess error:", err);
-    return res.status(500).json({ error: "Server error" });
+    console.error('revokeAccess error:', err);
+    return res.status(500).json({ error: 'Server error' });
   }
 };
+
 
 /**
  * GET /api/kyc/record/:uniqueId
