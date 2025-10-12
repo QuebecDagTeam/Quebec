@@ -1,7 +1,6 @@
 import { MdNotifications } from "react-icons/md";
 import Logo from "../../assets/logo.jpg";
 import User from "../../assets/user.jpg";
-import { Input } from "../../components/input";
 import {
   MdDashboard,
   MdPerson,
@@ -16,7 +15,6 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { decryptData } from "../../components/encrypt";
 import { useAccount } from "wagmi";
-import ThirdPartyAuth from "../auth/thirdParty";
 
 interface KYCData {
   fullName: string;

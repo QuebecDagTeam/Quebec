@@ -43,7 +43,7 @@ export const Notify: React.FC = () => {
       if (!uniqueId) return;
       setLoading(true);
       try {
-        const res = await fetch(`https://quebec-ur3w.onrender.com/api/notifications/api/kyc/${uniqueId}`);
+        const res = await fetch(`https://quebec-ur3w.onrender.com/api/kyc/notifications/${uniqueId}`);
         if (!res.ok) {
           setNotifications([]);
           return;
