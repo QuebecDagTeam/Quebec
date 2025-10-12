@@ -7,6 +7,7 @@ import User from "../models/users";  // Updated model import based on the new sc
 import KycRecord from "../models/KYCRecord";  // Assuming you have the KYCRecord model
 import { DAGKYC_ABI } from "../config/ABI";
 import users from "../models/users";
+import thirdParty from "../models/thirdParty";
 
 const RPC = process.env.RPC_URL;
 const CONTRACT_ADDRESS = (process.env.DAGKYC_ADDRESS || "").toLowerCase();
@@ -306,3 +307,62 @@ const deleteKYC = async (req: Request, res: Response): Promise<Response> => {
 };
 
 export default deleteKYC;
+
+
+// Controller to register KYC data
+export const ThirdPartyReg = async (req: Request, res: Response) => {
+  const {
+    appName,
+    detail,
+    description,
+    website,
+    walletAddress,
+    transactionHash,
+  } = req.body;
+
+  // Simple validation
+  if (!appName || !description || !walletAddress || !transactionHash) {
+    return res.status(400).json({ error: "Missing required fields" });
+  }
+
+  try {
+    // Check if the user has already registered
+    const existingUser = await thirdParty.findOne({ walletAddress });
+    if (existingUser) {
+      return res.status(400).json({ error: "User already registered" });
+    }
+
+    // Save the new KYC record to the database
+    const newKyc = new thirdParty({
+      appName,
+      detail,
+      description,
+      website,
+      walletAddress,
+      transactionHash,
+    });
+
+    await newKyc.save();
+
+    // Respond with success
+    return res.status(200).json({ message: "KYC registration successful!" });
+  } catch (error) {
+    console.error("Error registering KYC:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const getThirdPartyRecord = async (req: Request, res: Response) => {
+  try {
+    const { walletAdress } = req.params;
+    const doc = await thirdParty.findOne({ walletAdress });
+    if (!doc) return res.status(404).json({ error: "KYC record not found" });
+
+    return res.json({
+      doc
+    });
+  } catch (err) {
+    console.error("getRecordByUniqueId error:", err);
+    return res.status(500).json({ error: "Server error" });
+  }
+};

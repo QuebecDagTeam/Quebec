@@ -44,7 +44,7 @@ export const Dash = () => {
   const [Data, setDecryptedData] = useState<KYCData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-
+  const [id, setId] = useState<string | null>(null);
   useEffect(() => {
     const fetchKYCData = async () => {
       try {
@@ -57,9 +57,9 @@ export const Dash = () => {
         const data = await response.json();
 
         // Decrypt the data
+        setId(data?.kycDetails?.uniqueId || null);
         const decrypted = decryptData(data.kycDetails.encryptedData);
         console.log("Decrypted Data:", decrypted);
-
         setDecryptedData(decrypted);
         setLoading(false);
       } catch (error: any) {
@@ -80,7 +80,7 @@ export const Dash = () => {
     <div className="flex flex-col md:flex-row min-h-screen bg-[#000306] text-white">
       
       {/* Sidebar */}
-      <Sidebar/>
+      <Sidebar name={Data?.fullName}/>
       <MobileFooterNav/>
 
       {/* Main Content */}
@@ -88,7 +88,7 @@ export const Dash = () => {
         
         {/* Header */}
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl lg:text-3xl font-semibold">Welcome</h1>
+          <h1 className="text-2xl lg:text-3xl font-semibold">Welcome {Data?.fullName}</h1>
           <MdNotifications size={28} />
         </div>
 
@@ -102,11 +102,11 @@ export const Dash = () => {
             <div className="flex flex-col sm:flex-row justify-between gap-4 mb-6">
               <div>
                 <p className="text-sm text-[#5FFF92] font-medium text-[12px]">Wallet Address</p>
-                <p className="text-lg font-semibold text-[12px]">X44555</p>
+                <p className="text-lg font-semibold text-[12px]">{address}</p>
               </div>
               <div>
                 <p className="text-sm text-[#5FFF92] font-medium text-[12px]">Unique ID</p>
-                <p className="text-lg font-semibold text-[12px]">X44555</p>
+                <p className="text-lg font-semibold text-[12px]">{id|| ''}</p>
               </div>
             </div>
 
@@ -185,7 +185,7 @@ export const Dash = () => {
 
 
 
-export const Sidebar = () => {
+export const Sidebar = ({name}:any) => {
   const [active, setActive] = useState("dashboard");
 
   return (
@@ -220,13 +220,13 @@ export const Sidebar = () => {
       {/* Bottom: User Info + Log Out */}
       <div className="px-6 pb-6">
         {/* User Info */}
-        <div className="flex items-center gap-3 mb-4">
+        <div className="flex lg:flex-row flex-col items-start gap-3 mb-4">
           <img
             src={UserImg}
             alt="User"
             className="w-[32px] h-[32px] rounded-full object-cover"
           />
-          <p className="text-[15px] font-medium">Aisha Muhammad</p>
+          <p className="text-[15px] font-medium">{name} </p>
         </div>
 
         {/* Logout */}

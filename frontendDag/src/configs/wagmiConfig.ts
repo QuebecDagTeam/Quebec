@@ -18,7 +18,7 @@ export const wagmiConfig = defaultWagmiConfig({
     icons: ['https://avatars.githubusercontent.com/u/37784886'],
       // defaultChain: blockdagAwakening,
   }
-})
+});
 
 // ✅ Initialize Web3Modal
 createWeb3Modal({

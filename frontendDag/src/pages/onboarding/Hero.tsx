@@ -49,7 +49,7 @@ Verify once, Access everything The secure and simple way to manage your online I
           <ConnectButton />
         </div>
       </div>
-<img src={Hero2} className="w-full w-[600px] h-[200px] " alt="Hero" />
+{/* <img src={Hero2} className="w-full w-[600px] h-[200px] " alt="Hero" /> */}
       {/* Cards */}
       <div className="bg-[#000306] flex flex-wrap items-center justify-center gap-6 px-4 py-10 text-white">
         {cardDetails.map((card, i) => (

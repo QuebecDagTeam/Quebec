@@ -5,7 +5,8 @@ export interface IThirdParty extends Document {
   walletAddress: string;
   appName: string;
   description?: string;
-  logoUrl?: string;
+  wesite?: string;
+  detail?: string;
   authorizedUsers: Array<{
     userAddress: string;
     kycId: number;
@@ -21,7 +22,8 @@ const ThirdPartySchema = new Schema<IThirdParty>({
   walletAddress: { type: String, required: true, index: true, unique: true },
   appName: { type: String, required: true },
   description: { type: String },
-  logoUrl: { type: String },
+  wesite: { type: String },
+  detail: { type: String },
   authorizedUsers: { type: Schema.Types.Mixed, default: [] },
 }, { timestamps: true });
 

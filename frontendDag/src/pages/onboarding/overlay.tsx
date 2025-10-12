@@ -75,7 +75,7 @@ export const Overlay = () => {
 
           {/* Continue as Third Party */}
           <Link
-            to="/third-party"
+            to="/reg/third_party"
             className="flex items-start gap-4 border border-[#2F2F2F] rounded-lg p-4 hover:bg-[#111111] transition"
           >
             <div className="text-[#8C2A8F] mt-1">
