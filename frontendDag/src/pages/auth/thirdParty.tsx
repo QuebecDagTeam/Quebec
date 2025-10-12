@@ -90,28 +90,25 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     const encryptedBase64 = encryptData(formData);
     const encryptedHex = base64ToHex(encryptedBase64);
 
-    // Call the smart contract to register KYC.
-    const hash = await writeContractAsync({
-      address: DAGKYC_CONTRACT,
-      abi,
-      functionName: "registerKyc",
-      args: [address, encryptedHex],
-    });
+const tx = await writeContractAsync({
+  address: DAGKYC_CONTRACT,
+  abi,
+  functionName: "registerKyc",
+  args: [address, encryptedHex],
+});
 
-    setTxHash(hash);
-
-    // Send the data to the backend (e.g., to save it in the database).
-    const response = await fetch("https://quebec-ur3w.onrender.com/api/kyc/register_thirdparty", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        appName: formData.appName,
-        detail: formData.detail,
-        description: formData.description,
-        website: formData.website,
-        transactionHash: hash, // Include the transaction hash
-      }),
-    });
+const response = await fetch("https://quebec-ur3w.onrender.com/api/kyc/register_thirdparty", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    appName: formData.appName,
+    detail: formData.detail,
+    description: formData.description,
+    website: formData.website,
+    walletAddress: formData.walletAddress,
+    transactionHash: tx.hash,  // ✅
+  }),
+});
 
     if (!response.ok) {
       const errorText = await response.text();
