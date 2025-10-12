@@ -7,7 +7,10 @@ import deleteKYC, {
   Register,
   revokeAccess,
   getThirdPartyRecord,
-  isRegistered_thirdParty
+  isRegistered_thirdParty,
+  getNotification,
+  updateNotification,
+  requestAccess
 } from "../controllers/KYC";
 
 const router = express.Router();
@@ -20,4 +23,8 @@ router.delete('/delete-user/:walletAddress', deleteKYC);
 router.post("/register_thirdParty", Register);
 router.get("/isRegistered_thirdParty/:walletAddress", isRegistered_thirdParty);
 router.get('/thirdParty/:walletAddress', getThirdPartyRecord);
+router.get("/:to", getNotification);
+router.patch("/read", updateNotification);
+router.post("/request/:uniqueId/:adress", requestAccess);
+
 export default router;

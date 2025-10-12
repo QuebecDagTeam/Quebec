@@ -8,6 +8,7 @@ import KycRecord from "../models/KYCRecord";  // Assuming you have the KYCRecord
 import { DAGKYC_ABI } from "../config/ABI";
 import users from "../models/users";
 import thirdParty from "../models/thirdParty";
+import NotificationModel from "../models/notify";
 
 const RPC = process.env.RPC_URL;
 const CONTRACT_ADDRESS = (process.env.DAGKYC_ADDRESS || "").toLowerCase();
@@ -232,26 +233,6 @@ export const revokeAccess = async (req: Request, res: Response): Promise<Respons
  * GET /api/kyc/record/:uniqueId
  * Returns KYC record by uniqueId
  */
-export const getRecordByUniqueId = async (req: Request, res: Response) => {
-  try {
-    const { uniqueId } = req.params;
-    const doc = await User.findOne({ uniqueId });
-    if (!doc) return res.status(404).json({ error: "KYC record not found" });
-
-    return res.json({
-      ownerAddress: doc.walletAddress,
-      kycId: doc.uniqueId,
-      encryptedData: doc.encryptedData,
-      encryptedSymKeys: doc.encryptedSymKeys,
-      accessHistory: doc.accessHistory,
-      status: doc.status,
-      createdAt: doc.createdAt,
-    });
-  } catch (err) {
-    console.error("getRecordByUniqueId error:", err);
-    return res.status(500).json({ error: "Server error" });
-  }
-};
 
 export const getRecordByAddress = async (req: Request, res: Response) => {
   try {
@@ -364,6 +345,121 @@ export const isRegistered_thirdParty = async (req: Request, res: Response) => {
     return res.json({ registered: !!user });
   } catch (err) {
     console.error("isWalletRegistered error:", err);
+    return res.status(500).json({ error: "Server error" });
+  }
+};
+
+
+//createNotification
+// Controller to get a notification by ID
+
+
+
+
+/**
+ * @desc Get notifications for a recipient (by `to` param)
+ * @route GET /api/notifications/:to
+ */
+export const getNotification = async (req: Request, res: Response): Promise<Response> => {
+  const { to } = req.params;
+
+  try {
+    const notifications = await NotificationModel.find({ to }).sort({ createdAt: -1 });
+
+    if (!notifications || notifications.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No notifications found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      notifications,
+    });
+  } catch (error) {
+    console.error("getNotification error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error retrieving notifications",
+    });
+  }
+};
+
+/**
+ * @desc Update notification read status
+ * @route PATCH /api/notifications/read
+ */
+export const updateNotification = async (req: Request, res: Response): Promise<Response> => {
+  const { notificationId, isRead } = req.body as { notificationId: string; isRead: boolean };
+
+  try {
+    const updated = await NotificationModel.findByIdAndUpdate(
+      notificationId,
+      { isRead },
+      { new: true }
+    );
+
+    if (!updated) {
+      return res.status(404).json({
+        success: false,
+        message: "Notification not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      notification: updated,
+    });
+  } catch (error) {
+    console.error("updateNotification error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error updating notification",
+    });
+  }
+};
+
+/**
+ * @desc Request access to a KYC record → creates notification
+ * @route POST /api/notifications/request/:uniqueId/:adress
+ */
+export const requestAccess = async (req: Request, res: Response): Promise<Response> => {
+  try {
+    const { uniqueId, adress } = req.params;
+
+    // 1️⃣ Find user with that KYC uniqueId
+    const user = await User.findOne({ uniqueId });
+    if (!user) {
+      return res.status(404).json({ error: "KYC record not found" });
+    }
+
+    // 2️⃣ Find the third-party app making the request
+    const thirdPartyApp = await thirdParty.findOne({ walletAddress: adress });
+
+    // 3️⃣ Create a new notification document
+    const notification = new NotificationModel({
+      walletAddress: user.walletAddress,
+      from: thirdPartyApp?.appName || "Unknown App",
+      to: uniqueId,
+      type: "access_request",
+      message: `Access request from ${thirdPartyApp?.appName || "Unknown App"}`,
+    });
+
+    await notification.save();
+
+    // 4️⃣ Return the KYC record info (as per your original flow)
+    return res.json({
+      ownerAddress: user.walletAddress,
+      kycId: user.uniqueId,
+      encryptedData: user.encryptedData,
+      encryptedSymKeys: user.encryptedSymKeys,
+      accessHistory: user.accessHistory,
+      status: user.status,
+      createdAt: user.createdAt,
+    });
+  } catch (err) {
+    console.error("requestAccess error:", err);
     return res.status(500).json({ error: "Server error" });
   }
 };

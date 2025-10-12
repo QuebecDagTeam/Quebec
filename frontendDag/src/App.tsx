@@ -7,6 +7,7 @@ import { Dash } from './pages/dashboard/user';
 import { ThirdPartyAuth } from './pages/auth/thirdParty';
 import { ThirdPartyDash } from './pages/dashboard/thirdParty';
 import Pricing from './pages/pricing';
+import { Notify } from './pages/notifications';
 function App() {
 
   return (
@@ -19,6 +20,7 @@ function App() {
            <Route path="/user/dashboard" element={<Dash />} />
           <Route path="/third_party/dashboard" element={<ThirdPartyDash />} />
           <Route path="/pricing" element={<Pricing />} />
+                    <Route path="/notifications" element={<Notify />} />
          </Routes>
        </BrowserRouter>
   )
