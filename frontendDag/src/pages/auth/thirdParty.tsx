@@ -97,6 +97,9 @@ const tx = await writeContractAsync({
   args: [address, encryptedHex],
 });
 
+// Optionally store tx for UI
+setTxHash(tx);
+
 const response = await fetch("https://quebec-ur3w.onrender.com/api/kyc/register_thirdparty", {
   method: "POST",
   headers: { "Content-Type": "application/json" },
@@ -106,10 +109,9 @@ const response = await fetch("https://quebec-ur3w.onrender.com/api/kyc/register_
     description: formData.description,
     website: formData.website,
     walletAddress: formData.walletAddress,
-    transactionHash: tx.hash,  // ✅
+    transactionHash: tx,  // ✅ no .hash
   }),
 });
-
     if (!response.ok) {
       const errorText = await response.text();
       throw new Error(`Server error: ${response.status} - ${errorText}`);

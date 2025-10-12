@@ -57,14 +57,14 @@ export const RequestAccess: React.FC<Props> = ({ thirdPartyAddress }) => {
   };
 
   return (
-    <div className="bg-[#1e1e1e] p-4 rounded-lg text-white w-full max-w-md">
+    <div className="bg-[#333]  p-4 rounded-lg text-white w-full max-w-md">
       <form onSubmit={handleRequestAccess} className="space-y-3">
         <input
           type="text"
           placeholder="Enter Your Unique ID"
           onChange={handleChange}
           value={id}
-          className="w-full px-3 py-2 rounded bg-[#333] text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#8C2A8F]"
+          className="w-full px-3 py-2 rounded bg-[#424242] text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#8C2A8F]"
         />
 
         <button
