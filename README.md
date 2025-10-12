@@ -8,18 +8,18 @@
 
 ## 🌍 Live Resources
 
-- 🔗 **Live URL:** [https://dagkyc.vercel.app](#)
+- 🔗 **Live URL:** [https://quebeq-kyc.vercel.app/](#)
 - 🎥 **2-Minute Pitch Video:** [https://youtu.be/dagkyc-demo](#)
-- 🎨 **Figma Design File:** [https://www.figma.com/file/xyz123/DagKYC](#)
+- 🎨 **Figma Design File:** [https://www.figma.com/design/KAAXwfrYbcnWPeWuYv66mL/Untitled](#)
 
 ---
 
 ## 💡 Project Overview
 
-**DagKYC** is a **privacy-preserving decentralized KYC verification system** built on the **BlockDAG chain**.  
+**Quebec** is a **privacy-preserving decentralized KYC verification system** built on the **BlockDAG chain**.  
 It allows users to securely register their KYC once, store it in encrypted form on IPFS/Web3.Storage, and **grant or revoke** access to third-party apps without revealing any sensitive data.
 
-Instead of sharing actual user information, the system uses a **unique identifier (KYC ID)**.  
+Instead of sharing actual user information, the system uses a **unique identifier (Unique ID)**.  
 Third parties verify a user’s data by submitting the KYC ID and specific details (e.g., name, DOB, NIN). The backend decrypts and compares the information without ever exposing raw data.
 
 ---
@@ -131,10 +131,9 @@ DagKYC/
 | Name | Role | Responsibility |
 |------|------|----------------|
 | **Yakub Shakirudeen Olaide** | Fullstack Developer | Smart contract, backend logic & encryption integration |
-| **Mohamed** | Backend Developer | API routes, MongoDB schema & Web3.Storage handling |
-| **Jaamil** | UI/UX Designer | Figma design & user flow design |
-| **Haleemah** | UI/UX Designer | Component styling & user experience refinement |
-| **Mathias** | Project Lead | Coordination, project management & hackathon submission |
+| **Babatunde Jamiu** | UI/UX Designer | Figma design & user flow design |
+| **Sulyman Haleemah** | UI/UX Designer | Component styling & user experience refinement |
+| **Mathias Oluwatoyin** | Project Lead | Coordination, project management & hackathon submission |
 
 ---
 
@@ -161,12 +160,18 @@ npm run dev
 
 ### Frontend Setup
 ```bash
-cd frontend
+cd frontendDag
 npm install
 npm run dev
 ```
+### Blockchain Setup
+```bash
+cd contracts
+cd hardhat
+npm install
+```
 
-Visit the app at **http://localhost:5173**
+Visit the app at **https://quebeq-kyc.vercel.app/**
 
 ---
 
