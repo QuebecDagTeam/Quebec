@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { decryptData } from './encrypt';
+import { Input } from './input';
 
-// Define types for the decrypted data
 interface KYCData {
   fullName: string;
   email: string;
@@ -12,13 +13,8 @@ interface KYCData {
   residentialAddress: string;
 }
 
-interface APIResponse {
-  encryptedData: string;
-  [key: string]: any;
-}
-
 const KYCComponent: React.FC<{ userAddress: string }> = ({ userAddress }) => {
-  const [decryptedData, setDecryptedData] = useState<KYCData | null>(null);
+  const [Data, setDecryptedData] = useState<KYCData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -26,15 +22,16 @@ const KYCComponent: React.FC<{ userAddress: string }> = ({ userAddress }) => {
     const fetchKYCData = async () => {
       try {
         const response = await fetch(`https://quebec-ur3w.onrender.com/api/kyc/user/${userAddress}`);
-        
+
         if (!response.ok) {
           throw new Error('Failed to fetch KYC data');
         }
 
-        const data: APIResponse = await response.json();
-        
+        const data = await response.json();
+
         // Decrypt the data
-        const decrypted = decryptData(data.encryptedData);
+        const decrypted = decryptData(data.kycDetails.encryptedData);
+        console.log("Decrypted Data:", decrypted);
 
         setDecryptedData(decrypted);
         setLoading(false);
@@ -47,36 +44,85 @@ const KYCComponent: React.FC<{ userAddress: string }> = ({ userAddress }) => {
     fetchKYCData();
   }, [userAddress]);
 
-  // Dummy decrypt function - replace with actual decryption logic
-  const decryptData = (encryptedData: string): KYCData => {
-    // Example: Assuming decryption returns an object like this
-    // Replace with your actual decryption logic
-    return {
-      fullName: '',
-      email: '',
-      dob: '',
-      govIdType: '',
-      NIN: '',
-      phone: '',
-      walletAddress: '',
-      residentialAddress: '',
-    };
-  };
-
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
 
   return (
     <div>
-      <h3>KYC Information</h3>
-      <p><strong>Full Name:</strong> {decryptedData?.fullName}</p>
-      <p><strong>Email:</strong> {decryptedData?.email}</p>
-      <p><strong>Date of Birth:</strong> {decryptedData?.dob}</p>
-      <p><strong>Gov ID Type:</strong> {decryptedData?.govIdType}</p>
-      <p><strong>NIN:</strong> {decryptedData?.NIN}</p>
-      <p><strong>Phone:</strong> {decryptedData?.phone}</p>
-      <p><strong>Wallet Address:</strong> {decryptedData?.walletAddress}</p>
-      <p><strong>Residential Address:</strong> {decryptedData?.residentialAddress}</p>
+      <h3 className="font-semibold mb-4">Stored KYC Data</h3>
+      <div className="space-y-4">
+        {/* Full Name */}
+        <Input 
+          label="Full Name" 
+          value={Data?.fullName || ''} 
+          name="fullName" 
+          placeholder=''
+          action={() => {}} 
+        />
+        
+        {/* Date of Birth */}
+        <Input 
+         placeholder=''
+          label="Date of Birth" 
+          value={Data?.dob || ''} 
+          name="dob" 
+          action={() => {}} 
+        />
+        
+        {/* Government ID Type */}
+        <Input 
+          label="Government ID Type" 
+          value={Data?.govIdType || ''} 
+            placeholder=''
+          name="govIdType" 
+          action={() => {}} 
+        />
+
+        {/* Email */}
+        <Input 
+          label="Email" 
+                    placeholder=''
+          value={Data?.email || ''} 
+          name="email" 
+          action={() => {}} 
+        />
+
+        {/* NIN */}
+        <Input 
+          label="NIN" 
+          value={Data?.NIN || ''} 
+            placeholder=''
+          name="NIN" 
+          action={() => {}} 
+        />
+
+        {/* Phone */}
+        <Input 
+          label="Phone" 
+          value={Data?.phone || ''} 
+            placeholder=''
+          name="phone" 
+          action={() => {}} 
+        />
+
+        {/* Wallet Address */}
+        <Input 
+          label="Wallet Address" 
+          value={Data?.walletAddress || ''} 
+          name="walletAddress" 
+          placeholder=''
+          action={() => {}} 
+        />
+
+        {/* Residential Address */}
+        <Input 
+          label="Residential Address" 
+          value={Data?.residentialAddress || ''} 
+          name="residentialAddress" 
+          placeholder=''
+          action={() => {}} 
+        />
+      </div>
     </div>
   );
 };

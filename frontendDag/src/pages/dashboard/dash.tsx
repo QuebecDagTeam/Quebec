@@ -12,10 +12,23 @@ import {
   MdLogout,
 } from "react-icons/md";
 import UserImg from "../../assets/user.jpg";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import KYCComponent from "../../components/kycdata";
-import KYCDelete from "../../components/deleteKYC";
+import { decryptData } from "../../components/encrypt";
+import { useAccount } from "wagmi";
+
+interface KYCData {
+  fullName: string;
+  email: string;
+  dob: string;
+  govIdType: string;
+  NIN: string;
+  phone: string;
+  walletAddress: string;
+  residentialAddress: string;
+}
+
+
 
 const navItems = [
   { name: "Dashboard", icon: <MdDashboard size={24} />, path: "dashboard" },
@@ -26,6 +39,43 @@ const navItems = [
   { name: "Support", icon: <MdSupport size={24} />, path: "support" },
 ];
 export const Dash = () => {
+      const { address } = useAccount();
+
+  const [Data, setDecryptedData] = useState<KYCData | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchKYCData = async () => {
+      try {
+        const response = await fetch(`https://quebec-ur3w.onrender.com/api/kyc/user/${address}`);
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch KYC data');
+        }
+
+        const data = await response.json();
+
+        // Decrypt the data
+        const decrypted = decryptData(data.kycDetails.encryptedData);
+        console.log("Decrypted Data:", decrypted);
+
+        setDecryptedData(decrypted);
+        setLoading(false);
+      } catch (error: any) {
+        setError(error.message);
+        setLoading(false);
+      }
+    };
+
+    fetchKYCData();
+  }, [address]);
+
+
+  
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
+
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-[#000306] text-white">
       
@@ -34,7 +84,7 @@ export const Dash = () => {
       <MobileFooterNav/>
 
       {/* Main Content */}
-      <main className="flex-1 mt-[20px] md:mt-[80px] lg:mt-0 w-full px-6 lg:px-5 py-10">
+      <main className="flex-1 mt-[5px] md:mt-[20px] lg:mt-0 w-full px-6 lg:px-5 py-10">
         
         {/* Header */}
         <div className="flex justify-between items-center">
@@ -70,9 +120,9 @@ export const Dash = () => {
             <div>
               <p className="font-semibold mb-4">Stored KYC Data</p>
               <div className="space-y-4">
-                <Input label="Full Name" placeholder="Enter Full Name" value="" name="fullName" action={() => {}} />
-                <Input label="Date of Birth" placeholder="Enter Date of Birth" value="" name="dob" action={() => {}} />
-                <Input label="Government ID Type" placeholder="Enter Government ID Type" value="" name="govIdType" action={() => {}} />
+                <Input label="Full Name" placeholder="Enter Full Name" value={Data?.fullName || ''} name="fullName" action={() => {}} />
+                <Input label="Date of Birth" placeholder="Enter Date of Birth" value={Data?.dob || ''} name="dob" action={() => {}} />
+                <Input label="Government ID Type" placeholder="Enter Government ID Type" value={Data?.NIN || ''} name="govIdType" action={() => {}} />
               </div>
             </div>
           </div>
@@ -123,8 +173,8 @@ export const Dash = () => {
     </tbody>
   </table>
 </div>
-<KYCComponent userAddress="0x68c9313f05d95Ed6A0D3715EadDcCd35A81FDEc8"/>
-<KYCDelete walletAddress="0x68c9313f05d95Ed6A0D3715EadDcCd35A81FDEc8"/>
+{/* <KYCComponent userAddress="0x68c9313f05d95Ed6A0D3715EadDcCd35A81FDEc8"/>
+<KYCDelete walletAddress="0x68c9313f05d95Ed6A0D3715EadDcCd35A81FDEc8"/> */}
         </section>
       </main>
     </div>
