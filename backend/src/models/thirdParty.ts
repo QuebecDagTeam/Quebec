@@ -5,7 +5,7 @@ export interface IThirdParty extends Document {
   walletAddress: string;
   appName: string;
   description?: string;
-  wesite?: string;
+  website?: string;
   detail?: string;
   transactionHash: string
   authorizedUsers: Array<{
