@@ -13,7 +13,7 @@ import {
 } from "react-icons/md";
 import UserImg from "../../assets/user.jpg";
 import { useEffect, useState } from "react";
-import { Link, } from "react-router-dom";
+import { Link, Links } from "react-router-dom";
 import { decryptData } from "../../components/encrypt";
 import { useAccount } from "wagmi";
 
@@ -89,7 +89,7 @@ export const Dash = () => {
         {/* Header */}
         <div className="flex justify-between items-center">
           <h1 className="text-2xl lg:text-3xl font-semibold">Welcome {Data?.fullName}</h1>
-          <Link to='/notifications'> <MdNotifications size={28} /></Link>
+          <Link to='/notification'> <MdNotifications size={28} /></Link>
         </div>
 
         {/* Content Sections */}

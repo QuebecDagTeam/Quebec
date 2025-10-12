@@ -278,7 +278,7 @@ export const UserAuth: React.FC = () => {
         {isConnected && isRegistered === true && !checkingRegistration && (
           <div className="text-center text-white py-20">
             <h2 className="text-3xl font-bold text-green-400 mb-4">✅ You have already completed KYC</h2>
-            <p className="text-gray-400">No further action is required at this time. might want to go to  <Link to='/dashboard/user'>dashboard</Link></p>
+            <p className="text-gray-400">No further action is required at this time. might want to go to  <Link to='user/dashboard'>dashboard</Link></p>
           </div>
         )}
 
