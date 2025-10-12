@@ -165,11 +165,39 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
                   <aside className="p-6 mb-8">
                     <h2 className="text-xl font-semibold mb-4">App Details</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <Input label="App Name" name="App Name" placeholder="e.g, DeFI Analystics Pro" value={formData.appName} action={handleChange} />
-                      <Input label="Brief Description" name="desc" placeholder="Describe what your application does" value={formData.description} action={handleChange} />
-                      <Input label="Website   " name="website" placeholder="https://example.com" value={formData.website} action={handleChange} />
-                      <Input label="Additional Details   (optional)" name="detail" placeholder="Any  other information for integation" value={formData.detail} action={handleChange} />
-                    </div>
+  <Input
+    label="App Name"
+    name="appName"   // ✅ changed
+    placeholder="e.g, DeFI Analytics Pro"
+    value={formData.appName}
+    action={handleChange}
+  />
+
+  <Input
+    label="Brief Description"
+    name="description"   // ✅ changed
+    placeholder="Describe what your application does"
+    value={formData.description}
+    action={handleChange}
+  />
+
+  <Input
+    label="Website"
+    name="website"
+    placeholder="https://example.com"
+    value={formData.website}
+    action={handleChange}
+  />
+
+  <Input
+    label="Additional Details (optional)"
+    name="detail"
+    placeholder="Any other information for integration"
+    value={formData.detail}
+    action={handleChange}
+  />
+</div>
+
                   </aside>
 
                   <p className="text-xs text-center text-gray-500 mt-4">
