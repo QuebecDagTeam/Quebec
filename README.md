@@ -1,4 +1,4 @@
-# 🧩 DagKYC – Decentralized Access-Granted KYC Verification System
+# 🧩 Quebec – Decentralized Access-Granted KYC Verification System
 
 > **Hackathon Entry:** October 2025 BlockDAG Challenge  
 > **Team Name:** Quebec  
@@ -125,7 +125,7 @@ DagKYC/
 - **Focus:** Privacy-preserving data exchange, on-chain access logging, user-controlled verification.
 
 ---
-
+'
 ## 👥 Team Quebec
 
 | Name | Role | Responsibility |
