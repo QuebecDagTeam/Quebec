@@ -4,7 +4,6 @@ import Hero from "../../assets/hero.jpg";
 import ConnectButton from "../../../../frontendDag/src/components/connectBTN";
 import { Overlay } from "./overlay";
 import { useAccount } from 'wagmi'
-import Hero2 from "../../assets/hero.svg";
 
 export const HeroSection = () => {
   const { isConnected } = useAccount()
