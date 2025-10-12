@@ -7,6 +7,7 @@ export interface IThirdParty extends Document {
   description?: string;
   wesite?: string;
   detail?: string;
+  transactionHash: string
   authorizedUsers: Array<{
     userAddress: string;
     kycId: number;
@@ -24,6 +25,7 @@ const ThirdPartySchema = new Schema<IThirdParty>({
   description: { type: String },
   wesite: { type: String },
   detail: { type: String },
+transactionHash: { type: String, required: true, unique: true },
   authorizedUsers: { type: Schema.Types.Mixed, default: [] },
 }, { timestamps: true });
 
