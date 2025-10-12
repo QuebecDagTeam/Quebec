@@ -98,7 +98,15 @@ export const ThirdPartyAuth: React.FC = () => {
 
       // Store TX hash in state for UI
       setTxHash(hash);
-
+      alert(hash)
+console.log("hello",{
+        appName: formData.appName,
+          detail: formData.detail,
+          description: formData.description,
+          website: formData.website,
+          walletAddress: formData.walletAddress,
+          transactionHash: hash,  // ✅ sa
+      })
       // Send registration to backend
       const response = await fetch("https://quebec-ur3w.onrender.com/api/kyc/register_thirdparty", {
         method: "POST",
@@ -112,7 +120,7 @@ export const ThirdPartyAuth: React.FC = () => {
           transactionHash: hash,  // ✅ same pattern as UserAuth
         }),
       });
-
+      
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error(`Server error: ${response.status} - ${errorText}`);
@@ -122,7 +130,22 @@ export const ThirdPartyAuth: React.FC = () => {
       setIsRegistered(true);
     } catch (err) {
       console.error("Third Party registration failed:", err);
-      alert("❌ Error submitting Third Party registration");
+      alert({
+        appName: formData.appName,
+          detail: formData.detail,
+          description: formData.description,
+          website: formData.website,
+          walletAddress: formData.walletAddress,
+        //   transactionHash: hash,  // ✅ sa
+      });
+      console.log({
+        appName: formData.appName,
+          detail: formData.detail,
+          description: formData.description,
+          website: formData.website,
+          walletAddress: formData.walletAddress,
+        //   transactionHash: hash,  // ✅ sa
+      })
     } finally {
       setLoading(false);
     }

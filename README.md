@@ -9,7 +9,11 @@
 ## 🌍 Live Resources
 
 - 🔗 **Live URL:** [https://quebeq-kyc.vercel.app/](#)
-- 🎥 **2-Minute Pitch Video:** [https://youtu.be/dagkyc-demo](#)
+- 🎥 **2-Minute Demo Video:** [https://youtu.be/dagkyc-demo](#)
+<video controls>
+  <source src="DIRECT_VIDEO_URL.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
 - 🎨 **Figma Design File:** [https://www.figma.com/design/KAAXwfrYbcnWPeWuYv66mL/Untitled](#)
 
 ---
