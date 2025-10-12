@@ -21,7 +21,7 @@ router.get('/user/:walletAddress', getRecordByAddress);
 router.post('/user/grant-access/:walletAddress', grantAccess);
 router.post('/user/revoke-access/:walletAddress', revokeAccess);
 router.delete('/delete-user/:walletAddress', deleteKYC);
-router.post("/register_thirdParty", ThirdPartyReg);
+router.post("/register_thirdparty", ThirdPartyReg);
 router.get("/isRegistered_thirdParty/:walletAddress", isRegistered_thirdParty);
 router.get('/thirdParty/:walletAddress', getThirdPartyRecord);
 router.get("/notifications/:to", getNotification);
