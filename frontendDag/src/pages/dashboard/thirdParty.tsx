@@ -60,6 +60,7 @@ export const ThirdPartyDash = () => {
         console.log("Decrypted Data:", decrypted);
 
         setDecryptedData(decrypted);
+        console.log(Data)
         setLoading(false);
       } catch (error: any) {
         setError(error.message);
