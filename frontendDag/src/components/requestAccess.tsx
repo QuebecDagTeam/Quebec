@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 interface Props {
-  thirdPartyAddress: string; // The 3rd party wallet making the request
+  thirdPartyAddress: any; // The 3rd party wallet making the request
 }
 
 export const RequestAccess: React.FC<Props> = ({ thirdPartyAddress }) => {

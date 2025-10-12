@@ -4,7 +4,6 @@ import Hero from "../../assets/hero.jpg";
 import ConnectButton from "../../../../frontendDag/src/components/connectBTN";
 import { Overlay } from "./overlay";
 import { useAccount } from 'wagmi'
-
 export const HeroSection = () => {
   const { isConnected } = useAccount()
     const cardDetails = [
