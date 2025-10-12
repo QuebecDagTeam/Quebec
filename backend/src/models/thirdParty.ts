@@ -23,7 +23,7 @@ const ThirdPartySchema = new Schema<IThirdParty>({
   walletAddress: { type: String, required: true, index: true, unique: true },
   appName: { type: String, required: true },
   description: { type: String },
-  wesite: { type: String },
+  website: { type: String },
   detail: { type: String },
 transactionHash: { type: String, required: true, unique: true },
   authorizedUsers: { type: Schema.Types.Mixed, default: [] },
