@@ -39,9 +39,8 @@ export const ThirdPartyAuth: React.FC = () => {
 
   const [txHash, setTxHash] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [isRegistered, setIsRegistered] = useState<boolean | null>(null); // null = unknown
+  const [isRegistered, setIsRegistered] = useState<boolean | null>(null);
   const [checkingRegistration, setCheckingRegistration] = useState(false);
-
 
   useEffect(() => {
     if (address) {
@@ -58,11 +57,10 @@ export const ThirdPartyAuth: React.FC = () => {
       const response = await fetch(`https://quebec-ur3w.onrender.com/api/kyc/isRegistered_thirdParty/${walletAddress}`);
       const data = await response.json();
       setIsRegistered(data?.registered);
-      if(!data){
+      if (!data) {
         alert("Error checking registration status, check your connection and try again.");
-        return
+        return;
       }
-      console
     } catch (err) {
       console.error("Failed to check wallet registration:", err);
       setIsRegistered(false);
@@ -75,58 +73,60 @@ export const ThirdPartyAuth: React.FC = () => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value || "" }));
   };
 
-const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-  e.preventDefault();
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
-  if (!address) {
-    alert("Please connect your wallet first.");
-    return;
-  }
-
-  setLoading(true);
-
-  try {
-    // Encrypt the form data using the encryptData function.
-    const encryptedBase64 = encryptData(formData);
-    const encryptedHex = base64ToHex(encryptedBase64);
-
-const tx = await writeContractAsync({
-  address: DAGKYC_CONTRACT,
-  abi,
-  functionName: "registerKyc",
-  args: [address, encryptedHex],
-});
-
-// Optionally store tx for UI
-setTxHash(tx);
-
-const response = await fetch("https://quebec-ur3w.onrender.com/api/kyc/register_thirdparty", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    appName: formData.appName,
-    detail: formData.detail,
-    description: formData.description,
-    website: formData.website,
-    walletAddress: formData.walletAddress,
-    transactionHash: tx,  // ✅ no .hash
-  }),
-});
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Server error: ${response.status} - ${errorText}`);
+    if (!address) {
+      alert("Please connect your wallet first.");
+      return;
     }
 
-    alert("✅ ThirdParty Registered successfully!");
-    setIsRegistered(true); // Optimistic update
-  } catch (err) {
-    console.error("KYC submission failed:", err);
-    alert("❌ Error submitting KYC");
-  } finally {
-    setLoading(false);
-  }
-};
+    setLoading(true);
 
+    try {
+      // Encrypt the form data
+      const encryptedBase64 = encryptData(formData);
+      const encryptedHex = base64ToHex(encryptedBase64);
+
+      // 🟣 TX Hash is returned as a string directly
+      const hash = await writeContractAsync({
+        address: DAGKYC_CONTRACT,
+        abi,
+        functionName: "registerKyc",
+        args: [address, encryptedHex],
+      });
+
+      // Store TX hash in state for UI
+      setTxHash(hash);
+
+      // Send registration to backend
+      const response = await fetch("https://quebec-ur3w.onrender.com/api/kyc/register_thirdparty", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          appName: formData.appName,
+          detail: formData.detail,
+          description: formData.description,
+          website: formData.website,
+          walletAddress: formData.walletAddress,
+          transactionHash: hash,  // ✅ same pattern as UserAuth
+        }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Server error: ${response.status} - ${errorText}`);
+      }
+
+      alert("✅ ThirdParty Registered successfully!");
+      setIsRegistered(true);
+    } catch (err) {
+      console.error("Third Party registration failed:", err);
+      alert("❌ Error submitting Third Party registration");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <section className="min-h-screen bg-[#000306] font-inter relative">
@@ -140,104 +140,65 @@ const response = await fetch("https://quebec-ur3w.onrender.com/api/kyc/register_
           </div>
         )}
 
-        {/* Show if user is already registered */}
-        {isConnected && isRegistered === true && !checkingRegistration && (
-          <div className="text-center text-white py-20">
-            <h2 className="text-3xl font-bold text-green-400 mb-4">✅ You have already completed KYC</h2>
-            <p className="text-gray-400">No further action is required at this time. might want to go to  <Link to='/pricing'>dashboard</Link></p>
-          </div>
-        )}
-
         {isConnected && isRegistered === false && (
           <>
-          
-              <>
-                <h1 className="text-3xl sm:text-4xl font-extrabold mb-8 text-center text-blue-400">
-                  Register Your Third Party App
-                </h1>
-              </>
-            
+            <h1 className="text-3xl sm:text-4xl font-extrabold mb-8 text-center text-blue-400">
+              Register Your Third Party App
+            </h1>
 
             <form onSubmit={handleSubmit} className="w-full rounded-2xl max-w-4xl mx-auto space-y-8 border-1 border-[#71627A]">
-            
-                <div className="text-white">
-                  <aside className="p-6 mb-8">
-                    <h2 className="text-xl font-semibold mb-4">App Details</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-  <Input
-    label="App Name"
-    name="appName"   // ✅ changed
-    placeholder="e.g, DeFI Analytics Pro"
-    value={formData.appName}
-    action={handleChange}
-  />
-
-  <Input
-    label="Brief Description"
-    name="description"   // ✅ changed
-    placeholder="Describe what your application does"
-    value={formData.description}
-    action={handleChange}
-  />
-
-  <Input
-    label="Website"
-    name="website"
-    placeholder="https://example.com"
-    value={formData.website}
-    action={handleChange}
-  />
-
-  <Input
-    label="Additional Details (optional)"
-    name="detail"
-    placeholder="Any other information for integration"
-    value={formData.detail}
-    action={handleChange}
-  />
-</div>
-
-                  </aside>
-
-                  <p className="text-xs text-center text-gray-500 mt-4">
-                    Current Wallet Address: {address || 'Not Connected'}
-                  </p>
-                </div>
-            
-            
-
-              {/* Submit Button */}
-              <div className="px-4 py-2">
-              <button type="submit" disabled={loading || !address} className={`mt-8 w-full px-6 py-4 rounded-xl text-lg font-bold transition duration-300 
-                ${loading || !address ? 'bg-gray-700 text-gray-400 cursor-not-allowed' : 'bg-[#8C2A8F] text-white shadow-lg shadow-bg-[#8C2A8F] '}`}>
-                {loading ? (
-                  <div className="flex items-center justify-center">
-                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                    </svg>
-                    Submitting...
+              <div className="text-white">
+                <aside className="p-6 mb-8">
+                  <h2 className="text-xl font-semibold mb-4">App Details</h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <Input label="App Name" name="appName" placeholder="e.g., DeFi Analytics Pro" value={formData.appName} action={handleChange} />
+                    <Input label="Brief Description" name="description" placeholder="Describe your application" value={formData.description} action={handleChange} />
+                    <Input label="Website" name="website" placeholder="https://example.com" value={formData.website} action={handleChange} />
+                    <Input label="Additional Details" name="detail" placeholder="Optional integration info" value={formData.detail} action={handleChange} />
                   </div>
-                ) : (
-                  'Submit'
-                )}
-              </button>
+                </aside>
+
+                <p className="text-xs text-center text-gray-500 mt-4">
+                  Current Wallet Address: {address || "Not Connected"}
+                </p>
+              </div>
+
+              <div className="px-4 py-2">
+                <button
+                  type="submit"
+                  disabled={loading || !address}
+                  className={`mt-8 w-full px-6 py-4 rounded-xl text-lg font-bold transition duration-300 
+                    ${loading || !address ? "bg-gray-700 text-gray-400 cursor-not-allowed" : "bg-[#8C2A8F] text-white shadow-lg shadow-bg-[#8C2A8F]"}`}
+                >
+                  {loading ? (
+                    <div className="flex items-center justify-center">
+                      <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                      </svg>
+                      Submitting...
+                    </div>
+                  ) : (
+                    "Submit"
+                  )}
+                </button>
               </div>
 
               {txHash && (
                 <p className="mt-4 text-sm text-center text-green-400 break-all">
-                  Mock Transaction Hash: <span className="font-mono">{txHash}</span>
+                  Transaction Hash: <span className="font-mono">{txHash}</span>
                 </p>
               )}
             </form>
           </>
         )}
 
-        {/* Show if user is already registered */}
         {isConnected && isRegistered === true && !checkingRegistration && (
           <div className="text-center text-white py-20">
-            <h2 className="text-3xl font-bold text-green-400 mb-4">✅ You have already completed KYC</h2>
-            <p className="text-gray-400">No further action is required at this time. might want to go to  <Link to='/user'>dashboard</Link></p>
+            <h2 className="text-3xl font-bold text-green-400 mb-4">✅ You have already completed Third Party KYC</h2>
+            <p className="text-gray-400">
+              No further action is required. You might want to go to <Link to="/pricing">dashboard</Link>.
+            </p>
           </div>
         )}
 
