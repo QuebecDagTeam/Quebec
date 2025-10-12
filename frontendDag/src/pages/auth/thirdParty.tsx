@@ -141,6 +141,14 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
           </div>
         )}
 
+        {/* Show if user is already registered */}
+        {isConnected && isRegistered === true && !checkingRegistration && (
+          <div className="text-center text-white py-20">
+            <h2 className="text-3xl font-bold text-green-400 mb-4">✅ You have already completed KYC</h2>
+            <p className="text-gray-400">No further action is required at this time. might want to go to  <Link to='/pricing'>dashboard</Link></p>
+          </div>
+        )}
+
         {isConnected && isRegistered === false && (
           <>
           
@@ -155,7 +163,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
             
                 <div className="text-white">
                   <aside className="p-6 mb-8">
-                    <h2 className="text-xl font-semibold mb-4">Personal Details</h2>
+                    <h2 className="text-xl font-semibold mb-4">App Details</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <Input label="App Name" name="App Name" placeholder="e.g, DeFI Analystics Pro" value={formData.APPName} action={handleChange} />
                       <Input label="Brief Description" name="desc" placeholder="Describe what your application does" value={formData.desc} action={handleChange} />

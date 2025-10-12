@@ -7,7 +7,7 @@ import User from "../models/users";  // Updated model import based on the new sc
 import KycRecord from "../models/KYCRecord";  // Assuming you have the KYCRecord model
 import { DAGKYC_ABI } from "../config/ABI";
 import users from "../models/users";
-import thirdParty from "../models/thirdParty";
+import ThirdParty from "../models/thirdParty";
 import NotificationModel from "../models/notify";
 
 const RPC = process.env.RPC_URL;
@@ -137,94 +137,124 @@ export const isEmailRegistered = async (req: Request, res: Response) => {
 // Grant access
 
 // Grant access
+
+// ✅ Grant Access
 export const grantAccess = async (req: Request, res: Response): Promise<Response> => {
   try {
-    // Destructure request body
     const { uniqueId, recipient, txHash, ownerAddress } = req.body;
 
-    // Validate required fields
     if (!uniqueId || !recipient || !txHash || !ownerAddress) {
-      return res.status(400).json({ error: 'Missing fields' });
+      return res.status(400).json({ error: "Missing fields" });
     }
 
-    // Find user document by uniqueId
-    const userDoc = await User.findOne({ 'kyc.uniqueId': uniqueId });
-    if (!userDoc) return res.status(404).json({ error: 'KYC record not found' });
+    // 1️⃣ Find user by uniqueId
+    const userDoc = await User.findOne({ "kyc.uniqueId": uniqueId });
+    if (!userDoc) return res.status(404).json({ error: "KYC record not found" });
 
-    // Check if recipient is already whitelisted and has access granted
+    // 2️⃣ Update User whitelist entry
     const existingEntry = userDoc.whitelistedThirdParties.find(
-      (party:any) => party.kycId === uniqueId && party.thirdPartyAddress === recipient
+      (party: any) => party.kycId === uniqueId && party.thirdPartyAddress === recipient
     );
 
     if (existingEntry) {
-      if (existingEntry.status === 'granted') {
-        return res.status(400).json({ error: 'Access already granted' });
+      if (existingEntry.status === "granted") {
+        return res.status(400).json({ error: "Access already granted" });
       }
 
-      // Update status and grantedAt timestamp if revoked
-      existingEntry.status = 'granted';
+      existingEntry.status = "granted";
       existingEntry.grantedAt = new Date();
       existingEntry.revokedAt = null;
     } else {
-      // If no existing entry, create a new one
       userDoc.whitelistedThirdParties.push({
         thirdPartyAddress: recipient,
         kycId: uniqueId,
-        status: 'granted',
+        status: "granted",
         grantedAt: new Date(),
       });
     }
 
-    // Push the access event to the history (for logging purposes)
     userDoc.kyc.transactionHash = txHash;
-
-    // Save the document
     await userDoc.save();
+
+    // 3️⃣ Update ThirdParty.authorizedUsers
+    const thirdPartyDoc = await ThirdParty.findOne({ walletAddress: recipient });
+
+    if (thirdPartyDoc) {
+      const authUser = thirdPartyDoc.authorizedUsers.find(
+        (u: any) => u.kycId === Number(uniqueId)
+      );
+
+      if (authUser) {
+        authUser.accessStatus = "granted";
+        authUser.grantedAt = new Date();
+        authUser.revokedAt = null;
+      } else {
+        thirdPartyDoc.authorizedUsers.push({
+          userAddress: ownerAddress,
+          kycId: Number(uniqueId),
+          accessStatus: "granted",
+          grantedAt: new Date(),
+          revokedAt: null,
+        });
+      }
+
+      await thirdPartyDoc.save();
+    }
 
     return res.json({ success: true });
   } catch (err) {
-    console.error('grantAccess error:', err);
-    return res.status(500).json({ error: 'Server error' });
+    console.error("grantAccess error:", err);
+    return res.status(500).json({ error: "Server error" });
   }
 };
 
-// Revoke access
+// ✅ Revoke Access
 export const revokeAccess = async (req: Request, res: Response): Promise<Response> => {
   try {
     const { uniqueId, recipient, txHash, ownerAddress } = req.body;
 
-    // Validate required fields
     if (!uniqueId || !recipient || !txHash || !ownerAddress) {
-      return res.status(400).json({ error: 'Missing fields' });
+      return res.status(400).json({ error: "Missing fields" });
     }
 
-    // Find user document by uniqueId
-    const userDoc = await User.findOne({ 'kyc.uniqueId': uniqueId });
-    if (!userDoc) return res.status(404).json({ error: 'KYC record not found' });
+    // 1️⃣ Find user by uniqueId
+    const userDoc = await User.findOne({ "kyc.uniqueId": uniqueId });
+    if (!userDoc) return res.status(404).json({ error: "KYC record not found" });
 
-    // Find the recipient in the whitelistedThirdParties array
+    // 2️⃣ Revoke from User whitelist
     const existingEntry = userDoc.whitelistedThirdParties.find(
-      (party:any) => party.kycId === uniqueId && party.thirdPartyAddress === recipient
+      (party: any) => party.kycId === uniqueId && party.thirdPartyAddress === recipient
     );
 
-    if (!existingEntry || existingEntry.status === 'revoked') {
-      return res.status(400).json({ error: 'Access is already revoked or never granted' });
+    if (!existingEntry || existingEntry.status === "revoked") {
+      return res.status(400).json({ error: "Access is already revoked or never granted" });
     }
 
-    // Update the status to revoked and set the revokedAt timestamp
-    existingEntry.status = 'revoked';
+    existingEntry.status = "revoked";
     existingEntry.revokedAt = new Date();
-
-    // Push the access revocation event to the history (for logging purposes)
     userDoc.kyc.transactionHash = txHash;
-
-    // Save the document
     await userDoc.save();
+
+    // 3️⃣ Update ThirdParty.authorizedUsers
+    const thirdPartyDoc = await ThirdParty.findOne({ walletAddress: recipient });
+
+    if (thirdPartyDoc) {
+      const authUser = thirdPartyDoc.authorizedUsers.find(
+        (u: any) => u.kycId === Number(uniqueId)
+      );
+
+      if (authUser) {
+        authUser.accessStatus = "revoked";
+        authUser.revokedAt = new Date();
+      }
+
+      await thirdPartyDoc.save();
+    }
 
     return res.json({ success: true });
   } catch (err) {
-    console.error('revokeAccess error:', err);
-    return res.status(500).json({ error: 'Server error' });
+    console.error("revokeAccess error:", err);
+    return res.status(500).json({ error: "Server error" });
   }
 };
 
@@ -297,13 +327,13 @@ export const ThirdPartyReg = async (req: Request, res: Response) => {
 
   try {
     // Check if the user has already registered
-    const existingUser = await thirdParty.findOne({ walletAddress });
+    const existingUser = await ThirdParty.findOne({ walletAddress });
     if (existingUser) {
       return res.status(400).json({ error: "User already registered" });
     }
 
     // Save the new KYC record to the database
-    const newKyc = new thirdParty({
+    const newKyc = new ThirdParty({
       appName,
       detail,
       description,
@@ -325,7 +355,7 @@ export const ThirdPartyReg = async (req: Request, res: Response) => {
 export const getThirdPartyRecord = async (req: Request, res: Response) => {
   try {
     const { walletAdress } = req.params;
-    const doc = await thirdParty.findOne({ walletAdress });
+    const doc = await ThirdParty.findOne({ walletAdress });
     if (!doc) return res.status(404).json({ error: "KYC record not found" });
 
     return res.json({
@@ -340,7 +370,7 @@ export const getThirdPartyRecord = async (req: Request, res: Response) => {
 export const isRegistered_thirdParty = async (req: Request, res: Response) => {
   try {
     const wallet = toto(req.params.walletAddress);
-    const user = await thirdParty.findOne({ walletAddress: wallet });
+    const user = await ThirdParty.findOne({ walletAddress: wallet });
 
     return res.json({ registered: !!user });
   } catch (err) {
@@ -424,9 +454,9 @@ export const updateNotification = async (req: Request, res: Response): Promise<R
  * @desc Request access to a KYC record → creates notification
  * @route POST /api/notifications/request/:uniqueId/:adress
  */
-export const requestAccess = async (req: Request, res: Response): Promise<Response> => {
+export const requestAccess = async (req: Request, res: Response) => {
   try {
-    const { uniqueId, adress } = req.params;
+    const { uniqueId, address } = req.params;
 
     // 1️⃣ Find user with that KYC uniqueId
     const user = await User.findOne({ uniqueId });
@@ -435,7 +465,7 @@ export const requestAccess = async (req: Request, res: Response): Promise<Respon
     }
 
     // 2️⃣ Find the third-party app making the request
-    const thirdPartyApp = await thirdParty.findOne({ walletAddress: adress });
+    const thirdPartyApp = await ThirdParty.findOne({ walletAddress: address });
 
     // 3️⃣ Create a new notification document
     const notification = new NotificationModel({
@@ -449,15 +479,12 @@ export const requestAccess = async (req: Request, res: Response): Promise<Respon
     await notification.save();
 
     // 4️⃣ Return the KYC record info (as per your original flow)
-    return res.json({
-      ownerAddress: user.walletAddress,
-      kycId: user.uniqueId,
-      encryptedData: user.encryptedData,
-      encryptedSymKeys: user.encryptedSymKeys,
-      accessHistory: user.accessHistory,
-      status: user.status,
-      createdAt: user.createdAt,
-    });
+    // return res.json({
+    //   ownerAddress: user.walletAddress,
+    //   kycId: user.uniqueId,
+    //   encryptedData: user.encryptedData,
+    //   createdAt: user.createdAt,
+    // });
   } catch (err) {
     console.error("requestAccess error:", err);
     return res.status(500).json({ error: "Server error" });
