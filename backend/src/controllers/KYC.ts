@@ -134,9 +134,9 @@ export const isEmailRegistered = async (req: Request, res: Response) => {
  */
 export const grantAccess = async (req: Request, res: Response) => {
   try {
-    const { ownerAddress, kycId, recipient, txHash, recipientEncryptedSymKey } = req.body;
+    const { ownerAddress, uniqueId, recipient, txHash, recipientEncryptedSymKey } = req.body;
 
-    if (!ownerAddress || !kycId || !recipient || !txHash || !recipientEncryptedSymKey) {
+    if (!ownerAddress || !uniqueId || !recipient || !txHash || !recipientEncryptedSymKey) {
       return res.status(400).json({ error: "Missing fields" });
     }
 
@@ -158,7 +158,7 @@ export const grantAccess = async (req: Request, res: Response) => {
           if (
             parsedOwner.toLowerCase() === ownerAddress.toLowerCase() &&
             parsedRecipient.toLowerCase() === recipient.toLowerCase() &&
-            parsedKycId === Number(kycId)
+            parsedKycId === (uniqueId)
           ) {
             verified = true;
             break;
@@ -169,7 +169,7 @@ export const grantAccess = async (req: Request, res: Response) => {
 
     if (!verified) return res.status(400).json({ error: "Could not verify on-chain grant" });
 
-    const doc = await KycRecord.findOne({ kycId });
+    const doc = await User.findOne({ uniqueId });
     if (!doc) return res.status(404).json({ error: "KYC record not found" });
 
     doc.encryptedSymKeys[toto(recipient)] = recipientEncryptedSymKey;
@@ -363,6 +363,18 @@ export const getThirdPartyRecord = async (req: Request, res: Response) => {
     });
   } catch (err) {
     console.error("getRecordByUniqueId error:", err);
+    return res.status(500).json({ error: "Server error" });
+  }
+};
+
+export const isRegistered_thirdParty = async (req: Request, res: Response) => {
+  try {
+    const wallet = toto(req.params.walletAddress);
+    const user = await thirdParty.findOne({ walletAddress: wallet });
+
+    return res.json({ registered: !!user });
+  } catch (err) {
+    console.error("isWalletRegistered error:", err);
     return res.status(500).json({ error: "Server error" });
   }
 };
