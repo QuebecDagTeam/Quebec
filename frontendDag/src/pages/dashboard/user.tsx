@@ -13,7 +13,7 @@ import {
 } from "react-icons/md";
 import UserImg from "../../assets/user.jpg";
 import { useEffect, useState } from "react";
-import { Link, Links } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { decryptData } from "../../components/encrypt";
 import { useAccount } from "wagmi";
 
