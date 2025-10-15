@@ -6,7 +6,7 @@ import { Input } from "../../components/input";
 import FaceCapture from "../../components/faceCapture";
 import { Link } from "react-router-dom";
 
-const DAGKYC_CONTRACT = import.meta.env.VITE_CONTRACT_ADDRESS as `0x${string}`;
+const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS as `0x${string}`;
 
 function base64ToHex(base64: string): `0x${string}` {
   const raw = atob(base64);
@@ -99,7 +99,7 @@ export const UserAuth: React.FC = () => {
       const encryptedHex = base64ToHex(encryptedBase64);
 
       const hash = await writeContractAsync({
-        address: DAGKYC_CONTRACT,
+        address: CONTRACT_ADDRESS,
         abi,
         functionName: "registerKyc",
         args: [address, encryptedHex],

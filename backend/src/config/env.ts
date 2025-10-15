@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-const requiredVars = ["DB_URI", "DAGKYC_ADDRESS", "RPC_URL"] as const;
+const requiredVars = ["DB_URI", "CONTRACT_ADDRESS", "RPC_URL"] as const;
 
 requiredVars.forEach((key) => {
   if (!process.env[key]) {
@@ -11,7 +11,7 @@ requiredVars.forEach((key) => {
 
 export const ENV = {
   DB_URI: process.env.DB_URI as string,
-  DAGKYC_ADDRESS:process.env.DAGKYC_ADDRESS as string,
+  CONTRACT_ADDRESS:process.env.CONTRACT_ADDRESS as string,
   RPC_URL:process.env.RPC_URL 
 //   JWT_SECRET: process.env.JWT_SECRET as string,
 //   EXPIRE_TIME: process.env.EXPIRE_TIME as string,

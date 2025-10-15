@@ -2,7 +2,7 @@ import { defaultWagmiConfig, createWeb3Modal } from '@web3modal/wagmi/react'
 import { blockdagPrimordial } from '../chains'
 
 // 👇 Replace with your own project ID from WalletConnect Cloud
-const projectId = '6b7306869912f399b50e5c77bdc26fdf'
+const projectId =import.meta.env.VITE_PROJECT_ID
 
 // ✅ Use only your custom chain
 export const chains = [blockdagPrimordial] as const
