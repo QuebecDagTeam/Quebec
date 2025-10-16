@@ -1,4 +1,3 @@
-import { MdNotifications } from "react-icons/md";
 import Logo from "../../assets/logo.jpg";
 import User from "../../assets/user.jpg";
 import { Input } from "../../components/input";
@@ -16,6 +15,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { decryptData } from "../../components/encrypt";
 import { useAccount } from "wagmi";
+import { FaBell } from "react-icons/fa";
 
 interface KYCData {
   fullName: string;
@@ -89,8 +89,8 @@ export const Dash = () => {
         
         {/* Header */}
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl lg:text-3xl font-semibold">Welcome {Data?.fullName}</h1>
-          <Link to='/notifications'> <MdNotifications size={28} /></Link>
+          <h1 className="text-2xl lg:text-3xl font-semibold text-[#8C2A8F]">Welcome {Data?.fullName}</h1>
+          <Link to='/notifications'> <FaBell size={28} /></Link>
         </div>
 
         {/* Content Sections */}
