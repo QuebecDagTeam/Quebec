@@ -22,11 +22,11 @@ export const NavBar = () => {
       </div>
 
       {/* Center - Search bar */}
-      <div className="flex bg-[#F5F5F5] items-center gap-2 w-[180px] sm:w-[220px] lg:w-[260px] px-3 py-[6px] md:[py-10]  justify-center items-center rounded-full md:rounded-[15px]  focus-within:ring-2 focus-within:ring-[#8C2A8F] transition-all">
+      <div className="flex bg-[#F5F5F5] items-center gap-2 w-[180px] sm:w-[220px] lg:w-[260px] px-3 py-[8px] md:py-[12px]  justify-center items-center py-5 rounded-[10px] ">
         <input
           type="text"
           placeholder="Search"
-          className="flex-1 bg-transparent outline-none text-sm text-black"
+          className="bg-transparent outline-none text-sm text-black w-2/3"
         />
         <FaSearch className="text-[#8C2A8F]" />
       </div>

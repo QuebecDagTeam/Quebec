@@ -153,7 +153,7 @@ console.log("hello",{
   const navigate = useNavigate()
   useEffect(()=>{
     isConnected && isRegistered === true && !checkingRegistration && 
-    navigate('/user/dashboard');
+    navigate('/thirdparty/dashboard');
   }, [isConnected, isRegistered, !checkingRegistration])
   return (
     <section className="min-h-screen bg-[#000306] font-inter relative">

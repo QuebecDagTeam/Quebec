@@ -224,7 +224,7 @@ export const UserAuth: React.FC = () => {
               {progress === 2 && (
                 <div>
                   <div className="py-5">
-                    <p className="text-white text-[26px] font-[600]">Facial Verification</p>
+                    <p className="text-[26px] font-[600] text-[#8C2A8F] mb-2">Facial Verification</p>
                     <p className="text-white">Let’s verify it’s you. Position your head within the frame and hold still while we scan.</p>
                   </div>
                   <div className="flex gap-8 md:flex-row flex-col items-center justify-center">
