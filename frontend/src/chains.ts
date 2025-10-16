@@ -24,7 +24,7 @@ export const blockdagPrimordial = {
 
 
 export const blockdagAwakening = {
-  id: 1984,
+  id: 1043,
   name: 'BlockDAG Awakening',
   nativeCurrency: {
     decimals: 18,

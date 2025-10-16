@@ -1,11 +1,11 @@
 import { defaultWagmiConfig, createWeb3Modal } from '@web3modal/wagmi/react'
-import { blockdagPrimordial } from '../chains'
+import { blockdagAwakening } from '../chains'
 
 // 👇 Replace with your own project ID from WalletConnect Cloud
 const projectId =import.meta.env.VITE_PROJECT_ID
 
 // ✅ Use only your custom chain
-export const chains = [blockdagPrimordial] as const
+export const chains = [blockdagAwakening] as const
 
 // ✅ Create wagmi config
 export const wagmiConfig = defaultWagmiConfig({
@@ -24,7 +24,4 @@ export const wagmiConfig = defaultWagmiConfig({
 createWeb3Modal({
   wagmiConfig,
   projectId,
-  themeVariables: {
-    '--w3m-font-family': 'Roboto, sans-serif',
-  },
 });

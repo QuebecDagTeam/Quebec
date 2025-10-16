@@ -3,7 +3,7 @@ import { useAccount, useWriteContract } from "wagmi";
 import { abi } from "../../constants/abi";
 import { encryptData } from "../../components/encrypt";
 import { Input } from "../../components/input";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const DAGKYC_CONTRACT = import.meta.env.VITE_CONTRACT_ADDRESS as `0x${string}`;
 
@@ -150,7 +150,11 @@ console.log("hello",{
       setLoading(false);
     }
   };
-
+  const navigate = useNavigate()
+  useEffect(()=>{
+    isConnected && isRegistered === true && !checkingRegistration && 
+    navigate('/user/dashboard');
+  }, [isConnected, isRegistered, !checkingRegistration])
   return (
     <section className="min-h-screen bg-[#000306] font-inter relative">
       <div className="container mx-auto p-4 sm:p-8 md:p-12 lg:p-20">
@@ -165,7 +169,7 @@ console.log("hello",{
 
         {isConnected && isRegistered === false && (
           <>
-            <h1 className="text-3xl sm:text-4xl font-extrabold mb-8 text-center text-blue-400">
+            <h1 className="text-3xl sm:text-4xl font-extrabold mb-8 text-center text-[#8C2A8F]">
               Register Your Third Party App
             </h1>
 

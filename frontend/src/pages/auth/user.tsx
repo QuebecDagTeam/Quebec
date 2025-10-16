@@ -4,7 +4,7 @@ import { abi } from "../../constants/abi";
 import { encryptData } from "../../components/encrypt";
 import { Input } from "../../components/input";
 import FaceCapture from "../../components/faceCapture";
-import { Link } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 
 const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS as `0x${string}`;
 
@@ -135,7 +135,11 @@ export const UserAuth: React.FC = () => {
   };
 
   const progressWidth = progress === 1 ? "50%" : "100%";
-
+  const navigate = useNavigate()
+  useEffect(()=>{
+    isConnected && isRegistered === true && !checkingRegistration && 
+    navigate('/user/dashboard');
+  }, [isConnected, isRegistered, !checkingRegistration])
   return (
     <section className="min-h-screen bg-[#000306] font-inter relative">
       <div className="container mx-auto p-4 sm:p-8 md:p-12 lg:p-20">
@@ -152,7 +156,7 @@ export const UserAuth: React.FC = () => {
           <>
             {progress === 1 && (
               <>
-                <h1 className="text-3xl sm:text-4xl font-extrabold mb-8 text-center text-blue-400">
+                <h1 className="text-3xl sm:text-4xl font-extrabold mb-8 text-center text-[#8C2A8F]">
                   Decentralized KYC Registration
                 </h1>
                 <p className="text-gray-400 text-lg mb-4 text-center">
@@ -245,13 +249,14 @@ export const UserAuth: React.FC = () => {
 
               {/* Navigation Buttons */}
               <div className="flex justify-between items-center md:gap-4">
-                <button type="button" className="px-6 py-3 bg-[#BDBDBD] rounded-full text-black font-medium" disabled={progress === 1} onClick={() => handleProgress(1)}>Back</button>
-                <button type="button" className="px-6 py-3 bg-[#8C2A8F] rounded-full text-white font-medium" disabled={progress === 2} onClick={() => handleProgress(2)}>Next</button>
+                <button type="button" className={`${progress ==1 ? "bg-[#BDBDBD]":"bg-[#8C2A8F] text-white"} px-6 py-3  rounded-full text-black font-medium"`} disabled={progress === 1} onClick={() => handleProgress(1)}>Back</button>
+                <button type="button" className={` ${progress ==1 ? "bg-[#8C2A8F]":"bg-gray-300 text-black"} px-6 py-3 rounded-full text-white font-medium"`} disabled={progress === 2} onClick={() => handleProgress(2)}>Next</button>
               </div>
 
               {/* Submit Button */}
-              <button type="submit" disabled={loading || !address} className={`mt-8 w-full sm:w-auto px-6 py-4 rounded-xl text-lg font-bold transition duration-300 
-                ${loading || !address ? 'bg-gray-700 text-gray-400 cursor-not-allowed' : 'bg-[#8C2A8F] text-white shadow-lg shadow-bg-[#8C2A8F] '}`}>
+              <div className="flex items-center justify-center w-full">
+              <button type="submit" disabled={loading || !address || progress===1} className={`mt-8 w-full px-6 py-4 rounded-xl text-lg font-bold transition duration-300 
+                ${loading || !address ||progress!==2 ? 'bg-gray-700 text-gray-400 cursor-not-allowed' : 'bg-[#8C2A8F] text-white shadow-lg shadow-bg-[#8C2A8F] '}`}>
                 {loading ? (
                   <div className="flex items-center justify-center">
                     <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -264,6 +269,7 @@ export const UserAuth: React.FC = () => {
                   'Submit'
                 )}
               </button>
+              </div>
 
               {txHash && (
                 <p className="mt-4 text-sm text-center text-green-400 break-all">

@@ -58,7 +58,8 @@ export const Dash = () => {
 
         // Decrypt the data
         setId(data?.kycDetails?.uniqueId || null);
-        const decrypted = decryptData(data.kycDetails.encryptedData);
+        console.log(data)
+        const decrypted = decryptData(data?.kycDetails?.encryptedData);
         console.log("Decrypted Data:", decrypted);
         setDecryptedData(decrypted);
         setLoading(false);

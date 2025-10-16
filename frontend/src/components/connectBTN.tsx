@@ -9,25 +9,32 @@ import { useWeb3Modal } from '@web3modal/wagmi/react';
  */
 export const ConnectButton = () => {
   // Check connection status
-  const { isConnected } = useAccount();
+  const {  address, isConnected } = useAccount();
   
   // Get the modal control
   const { open } = useWeb3Modal();
 
   // Render nothing if already connected
   if (isConnected) {
-    return null;
-  }
+       null
+   }
 
   // Render the connect button
   return (
+    <>
+    {isConnected && 
+     <p className="text-white text-sm">
+    Wallet: {address?.slice(0, 6)}...{address?.slice(-4)}
+  </p>  }
     <button
       // On click, open the modal to the default 'Connect' view
+      
       onClick={() => open()}
-      className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+      className="bg-[#8C2A8F] hover:bg-[#8C2A8F] text-white font-bold py-2 px-4 rounded-[8px]"
     >
       Connect Wallet
     </button>
+    </>
   );
 };
 
@@ -39,7 +46,7 @@ export const ConnectButton = () => {
  */
 export const DisconnectBTN = () => {
   // Get wallet state
-  const { address, isConnected } = useAccount();
+  const {isConnected } = useAccount();
   
   // Get the modal control
   const { open } = useWeb3Modal();
@@ -51,17 +58,11 @@ export const DisconnectBTN = () => {
 
   // Render the connected status and disconnect action
   return (
-    <div className="flex items-center space-x-2">
-      <p className="text-white text-sm">
-        Wallet: {address?.slice(0, 6)}...{address?.slice(-4)}
-      </p>
       <button 
         // On click, open the modal to the 'Account' view for disconnection
         onClick={() => open({ view: 'Account' })}
-        className="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded text-sm"
       >
         Disconnect
       </button>
-    </div>
   );
 };
