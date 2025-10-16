@@ -30,7 +30,7 @@ export const ConnectButton = () => {
       // On click, open the modal to the default 'Connect' view
       
       onClick={() => open()}
-      className="bg-[#8C2A8F] hover:bg-[#8C2A8F] text-white font-bold py-2 px-4 rounded-[8px]"
+      className="bg-[#8C2A8F] hover:bg-[#8C2A8F] text-white font-bold py-[12px] px-4 rounded-full"
     >
       Connect Wallet
     </button>
