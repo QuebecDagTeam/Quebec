@@ -1,7 +1,7 @@
 import { FaUserFriends } from "react-icons/fa";
 import { MdSecurity, MdWorkOutline } from "react-icons/md";
 import Hero from "../../assets/hero.jpg";
-import ConnectButton from "../../components/connectBTN";
+import {ConnectButton} from "../../components/connectBTN";
 import { Overlay } from "./overlay";
 import { useAccount } from 'wagmi'
 export const HeroSection = () => {
