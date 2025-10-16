@@ -1,4 +1,4 @@
-import { DisconnectBTN } from "../../../frontendDag/src/components/connectBTN"
+import { DisconnectBTN } from "../components/connectBTN"
 
 export const Nav = () => {
     return(

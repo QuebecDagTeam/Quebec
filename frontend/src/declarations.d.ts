@@ -1,13 +1,14 @@
 // src/custom-elements.d.ts
-import React from 'react';
 
-// Add this line to ensure the file is treated as a module
+// Must be a module for global augmentation to work in most setups
 export {}; 
 
 declare global {
   namespace JSX {
+    // ... inside src/custom-elements.d.ts
     interface IntrinsicElements {
-      'w3m-button': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
+      // Use a known element's type definition
+      'w3m-button': JSX.IntrinsicElements['button'];
     }
   }
 }

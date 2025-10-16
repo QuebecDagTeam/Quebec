@@ -24,5 +24,9 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-"include": ["src/**/*"] // Ensure this includes the directory where the .d.ts file is.
+"include": ["src/**/*"], // Ensure this includes the directory where the .d.ts file is.
+"files": [
+    // Explicitly list the file path relative to this tsconfig file
+    "./src/declarations..d.ts" 
+  ]
 }

@@ -1,4 +1,4 @@
-import ConnectButton from "../../../frontendDag/src/components/connectBTN"
+import {ConnectButton} from "../components/connectBTN"
 
 export const Header = () => {
     return (
