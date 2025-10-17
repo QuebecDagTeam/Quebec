@@ -1,21 +1,25 @@
 import { Link } from "react-router-dom";
 import Logo from "../../assets/logo.jpg";
-import { MdMoreHoriz } from "react-icons/md";
 import { ConnectButton } from "../../components/connectBTN";
 import { useAccount } from "wagmi";
 import { useState } from "react";
 import { Overlay } from "./overlay";
+import { FaBars, FaTimes } from "react-icons/fa";
 
 export const NavBar = () => {
   const { address, isConnected } = useAccount();
   const [showOverlay, setShowOverlay] = useState(false);
-
+  const [showNavList, setShowhowNavList] = useState(false)
   const handleOverlayOpen = () => {
     setShowOverlay(true);
   };
 
   const handleOverlayClose = () => {
     setShowOverlay(false);
+  };
+
+  const handleNav = () => {
+    setShowhowNavList(true);
   };
 
   return (
@@ -35,8 +39,11 @@ export const NavBar = () => {
             alt="Logo"
             className="h-[50px] w-[50px] md:h-[58px] md:w-[58px] rounded-full object-cover"
           />
-          <ul className="hidden md:flex gap-6 lg:gap-10 text-white font-medium flex-wrap">
-            <li>
+          <ul className={`${showNavList ? "bg-black w-full h-full text-right px-10 pt-10 text-white fixed top-0 z-10 lg:hidden":"hidden"} "hidden md:flex gap-6 lg:gap-10 text-white font-medium flex-wrap"`}>
+            <div onClick={()=>{setShowhowNavList(false)}} className="hover:text-[#8C2A8F] cursor-pointer">
+              <FaTimes />
+            </div>
+            <li onClick={()=>{setShowhowNavList(false)}}>
               <Link to="/" className="hover:text-[#8C2A8F] transition">
                 Home
               </Link>
@@ -74,8 +81,8 @@ export const NavBar = () => {
         </div>
 
         {/* Right - Mobile Menu Icon */}
-        <div className="text-white md:hidden">
-          <MdMoreHoriz size={28} />
+        <div className="text-white md:hidden px-5"  onClick={handleNav}>
+          <FaBars size={25} />
         </div>
       </nav>
     </>
