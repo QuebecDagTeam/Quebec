@@ -1,10 +1,15 @@
 import { Link } from "react-router-dom";
 import Logo from "../../assets/logo.jpg";
 import { FaArrowRight, FaTimes, FaUser, FaUserEdit } from "react-icons/fa";
-import {  useDisconnect } from 'wagmi'
+// import {  useDisconnect } from 'wagmi'
+import { useState } from "react";
 
 export const Overlay = () => {
-        const { disconnect } = useDisconnect()
+        // const { disconnect } = useDisconnect();
+        const [showOverlay, setShowOverlay]= useState(false)
+        const handleOverly = () =>{
+          setShowOverlay(!showOverlay)
+        }
   return (
     <section
       className="
@@ -26,7 +31,7 @@ export const Overlay = () => {
         "
       >
         {/* LEFT SIDE */}
-        <button onClick={() => disconnect()} className="w-10 h-10 rounded-full flex items-center text-white fixed top-2 md:top-10 right-4 md:right-10 justify-center bg-[#8C2A8F]">
+        <button onClick={() => handleOverly()} className="w-10 h-10 rounded-full flex items-center text-white fixed top-2 md:top-10 right-4 md:right-10 justify-center bg-[#8C2A8F]">
             <FaTimes/>
         </button>
         <aside className="bg-[#2F2F2F] flex flex-col items-center justify-center text-white p-6 md:p-10 md:w-1/2">

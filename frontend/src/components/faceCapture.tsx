@@ -152,7 +152,6 @@
 //   );
 // };
 
-// export default FaceCapture;
 import React, { useEffect, useRef, useState } from "react";
 import * as faceapi from "face-api.js";
 import Camera from "../assets/camera.svg";
@@ -166,6 +165,7 @@ const FaceCapture: React.FC = () => {
   const [faceDetected, setFaceDetected] = useState<boolean>(false);
   const [capturedFace, setCapturedFace] = useState<string | null>(null);
   const [countdownStarted, setCountdownStarted] = useState<boolean>(false);
+  const [showVideo, setShowVideo] = useState<boolean>(true);
 
   // Load face-api models
   useEffect(() => {
@@ -204,7 +204,7 @@ const FaceCapture: React.FC = () => {
   // Detect face in real-time
   const handleVideoPlay = () => {
     const interval = setInterval(async () => {
-      if (!videoRef.current || videoRef.current.paused) return;
+      if (!videoRef.current || videoRef.current.paused || !showVideo) return;
 
       const detections = await faceapi.detectAllFaces(
         videoRef.current,
@@ -271,11 +271,33 @@ const FaceCapture: React.FC = () => {
       ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
       const imageData = canvas.toDataURL("image/png");
       setCapturedFace(imageData);
+      setShowVideo(false); // Hide video/canvas after capture
+    }
+  };
+
+  // Recapture handler
+  const handleRecapture = () => {
+    setCapturedFace(null);
+    setShowVideo(true);
+    setCountdownStarted(false);
+    setFaceDetected(false);
+  };
+
+  // Handle file input for custom upload
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setCapturedFace(reader.result as string);
+        setShowVideo(false); // Hide video if file is uploaded
+      };
+      reader.readAsDataURL(file);
     }
   };
 
   return (
-    <div className="flex flex-col items-center justify-center md:h-full h-[300px] w-full md:w-2/3 bg-[#2F2F2F] border-[18px] border-dashed border-[#F697F959] text-white">
+    <div className="flex flex-col items-center justify-center md:h-full h-[200px] w-full md:w-2/3 bg-[#2F2F2F] border-[18px] border-dashed border-[#F697F959] text-white">
       {loading ? (
         <div className="flex flex-col items-center">
           <img
@@ -286,41 +308,25 @@ const FaceCapture: React.FC = () => {
         </div>
       ) : (
         <>
-          <div className="relative mt-3 mb-3 h-[200px]">
-            <video
-              ref={videoRef}
-              autoPlay
-              muted
-              onPlay={handleVideoPlay}
-              width={400}
-              height={300}
-              className="rounded-lg"
-            />
-            <canvas
-              ref={canvasRef}
-              className="absolute top-0 left-0"
-              width={400}
-              height={300}
-            />
-          </div>
-
-          <p className="mt-4">
-            {faceDetected ? "✅ Face detected!" : "😐 No face detected yet"}
-          </p>
-
-          {countdownStarted && (
-            <p className="text-yellow-300 mt-2">⏳ Auto-capturing in 10 seconds...</p>
-          )}
-
-          <button
-            onClick={captureFace}
-            className="mt-4 px-6 py-2 bg-[#F697F959] mb-2 rounded-lg"
-            disabled={!faceDetected}
-          >
-            Capture Face
-          </button>
-
-          {capturedFace && (
+          {showVideo ? (
+            <div className="relative mt-3 mb-3">
+              <video
+                ref={videoRef}
+                autoPlay
+                muted
+                onPlay={handleVideoPlay}
+                width={400}
+                height={300}
+                className="rounded-lg"
+              />
+              <canvas
+                ref={canvasRef}
+                className="absolute top-0 left-0"
+                width={400}
+                height={300}
+              />
+            </div>
+          ) : capturedFace ? (
             <div className="mt-6">
               <h2 className="text-lg mb-2">Captured Face:</h2>
               <img
@@ -330,7 +336,68 @@ const FaceCapture: React.FC = () => {
                 width={200}
               />
             </div>
+          ) : null}
+
+          {showVideo && (
+            <>
+              <p className="mt-4">
+                {faceDetected ? "✅ Face detected!" : "😐 No face detected yet"}
+              </p>
+              {countdownStarted && (
+                <p className="text-yellow-300 mt-2">
+                  ⏳ Auto-capturing in 10 seconds...
+                </p>
+              )}
+              <button
+                onClick={captureFace}
+                className="mt-4 px-6 py-2 bg-[#F697F959] mb-2 rounded-lg"
+                disabled={!faceDetected}
+              >
+                Capture Face
+              </button>
+            </>
           )}
+
+          {capturedFace && (
+            <button
+              onClick={handleRecapture}
+              className="mt-4 px-6 py-2 bg-red-500 text-white rounded-lg"
+            >
+              🔄 Recapture
+            </button>
+          )}
+
+<div className="mt-6">
+  {capturedFace && (
+    <div>
+      <h2 className="text-lg mb-2">Uploaded or Captured Image:</h2>
+      <img
+        src={capturedFace}
+        alt="Uploaded or captured face"
+        className="rounded-lg border border-gray-500"
+        width={200}
+      />
+    </div>
+  )}
+
+  {/* Hidden input for uploading image */}
+  <input
+    type="file"
+    accept="image/*"
+    onChange={handleFileUpload}
+    className="hidden"
+    id="fileUpload"
+  />
+
+  {/* Clickable label to trigger file input */}
+  <label
+    htmlFor="fileUpload"
+    className="mt-4 inline-block px-4 py-2 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700"
+  >
+    📤 Upload Image
+  </label>
+</div>
+
         </>
       )}
     </div>
