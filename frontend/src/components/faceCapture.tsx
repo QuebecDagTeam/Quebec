@@ -100,7 +100,7 @@ const FaceCapture: React.FC = () => {
 
       {loading ? (
         <div className="flex flex-col items-center">
-        <img src={Camera} className="md:w-[236px] w-[80%] md:h-[406px] h-[400px]"/>
+        <img src={Camera} className="md:w-[236px] w-[80%] md:h-[406px] h-[200px]"/>
         </div>
         // <p>Loading models...</p>
       ) : (

@@ -227,7 +227,7 @@ export const UserAuth: React.FC = () => {
                     <p className="text-[26px] font-[600] text-[#8C2A8F] mb-2">Facial Verification</p>
                     <p className="text-white">Let’s verify it’s you. Position your head within the frame and hold still while we scan.</p>
                   </div>
-                  <div className="flex gap-8 md:flex-row flex-col items-center justify-center">
+                  <div className="flex gap-8 md:flex-row flex-col items-center justify-center md:px-0 px-5">
                     <FaceCapture />
                     <div className="md:bg-[#2F2F2F] gap-2 md:gap-8 w-full md:w-1/3 px-[10px] md:px-[30px] py-[20px] flex-col rounded-[8px] flex items-center justify-center">
                       <div className="bg-[#424242] w-full h-auto text-white p-5 rounded-[15px]">

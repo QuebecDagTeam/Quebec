@@ -266,9 +266,11 @@ export const revokeAccess = async (req: Request, res: Response): Promise<Respons
 
 export const getRecordByAddress = async (req: Request, res: Response) => {
   try {
-    const { walletAdress } = req.params;
-    const doc = await User.findOne({ walletAdress });
-    if (!doc) return res.status(404).json({ error: "KYC record not found" });
+    const wallet = toto(req.params.walletAddress);
+    const doc = await User.findOne({ walletAdress:wallet });
+    if (!doc) {
+      return res.status(404).json({ error: "KYC record not found" });
+    }
 
     return res.json({
       NIN: doc.NIN,
