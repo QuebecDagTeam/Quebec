@@ -2,10 +2,10 @@ import { FaUserFriends } from "react-icons/fa";
 import { MdSecurity, MdWorkOutline } from "react-icons/md";
 import Hero from "../../assets/hero.jpg";
 import {ConnectButton} from "../../components/connectBTN";
-import { Overlay } from "./overlay";
+// import { Overlay } from "./overlay";
 import { useAccount } from 'wagmi'
 export const HeroSection = () => {
-  const { isConnected } = useAccount()
+  // const { isConnected } = useAccount()
     const cardDetails = [
           {
             icon: <MdWorkOutline size={28} />,
@@ -25,10 +25,10 @@ export const HeroSection = () => {
         ];
   return (
     <>
-     {isConnected && (
+     {/* {isConnected && (
         
           <Overlay />
-      )}      
+      )}       */}
     
     <section
       className="w-full bg-cover bg-center min-h-screen flex flex-col justify-between overflow-hidden"

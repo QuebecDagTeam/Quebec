@@ -297,7 +297,7 @@ const FaceCapture: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center md:h-full h-[200px] w-full md:w-2/3 bg-[#2F2F2F] border-[18px] border-dashed border-[#F697F959] text-white">
+    <div className="flex flex-col items-center justify-center md:h-full h-full w-full md:w-2/3 bg-[#2F2F2F] border-[18px] border-dashed border-[#F697F959] text-white">
       {loading ? (
         <div className="flex flex-col items-center">
           <img

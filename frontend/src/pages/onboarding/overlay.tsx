@@ -1,39 +1,25 @@
+// Overlay.tsx
 import { Link } from "react-router-dom";
 import Logo from "../../assets/logo.jpg";
 import { FaArrowRight, FaTimes, FaUser, FaUserEdit } from "react-icons/fa";
-// import {  useDisconnect } from 'wagmi'
-import { useState } from "react";
 
-export const Overlay = () => {
-        // const { disconnect } = useDisconnect();
-        const [showOverlay, setShowOverlay]= useState(false)
-        const handleOverly = () =>{
-          setShowOverlay(!showOverlay)
-        }
+interface OverlayProps {
+  onClose: () => void;
+}
+
+export const Overlay: React.FC<OverlayProps> = ({ onClose }) => {
   return (
-    <section
-      className="
-        fixed inset-0 z-50 
-        flex items-center justify-center
-         bg-opacity-60
-        backdrop-blur
-        h-screen
-      "
-    >
-      <div
-        className="
-          flex flex-col md:flex-row 
-          items-stretch justify-center 
-          w-[90%] max-w-[900px] 
-          md:h-[90%]
-          rounded-[36px] overflow-hidden 
-          shadow-2xl
-        "
-      >
-        {/* LEFT SIDE */}
-        <button onClick={() => handleOverly()} className="w-10 h-10 rounded-full flex items-center text-white fixed top-2 md:top-10 right-4 md:right-10 justify-center bg-[#8C2A8F]">
-            <FaTimes/>
+    <section className="fixed inset-0 z-50 flex items-center justify-center bg-opacity-60 backdrop-blur h-screen">
+      <div className="flex flex-col md:flex-row items-stretch justify-center w-[90%] max-w-[900px] md:h-[90%] rounded-[36px] overflow-hidden shadow-2xl">
+        {/* Close Button */}
+        <button
+          onClick={onClose}
+          className="cursor-pointer w-10 h-10 rounded-full flex items-center text-white fixed top-2 md:top-10 right-4 md:right-10 justify-center bg-[#8C2A8F]"
+        >
+          <FaTimes />
         </button>
+
+        {/* LEFT SIDE */}
         <aside className="bg-[#2F2F2F] flex flex-col items-center justify-center text-white p-6 md:p-10 md:w-1/2">
           <div className="flex items-center gap-4 md:mb-6 mb-2">
             <img
@@ -48,8 +34,8 @@ export const Overlay = () => {
               Wallet Connected!
             </p>
             <p className="text-[15px] text-gray-300 leading-relaxed">
-              Choose your role to proceed with a secure and seamless
-              identity verification process.
+              Choose your role to proceed with a secure and seamless identity
+              verification process.
             </p>
           </div>
         </aside>
@@ -66,14 +52,12 @@ export const Overlay = () => {
             </div>
             <div className="flex-1">
               <div className="flex items-center justify-between">
-                <p className="font-semibold text-[16px]">
-                  Continue as User
-                </p>
+                <p className="font-semibold text-[16px]">Continue as User</p>
                 <FaArrowRight className="text-[#8C2A8F]" />
               </div>
               <p className="text-[12px] text-gray-300 mt-1">
-                Manage your digital identity, control your data,
-                and share your KYC information securely.
+                Manage your digital identity, control your data, and share your
+                KYC information securely.
               </p>
             </div>
           </Link>
