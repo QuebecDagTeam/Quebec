@@ -308,7 +308,7 @@ const FaceCapture: React.FC = () => {
         </div>
       ) : (
         <>
-          {showVideo && !captureFace ? (
+          {showVideo ? (
             <div className="relative mt-3 mb-3">
               <video
                 ref={videoRef}
