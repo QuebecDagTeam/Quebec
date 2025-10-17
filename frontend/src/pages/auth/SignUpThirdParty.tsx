@@ -23,9 +23,11 @@ interface FormData {
   description: string;
   website: string;
   walletAddress: string;
+  password:string;
+  confirmPsw:string
 }
 
-export const ThirdPartyAuth: React.FC = () => {
+export const SignUpThirdParty: React.FC = () => {
   const { address, isConnected } = useAccount();
   const { writeContractAsync } = useWriteContract();
 
@@ -35,6 +37,8 @@ export const ThirdPartyAuth: React.FC = () => {
     description: "",
     website: "",
     walletAddress: "",
+    password:"",
+    confirmPsw:""
   });
 
   const [txHash, setTxHash] = useState<string | null>(null);
@@ -184,6 +188,8 @@ console.log("hello",{
                     <Input label="Additional Details" name="detail" placeholder="Optional integration info" value={formData.detail} action={handleChange} />
                   </div>
                 </aside>
+                <Input label="Password" name="password" placeholder="************" value={formData.password} action={handleChange} />
+                  <Input label="Confirm Passowrd" name="password" placeholder="************" value={formData.confirmPsw} action={handleChange} />
 
                 <p className="text-xs text-center text-gray-500 mt-4">
                   Current Wallet Address: {address || "Not Connected"}
@@ -239,4 +245,4 @@ console.log("hello",{
   );
 };
 
-export default ThirdPartyAuth;
+export default SignUpThirdParty;

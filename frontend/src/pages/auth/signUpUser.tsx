@@ -27,9 +27,12 @@ interface FormData {
   phone: string;
   walletAddress: string;
   residentialAddress: string;
+  image:string;
+  password:string,
+  confirmPsw:string
 }
 
-export const UserAuth: React.FC = () => {
+export const SignUpUser: React.FC = () => {
   const { address, isConnected } = useAccount();
   const { writeContractAsync } = useWriteContract();
 
@@ -42,6 +45,9 @@ export const UserAuth: React.FC = () => {
     phone: "",
     walletAddress: "",
     residentialAddress: "",
+    image:"",
+    password:"",
+    confirmPsw:""
   });
 
   const [progress, setProgress] = useState(1);
@@ -91,6 +97,7 @@ export const UserAuth: React.FC = () => {
       alert("Please connect your wallet first.");
       return;
     }
+    console.log(formData)
 
     setLoading(true);
 
@@ -106,7 +113,6 @@ export const UserAuth: React.FC = () => {
       });
 
       setTxHash(hash);
-
       const response = await fetch("https://quebec-ur3w.onrender.com/api/kyc/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -133,7 +139,9 @@ export const UserAuth: React.FC = () => {
       setLoading(false);
     }
   };
-
+  const handleFaceCapture = (image: string) => {
+    setFormData((prev) => ({ ...prev, image }));
+  };
   const progressWidth = progress === 1 ? "50%" : "100%";
   const navigate = useNavigate()
   useEffect(()=>{
@@ -188,7 +196,7 @@ export const UserAuth: React.FC = () => {
                           name="govIdType"
                           value={formData.govIdType}
                           onChange={handleChange}
-                          className="w-full bg-[#424242] text-white py-3 px-5 rounded-full appearance-none focus:outline-none focus:ring-2 focus:ring-[#71627A] transition"
+                          className="w-full bg-[#424242] text-white py-3 px-5 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-[#71627A] transition"
                         >
                           <option value="" disabled>Select ID Type</option>
                           <option value="NIN">NIN (National ID)</option>
@@ -197,7 +205,7 @@ export const UserAuth: React.FC = () => {
                           <option value="Passport">Passport</option>
                         </select>
                       </div>
-                      <Input label="ID Number" name="govIdNumber" placeholder="Enter Government ID number" value={formData.NIN} action={handleChange} />
+                      <Input label="ID Number" name="NIN" placeholder="Enter Government ID number" value={formData?.NIN} action={handleChange} />
                     </div>
                   </aside>
 
@@ -228,7 +236,7 @@ export const UserAuth: React.FC = () => {
                     <p className="text-white">Let’s verify it’s you. Position your head within the frame and hold still while we scan.</p>
                   </div>
                   <div className="flex gap-8 md:flex-row flex-col items-center justify-center md:px-0 px-5">
-                    <FaceCapture />
+                    <FaceCapture onCapture={handleFaceCapture}/>
                     <div className="md:bg-[#2F2F2F] gap-2 md:gap-8 w-full md:w-1/3 px-[10px] md:px-[30px] py-[20px] flex-col rounded-[8px] flex items-center justify-center">
                       <div className="bg-[#424242] w-full h-auto text-white p-5 rounded-[15px]">
                         <p className="md:text-[18px] text-center">Good Lighting</p>
@@ -244,6 +252,11 @@ export const UserAuth: React.FC = () => {
                       </div>
                     </div>
                   </div>
+                  <div>
+                  <Input label="Password" name="password" placeholder="************" value={formData.password} action={handleChange} />
+                  <Input label="Confirm Passowrd" name="confirmPsw" placeholder="************" value={formData.confirmPsw} action={handleChange} />
+
+                    </div> 
                 </div>
               )}
 
@@ -298,4 +311,4 @@ export const UserAuth: React.FC = () => {
   );
 };
 
-export default UserAuth;
+export default SignUpUser;

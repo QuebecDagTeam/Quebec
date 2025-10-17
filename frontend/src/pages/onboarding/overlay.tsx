@@ -44,7 +44,7 @@ export const Overlay: React.FC<OverlayProps> = ({ onClose }) => {
         <aside className="bg-[#000000] text-white flex flex-col justify-center gap-6 p-6 md:p-10 md:w-1/2">
           {/* Continue as User */}
           <Link
-            to="/reg/user"
+            to="/sign_up/user"
             className="flex items-start gap-4 border border-[#2F2F2F] rounded-lg p-4 hover:bg-[#111111] transition"
           >
             <div className="text-[#8C2A8F] mt-1">
@@ -64,7 +64,7 @@ export const Overlay: React.FC<OverlayProps> = ({ onClose }) => {
 
           {/* Continue as Third Party */}
           <Link
-            to="/reg/third_party"
+            to="/sign_up/third_party"
             className="flex items-start gap-4 border border-[#2F2F2F] rounded-lg p-4 hover:bg-[#111111] transition"
           >
             <div className="text-[#8C2A8F] mt-1">

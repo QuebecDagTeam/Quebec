@@ -51,12 +51,12 @@ export const NavBar = () => {
                 onClick={handleOverlayOpen}
                 className="hover:text-[#8C2A8F] transition"
               >
-                SignIn
+                SignUp
               </button>
             </li>
             <li>
-              <Link to="/notifications" className="hover:text-[#8C2A8F] transition">
-                Notifications
+              <Link to="/sign_in" className="hover:text-[#8C2A8F] transition">
+                SignIn
               </Link>
             </li>
           </ul>
