@@ -368,17 +368,17 @@ const FaceCapture: React.FC = () => {
           )}
 
 <div className="mt-6">
-  {capturedFace && (
-    <div>
-      <h2 className="text-lg mb-2">Uploaded or Captured Image:</h2>
-      <img
-        src={capturedFace}
-        alt="Uploaded or captured face"
-        className="rounded-lg border border-gray-500"
-        width={200}
-      />
-    </div>
-  )}
+  {/* {capturedFace && (
+    // <div>
+    //   <h2 className="text-lg mb-2">Uploaded or Captured Image:</h2>
+    //   <img
+    //     src={capturedFace}
+    //     alt="Uploaded or captured face"
+    //     className="rounded-lg border border-gray-500"
+    //     width={200}
+    //   />
+    // </div>
+  )} */}
 
   {/* Hidden input for uploading image */}
   <input
