@@ -12,6 +12,7 @@ export interface IUser extends Document {
     userType: "user" | "thirdParty";
     timestamp: Date;
   };
+  password:string;
   whitelistedThirdParties: Array<{
     thirdPartyAddress: string;
     kycId: string; // KYC unique ID that the third party has access to
@@ -36,6 +37,7 @@ const UserSchema = new Schema<IUser>(
       userType: { type: String, enum: ["user", "thirdParty"], default: "user" },
       timestamp: { type: Date, default: Date.now },
     },
+    password:{ type: String, required: true },
     whitelistedThirdParties: [
       {
         thirdPartyAddress: { type: String, required: true },
@@ -50,3 +52,8 @@ const UserSchema = new Schema<IUser>(
 );
 
 export default mongoose.models.User || mongoose.model<IUser>("User", UserSchema);
+
+
+
+
+

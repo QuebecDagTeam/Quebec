@@ -10,9 +10,12 @@ import Pricing from './pages/pricing';
 import { Notify } from './pages/notifications';
 import { ZPay } from './pages/Zpay';
 import {SignIn}  from './pages/auth/signIn';
+import {UserProvider}  from './contexts/UserContext';
+
 function App() {
 
   return (
+    <UserProvider>
    <BrowserRouter>
          {/* <Head/> */}
          <Routes>
@@ -28,6 +31,7 @@ function App() {
 
          </Routes>
        </BrowserRouter>
+       </UserProvider>
   )
 }
 

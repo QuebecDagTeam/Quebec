@@ -142,11 +142,12 @@ export const SignUpUser: React.FC = () => {
   const handleFaceCapture = (image: string) => {
     setFormData((prev) => ({ ...prev, image }));
   };
+  
   const progressWidth = progress === 1 ? "50%" : "100%";
   const navigate = useNavigate()
   useEffect(()=>{
     isConnected && isRegistered === true && !checkingRegistration && 
-    navigate('/user/dashboard');
+    navigate('/sign_in');
   }, [isConnected, isRegistered, !checkingRegistration])
   return (
     <section className="min-h-screen bg-[#000306] font-inter relative">

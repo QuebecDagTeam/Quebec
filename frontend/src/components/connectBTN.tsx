@@ -31,8 +31,9 @@ export const ConnectButton = () => {
     >
          {isConnected ?
      <p className="text-white text-sm">
-    Wallet: {address?.slice(0, 6)}...{address?.slice(-4)}:
-  </p>  :<p>Connect Wallet</p>}
+    {address?.slice(0, 6)}...{address?.slice(-4)}
+  </p> 
+   :<p>Connect Wallet</p>}
       
     </button>
     </>

@@ -480,13 +480,6 @@ export const requestAccess = async (req: Request, res: Response) => {
 
     await notification.save();
 
-    // 4️⃣ Return the KYC record info (as per your original flow)
-    // return res.json({
-    //   ownerAddress: user.walletAddress,
-    //   kycId: user.uniqueId,
-    //   encryptedData: user.encryptedData,
-    //   createdAt: user.createdAt,
-    // });
   } catch (err) {
     console.error("requestAccess error:", err);
     return res.status(500).json({ error: "Server error" });

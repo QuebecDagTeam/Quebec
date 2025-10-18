@@ -1,20 +1,21 @@
-import { Link } from "react-router-dom";
+import { Link} from "react-router-dom";
 import Logo from "../../assets/logo.jpg";
 import { ConnectButton } from "../../components/connectBTN";
-import { useAccount } from "wagmi";
 import { useState } from "react";
 import { Overlay } from "./overlay";
 import { FaTimes } from "react-icons/fa";
 import { MdGridView } from "react-icons/md";
+import { useUser } from "../../contexts/UserContext";
 
 export const NavBar = () => {
-  const { address, isConnected } = useAccount();
+  // const { address, isConnected } = useAccount();
   const [showOverlay, setShowOverlay] = useState(false);
   const [showNavList, setShowhowNavList] = useState(false)
   const handleOverlayOpen = () => {
     setShowOverlay(true);
   };
 
+  const {user} = useUser();
   const handleOverlayClose = () => {
     setShowOverlay(false);
   };
@@ -41,7 +42,7 @@ export const NavBar = () => {
             className="h-[50px] w-[50px] md:h-[58px] md:w-[58px] rounded-full object-cover"
           />
           <ul className={`${showNavList ? "bg-black w-full flex-col h-full flex w-fit text-left px-10 pt-10 text-white fixed pt-20 top-0 z-10 lg:hidden":"hidden"} "hidden md:flex gap-6 lg:gap-10 text-white font-medium flex-wrap"`}>
-            <div onClick={()=>{setShowhowNavList(false)}} className="hover:text-[#8C2A8F] cursor-pointer fixed top-10 right-10 px-5">
+            <div onClick={()=>{setShowhowNavList(false)}} className="md:hidden hover:text-[#8C2A8F] cursor-pointer fixed top-10 right-10 px-5">
               <FaTimes size={20}/>
             </div>
             <li onClick={()=>{setShowhowNavList(false)}}>
@@ -50,9 +51,19 @@ export const NavBar = () => {
               </Link>
             </li>
             <li>
-              <Link to="/kycs" className="hover:text-[#8C2A8F] transition">
+              {
+                user!== null ? 
+                (
+                  <Link to={`/${user}/dashboard`} className="hover:text-[#8C2A8F] transition">
                 Dashboard
               </Link>
+                ):
+                (
+                  <Link to={'/sign_in'} className="hover:text-[#8C2A8F] transition">
+                Dashboard
+              </Link>
+                )
+              }
             </li>
             <li>
               <button
@@ -71,14 +82,10 @@ export const NavBar = () => {
         </div>
 
         {/* Center - Wallet / Connect */}
-        <div className="flex items-center gap-2 w-[180px] sm:w-[220px] lg:w-[260px] px-3 justify-center py-5 rounded-[10px]">
-          {!isConnected ? (
+        <div className="flex items-center gap-2 bg-[#8C2A8F]   justify-center  rounded-[8px]">
+          
             <ConnectButton />
-          ) : (
-            <p className="text-white text-sm bg-[#8C2A8F] px-4 py-3 rounded-[50px]">
-              {address?.slice(0, 6)}...{address?.slice(-4)}
-            </p>
-          )}
+          
         </div>
 
         {/* Right - Mobile Menu Icon */}

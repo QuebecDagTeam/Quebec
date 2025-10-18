@@ -12,10 +12,11 @@ import {
 } from "react-icons/md";
 import UserImg from "../../assets/user.jpg";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { decryptData } from "../../components/encrypt";
 import { useAccount } from "wagmi";
 import { FaBell } from "react-icons/fa";
+import { useUser } from "../../contexts/UserContext";
 
 interface KYCData {
   fullName: string;
@@ -45,6 +46,13 @@ export const Dash = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [id, setId] = useState<string | null>(null);
+
+    const {user} = useUser();
+    const navigate = useNavigate()
+    useEffect(()=>{
+      !user && navigate("/sign_in")
+    })
+  
   useEffect(() => {
     const fetchKYCData = async () => {
       try {
