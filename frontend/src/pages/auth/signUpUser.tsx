@@ -1,27 +1,22 @@
 import React, { useState, useEffect } from "react";
-import { useAccount } from "wagmi";
-import { encryptData, base64ToHex } from "../../components/encrypt";
-import { useQuebecKYC } from "../../hooks/useQuebecKYC";
+import { useAccount,  } from "wagmi";
+import { encryptData } from "../../components/encrypt";
+import { Input } from "../../components/input";
+import FaceCapture from "../../components/faceCapture";
+import { Link, useNavigate } from "react-router-dom";
+import uploadToCloudinary from "../../services/cloudinary";
+import { useQuebecKYC } from "../../services/contract";
 
-// helper function to upload image
-const uploadToCloudinary = async (file: File): Promise<string> => {
-  const data = new FormData();
-  data.append("file", file);
-  data.append("upload_preset", "quebec_preset");
 
-  const res = await fetch(
-    "https://api.cloudinary.com/v1_1/YOUR_CLOUD_NAME/image/upload",
-    { method: "POST", body: data }
-  );
-  const json = await res.json();
-
-  if (!res.ok) throw new Error(json.error?.message || "Cloudinary upload failed");
-  return json.secure_url;
-};
-
-// timeout helper
-const timeout = (ms: number) =>
-  new Promise((_, reject) => setTimeout(() => reject(new Error("⏱️ Request timed out")), ms));
+function base64ToHex(base64: string): `0x${string}` {
+  const raw = atob(base64);
+  let hex = "";
+  for (let i = 0; i < raw.length; i++) {
+    const h = raw.charCodeAt(i).toString(16).padStart(2, "0");
+    hex += h;
+  }
+  return `0x${hex}`;
+}
 
 interface FormData {
   fullName: string;
@@ -30,15 +25,15 @@ interface FormData {
   govIdType: string;
   NIN: string;
   phone: string;
+  walletAddress: string;
   residentialAddress: string;
-  image: File | null;
-  password: string;
-  confirmPsw: string;
+  image:string;
+  password:string,
+  confirmPsw:string
 }
 
-export default function SignUpUser() {
-  const { address } = useAccount();
-  const { registerUser } = useQuebecKYC();
+export const SignUpUser: React.FC = () => {
+  const { address, isConnected } = useAccount();
 
   const [formData, setFormData] = useState<FormData>({
     fullName: "",
@@ -47,241 +42,316 @@ export default function SignUpUser() {
     govIdType: "",
     NIN: "",
     phone: "",
+    walletAddress: "",
     residentialAddress: "",
-    image: null,
-    password: "",
-    confirmPsw: "",
+    image:"",
+    password:"",
+    confirmPsw:""
   });
 
-  const [loading, setLoading] = useState(false);
-  const [progress, setProgress] = useState("Idle");
-  const [error, setError] = useState<string | null>(null);
+  const [progress, setProgress] = useState(1);
   const [txHash, setTxHash] = useState<string | null>(null);
-  const [isRegistered, setIsRegistered] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [isRegistered, setIsRegistered] = useState<boolean | null>(null); // null = unknown
+  const [checkingRegistration, setCheckingRegistration] = useState(false);
+
+  const handleProgress = (step: number) => setProgress(step);
 
   useEffect(() => {
-    window.onerror = (msg, url, line, col, error) => {
-      console.error("🧨 Global JS Error:", { msg, url, line, col, error });
-    };
-    window.onunhandledrejection = (event) => {
-      console.error("🚨 Unhandled Promise Rejection:", event.reason);
-    };
-  }, []);
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setError(null);
-
-    if (!address) {
-      alert("Please connect your wallet first.");
-      return;
+    if (address) {
+      setFormData((prev) => ({ ...prev, walletAddress: address }));
+      checkWalletRegistration(address);
+    } else {
+      setIsRegistered(null);
     }
+  }, [address]);
 
-    const requiredFields: (keyof FormData)[] = [
-      "fullName",
-      "email",
-      "dob",
-      "govIdType",
-      "NIN",
-      "phone",
-      "residentialAddress",
-      "image",
-      "password",
-      "confirmPsw",
-    ];
-
-    const missingFields = requiredFields.filter((field) => !formData[field]);
-    if (missingFields.length > 0) {
-      alert(`Please fill in all fields. Missing: ${missingFields.join(", ")}`);
-      return;
-    }
-
-    if (formData.password !== formData.confirmPsw) {
-      alert("Passwords do not match.");
-      return;
-    }
-
-    setLoading(true);
-    setProgress("Uploading image...");
-
+  const checkWalletRegistration = async (walletAddress: string) => {
     try {
-      const result = await Promise.race([
-        (async () => {
-          // STEP 1: Upload image
-          const cloudinaryUrl = await uploadToCloudinary(formData.image!);
-          setProgress("Encrypting data...");
-
-          // STEP 2: Encrypt data
-          const updatedFormData = { ...formData, image: cloudinaryUrl };
-          const encryptedBase64 = encryptData(updatedFormData);
-          const encryptedHex = base64ToHex(encryptedBase64);
-
-          setProgress("Registering on blockchain...");
-          const txHash = await registerUser(encryptedHex);
-          setTxHash(txHash ?? null);
-
-          setProgress("Sending data to backend...");
-          const response = await fetch(
-            "https://quebec-ur3w.onrender.com/api/auth/kyc/register",
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                email: updatedFormData.email,
-                NIN: updatedFormData.NIN,
-                walletAddress: address,
-                encryptedData: encryptedBase64,
-                transactionHash: txHash,
-              }),
-            }
-          );
-
-          if (!response.ok) {
-            const errorText = await response.text();
-            console.error("❌ Backend Error:", errorText);
-            throw new Error(`Server error: ${response.status} - ${errorText}`);
-          }
-
-          setProgress("✅ Registration successful!");
-          setIsRegistered(true);
-          alert("✅ KYC submitted successfully!");
-        })(),
-        timeout(60000), // 1-minute timeout
-      ]);
-    } catch (err: any) {
-      console.error("🔥 Submission failed:", err);
-      setError(err.message || "Unknown error occurred");
-      alert(`❌ Error submitting KYC: ${err.message || "Unknown error"}`);
+      setCheckingRegistration(true);
+      const response = await fetch(`https://quebec-ur3w.onrender.com/api/kyc/auth/isRegistered/${walletAddress}`);
+      const data = await response.json();
+      setIsRegistered(data?.registered);
+      if(!data){
+        alert("Error checking registration status, check your connection and try again.");
+        return
+      }
+      console
+    } catch (err) {
+      console.error("Failed to check wallet registration:", err);
+      setIsRegistered(false);
     } finally {
-      setLoading(false);
-      setProgress("Done.");
+      setCheckingRegistration(false);
     }
   };
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value || "" }));
+  };
+
+const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+
+  if (!address) {
+    alert("Please connect your wallet first.");
+    return;
+  }
+
+  // ✅ Step 1: Validate Required Fields
+  const requiredFields: (keyof FormData)[] = [
+    "fullName",
+    "email",
+    "dob",
+    "govIdType",
+    "NIN",
+    "phone",
+    "residentialAddress",
+    "image",
+    "password",
+    "confirmPsw",
+  ];
+
+  const missingFields = requiredFields.filter((field) => !formData[field]);
+
+  if (missingFields.length > 0) {
+    console.error("Missing fields:", missingFields);
+    alert(`Please fill in all fields. Missing: ${missingFields.join(", ")}`);
+    return;
+  }
+
+  // ✅ Step 2: Validate Password Match
+  if (formData.password !== formData.confirmPsw) {
+    console.error("Passwords do not match");
+    alert("Passwords do not match.");
+    return;
+  }
+
+  setLoading(true);
+    const {registerUser} = useQuebecKYC();
+
+  try {
+    // ✅ Step 3: Upload image to Cloudinary
+    const cloudinaryUrl = await uploadToCloudinary(formData.image);
+
+    const updatedFormData = {
+      ...formData,
+      image: cloudinaryUrl,
+    };
+
+    // ✅ Step 4: Encrypt updated form data
+    const encryptedBase64 = encryptData(updatedFormData);
+    const encryptedHex = base64ToHex(encryptedBase64);
+
+    // ✅ Step 5: Write to contract
+    // const hash = await writeContractAsync({
+    //   address: CONTRACT_ADDRESS,
+    //   abi,
+    //   functionName: "registerKyc",
+    //   args: [address, encryptedHex],
+    // });
+
+    const txHash = await registerUser(encryptedHex)|| '';
+    setTxHash(txHash);
+
+    // ✅ Step 6: Send to backend
+    const response = await fetch("https://quebec-ur3w.onrender.com/api/auth/kyc/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: updatedFormData.email,
+        NIN: updatedFormData.NIN,
+        walletAddress: address,
+        encryptedData: encryptedBase64,
+        transactionHash: txHash,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Server error: ${response.status} - ${errorText}`);
+    }
+
+    alert("✅ KYC submitted successfully!");
+    setIsRegistered(true);
+  } catch (err: any) {
+    console.error("KYC submission failed:", err);
+    alert("❌ Error submitting KYC: " + err.message);
+  } finally {
+    setLoading(false);
+  }
+};
+
+  const handleFaceCapture = (image: string) => {
+    setFormData((prev) => ({ ...prev, image }));
+  };
+  
+  const progressWidth = progress === 1 ? "50%" : "100%";
+  const navigate = useNavigate()
+  useEffect(()=>{
+    isConnected && isRegistered === true && !checkingRegistration && 
+    navigate('/sign_in');
+  }, [isConnected, isRegistered, !checkingRegistration])
   return (
-    <div className="relative flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6">
-      <h1 className="text-3xl font-semibold mb-6">User KYC Registration</h1>
-
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white p-6 rounded-2xl shadow-md w-full max-w-lg space-y-4"
-      >
-        <input
-          type="text"
-          placeholder="Full Name"
-          className="w-full p-3 border rounded"
-          value={formData.fullName}
-          onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-        />
-        <input
-          type="email"
-          placeholder="Email"
-          className="w-full p-3 border rounded"
-          value={formData.email}
-          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-        />
-        <input
-          type="date"
-          className="w-full p-3 border rounded"
-          value={formData.dob}
-          onChange={(e) => setFormData({ ...formData, dob: e.target.value })}
-        />
-        <input
-          type="text"
-          placeholder="Government ID Type"
-          className="w-full p-3 border rounded"
-          value={formData.govIdType}
-          onChange={(e) => setFormData({ ...formData, govIdType: e.target.value })}
-        />
-        <input
-          type="text"
-          placeholder="NIN"
-          className="w-full p-3 border rounded"
-          value={formData.NIN}
-          onChange={(e) => setFormData({ ...formData, NIN: e.target.value })}
-        />
-        <input
-          type="tel"
-          placeholder="Phone Number"
-          className="w-full p-3 border rounded"
-          value={formData.phone}
-          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-        />
-        <textarea
-          placeholder="Residential Address"
-          className="w-full p-3 border rounded"
-          value={formData.residentialAddress}
-          onChange={(e) => setFormData({ ...formData, residentialAddress: e.target.value })}
-        />
-        <input
-          type="file"
-          accept="image/*"
-          className="w-full p-3 border rounded"
-          onChange={(e) =>
-            setFormData({ ...formData, image: e.target.files?.[0] || null })
-          }
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          className="w-full p-3 border rounded"
-          value={formData.password}
-          onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-        />
-        <input
-          type="password"
-          placeholder="Confirm Password"
-          className="w-full p-3 border rounded"
-          value={formData.confirmPsw}
-          onChange={(e) => setFormData({ ...formData, confirmPsw: e.target.value })}
-        />
-
-        <button
-          type="submit"
-          disabled={loading}
-          className={`w-full py-3 rounded-xl text-white ${
-            loading ? "bg-gray-400" : "bg-blue-600 hover:bg-blue-700"
-          }`}
-        >
-          {loading ? "Submitting..." : "Submit KYC"}
-        </button>
-      </form>
-
-      {/* Overlay progress */}
-      {loading && (
-        <div className="absolute inset-0 bg-black bg-opacity-60 flex flex-col items-center justify-center text-white backdrop-blur-sm transition-all duration-300">
-          <div className="bg-gray-800 px-6 py-4 rounded-xl shadow-lg text-center space-y-3 w-72">
-            <div className="animate-pulse text-lg font-medium">{progress}</div>
-            <div className="w-full bg-gray-700 h-2 rounded-full overflow-hidden">
-              <div
-                className="bg-blue-400 h-full transition-all duration-700"
-                style={{
-                  width:
-                    progress.includes("Uploading") ? "20%" :
-                    progress.includes("Encrypting") ? "40%" :
-                    progress.includes("Registering") ? "60%" :
-                    progress.includes("Sending") ? "80%" :
-                    progress.includes("✅") ? "100%" : "10%",
-                }}
-              ></div>
+    <section className="min-h-screen bg-[#000306] font-inter relative">
+      <div className="container mx-auto p-4 sm:p-8 md:p-12 lg:p-20">
+        {(checkingRegistration || isRegistered === null) && isConnected && (
+          <div className="fixed inset-0 bg-black bg-opacity-80 text-white z-50 flex items-center justify-center">
+            <div className="text-center space-y-4">
+              <div className="animate-spin rounded-full h-10 w-10 border-t-4 border-[#8C2A8F] mx-auto" />
+              <p className="text-xl font-semibold">Checking registration status...</p>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {error && (
-        <div className="mt-4 bg-red-100 text-red-700 p-3 rounded-xl">
-          <strong>Error:</strong> {error}
-        </div>
-      )}
+        {isConnected && isRegistered === false && (
+          <>
+            {progress === 1 && (
+              <>
+                <h1 className="text-3xl sm:text-4xl font-extrabold mb-8 text-center text-[#8C2A8F]">
+                  Decentralized KYC Registration
+                </h1>
+                <p className="text-gray-400 text-lg mb-4 text-center">
+                  Step {progress} of 2: {progress === 1 ? "Enter Personal & Contact Details" : "Facial Verification"}
+                </p>
+                <div className="flex items-center justify-center">
+                  <div className="w-full h-4 bg-gray-200 max-w-4xl rounded-full overflow-hidden mb-10">
+                    <div
+                      className="h-full bg-[#8C2A8F] transition-all duration-300"
+                      style={{ width: progressWidth }}
+                    />
+                  </div>
+                </div>
+              </>
+            )}
 
-      {isRegistered && txHash && (
-        <div className="mt-6 bg-green-100 text-green-700 p-3 rounded-xl">
-          ✅ Registration successful!  
-          <br />
-          <small>Transaction Hash: {txHash}</small>
-        </div>
-      )}
-    </div>
+            <form onSubmit={handleSubmit} className="w-full max-w-4xl mx-auto space-y-8">
+              {progress === 1 && (
+                <div className="text-white">
+                  <aside className="p-6 border border-[#71627A] rounded-2xl mb-8">
+                    <h2 className="text-xl font-semibold mb-4">Personal Details</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <Input label="Full Name" name="fullName" placeholder="Enter your full name" value={formData.fullName} action={handleChange} />
+                      <Input label="Date of Birth" name="dob" type="date" placeholder="mm/dd/yyyy" value={formData.dob} action={handleChange} />
+                      <div className="flex flex-col">
+                        <label htmlFor="govIdType" className="text-sm mb-2 text-gray-300">Government ID Type</label>
+                        <select
+                          id="govIdType"
+                          name="govIdType"
+                          value={formData.govIdType}
+                          onChange={handleChange}
+                          className="w-full bg-[#424242] text-white py-3 px-5 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-[#71627A] transition"
+                        >
+                          <option value="" disabled>Select ID Type</option>
+                          <option value="NIN">NIN (National ID)</option>
+                          <option value="Driver’s License">Driver’s License</option>
+                          <option value="Voter’s Card">Voter’s Card</option>
+                          <option value="Passport">Passport</option>
+                        </select>
+                      </div>
+                      <Input label="ID Number" name="NIN" placeholder="Enter Government ID number" value={formData?.NIN} action={handleChange} />
+                    </div>
+                  </aside>
+
+                  <aside className="p-6 border border-[#71627A] rounded-2xl">
+                    <h2 className="text-xl font-semibold mb-4">Contact Information</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <Input label="Email Address" name="email" type="email" placeholder="Enter your email" value={formData.email} action={handleChange} />
+                      <Input label="Phone Number" name="phone" type="tel" placeholder="+234..." value={formData.phone} action={handleChange} />
+                    </div>
+                    <div className="mt-6">
+                      <Input label="Residential Address" name="residentialAddress" placeholder="Enter your full home address" value={formData.residentialAddress} action={handleChange} />
+                    </div>
+                    <div className="mt-6">
+                      <Input label="Wallet Address (Detected)" name="walletAddress" placeholder="Connect wallet to display address" value={formData.walletAddress} action={handleChange} />
+                    </div>
+                  </aside>
+
+                  <p className="text-xs text-center text-gray-500 mt-4">
+                    Current Wallet Address: {address || 'Not Connected'}
+                  </p>
+                </div>
+              )}
+
+              {progress === 2 && (
+                <div>
+                  <div className="py-5">
+                    <p className="text-[26px] font-[600] text-[#8C2A8F] mb-2">Facial Verification</p>
+                    <p className="text-white">Let’s verify it’s you. Position your head within the frame and hold still while we scan.</p>
+                  </div>
+                  <div className="flex gap-8 md:flex-row flex-col items-center justify-center md:px-0 px-5">
+                    <FaceCapture onCapture={handleFaceCapture}/>
+                    <div className="md:bg-[#2F2F2F] gap-2 md:gap-8 w-full md:w-1/3 px-[10px] md:px-[30px] py-[20px] flex-col rounded-[8px] flex items-center justify-center">
+                      <div className="bg-[#424242] w-full h-auto text-white p-5 rounded-[15px]">
+                        <p className="md:text-[18px] text-center">Good Lighting</p>
+                        <p className="md:text-[14px] text-[12px] text-center ">Ensure you’re in a well lit area</p>
+                      </div>
+                      <div className="bg-[#424242] w-full h-auto text-white p-5 rounded-[15px]">
+                        <p className="md:text-[18px] text-center">Stay Still</p>
+                        <p className="md:text-[14px] text-[12px] text-center ">Minimize movement while scanning</p>
+                      </div>
+                      <div className="bg-[#424242] w-full h-auto text-white p-5 rounded-[15px]">
+                        <p className="md:text-[18px] text-center">Face Visibility</p>
+                        <p className="md:text-[14px] text-[12px] text-center ">Ensure your face is fully visible</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                  <Input label="Password" name="password" placeholder="************" value={formData.password} action={handleChange} />
+                  <Input label="Confirm Passowrd" name="confirmPsw" placeholder="************" value={formData.confirmPsw} action={handleChange} />
+
+                    </div> 
+                </div>
+              )}
+
+              {/* Navigation Buttons */}
+              <div className="flex justify-between items-center md:gap-4">
+                <button type="button" className={`${progress ==1 ? "bg-[#BDBDBD]":"bg-[#8C2A8F] text-white"} px-6 py-3  rounded-full text-black font-medium"`} disabled={progress === 1} onClick={() => handleProgress(1)}>Back</button>
+                <button type="button" className={` ${progress ==1 ? "bg-[#8C2A8F]":"bg-gray-300 text-black"} px-6 py-3 rounded-full text-white font-medium"`} disabled={progress === 2} onClick={() => handleProgress(2)}>Next</button>
+              </div>
+
+              {/* Submit Button */}
+              <div className="flex items-center justify-center w-full">
+              <button type="submit" disabled={loading || !address || progress===1} className={`mt-8 w-full px-6 py-4 rounded-xl text-lg font-bold transition duration-300 
+                ${loading || !address ||progress!==2 ? 'bg-gray-700 text-gray-400 cursor-not-allowed' : 'bg-[#8C2A8F] text-white shadow-lg shadow-bg-[#8C2A8F] '}`}>
+                {loading ? (
+                  <div className="flex items-center justify-center">
+                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                    </svg>
+                    Submitting...
+                  </div>
+                ) : (
+                  'Submit'
+                )}
+              </button>
+              </div>
+
+              {txHash && (
+                <p className="mt-4 text-sm text-center text-green-400 break-all">
+                  Mock Transaction Hash: <span className="font-mono">{txHash}</span>
+                </p>
+              )}
+            </form>
+          </>
+        )}
+
+        {/* Show if user is already registered */}
+        {isConnected && isRegistered === true && !checkingRegistration && (
+          <div className="text-center text-white py-20">
+            <h2 className="text-3xl font-bold text-green-400 mb-4">✅ You have already completed KYC</h2>
+            <p className="text-gray-400">No further action is required at this time. might want to go to  <Link to='/user/dashboard'>dashboard</Link></p>
+          </div>
+        )}
+
+        {!isConnected && (
+          <div className="text-center text-white py-20">
+            <h2 className="text-2xl font-semibold">🔌 Please connect your wallet to continue.</h2>
+          </div>
+        )}
+      </div>
+    </section>
   );
-}
+};
+
+export default SignUpUser;
