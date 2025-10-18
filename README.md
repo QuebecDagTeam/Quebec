@@ -8,7 +8,7 @@
 
 ## 🌍 Live Resources
 
-- 🔗 **Live URL:** [https://quebec-alpha.vercel.com](#)
+- 🔗 **Live URL:** [https://quebec-alpha.vercel.app](#)
 - 🎥 **2-Minute Demo Video:** <video src="https://github.com/user-attachments/assets/b246caf1-3317-4b8b-a9d5-1d9e7ebdf709" controls width="600"></video>
 - 🎨 **Figma Design File:** [https://www.figma.com/design/KAAXwfrYbcnWPeWuYv66mL/Untitled](#)
 
