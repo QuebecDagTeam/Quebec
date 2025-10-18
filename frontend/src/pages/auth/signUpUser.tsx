@@ -135,11 +135,13 @@ export const SignUpUser: React.FC = () => {
     try {
       // Step 3: Upload image to Cloudinary
       const cloudinaryUrl = await uploadToCloudinary(formData.image);
+const { password, ...rest } = formData;
 
-      const updatedFormData = {
-        ...formData,
-        image: cloudinaryUrl,
-      };
+const updatedFormData = {
+  ...rest,
+  image: cloudinaryUrl,
+};
+
 
       // Step 4: Encrypt updated form data
       setProgressStatus("Encrypting data...");
