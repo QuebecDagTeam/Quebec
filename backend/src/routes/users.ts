@@ -9,7 +9,7 @@ import deleteKYC, {
 
 const UserRoute = express.Router()
 UserRoute.get('/:walletAddress', getRecordByAddress)
-.delete('/delete:walletAddress', deleteKYC)
+.delete('/delete/:walletAddress', deleteKYC)
 .get("/notifications/:to", getNotification)
 .patch("/read", updateNotification)
 .patch("/control_access", controlAccess);

@@ -6,7 +6,6 @@ dotenv.config();
 import User from "../models/users";  // Updated model import based on the new schema
 import KycRecord from "../models/KYCRecord";  // Assuming you have the KYCRecord model
 import { DAGKYC_ABI } from "../config/ABI";
-import users from "../models/users";
 import ThirdParty from "../models/thirdParty";
 import NotificationModel from "../models/notify";
 import toto from "./auth";

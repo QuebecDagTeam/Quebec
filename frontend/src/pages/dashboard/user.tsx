@@ -50,7 +50,7 @@ export const Dash = () => {
     const {user} = useUser();
     const navigate = useNavigate()
     useEffect(()=>{
-      !user && navigate("/sign_in")
+      user?.role!=='' && navigate("/sign_in")
     })
   
   useEffect(() => {
