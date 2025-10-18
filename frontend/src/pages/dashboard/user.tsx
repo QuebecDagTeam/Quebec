@@ -56,7 +56,7 @@ export const Dash = () => {
   useEffect(() => {
     const fetchKYCData = async () => {
       try {
-        const response = await fetch(`https://quebec-ur3w.onrender.com/api/kyc/user${address}`);
+        const response = await fetch(`https://quebec-ur3w.onrender.com/api/kyc/user/${address}`);
 
         if (!response.ok) {
           throw new Error('Failed to fetch KYC data');
