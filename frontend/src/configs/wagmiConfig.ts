@@ -24,4 +24,5 @@ export const wagmiConfig = defaultWagmiConfig({
 createWeb3Modal({
   wagmiConfig,
   projectId,
+    ...( { chains } as any ), // 👈 adds chains safely for mobile wallets
 });
