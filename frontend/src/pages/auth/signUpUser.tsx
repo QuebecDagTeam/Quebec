@@ -5,6 +5,7 @@ import { encryptData } from "../../components/encrypt";
 import { Input } from "../../components/input";
 import FaceCapture from "../../components/faceCapture";
 import { Link, useNavigate } from "react-router-dom";
+import uploadToCloudinary from "../../services/cloudinary";
 
 const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS as `0x${string}`;
 
@@ -90,55 +91,96 @@ export const SignUpUser: React.FC = () => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value || "" }));
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
 
-    if (!address) {
-      alert("Please connect your wallet first.");
-      return;
+  if (!address) {
+    alert("Please connect your wallet first.");
+    return;
+  }
+
+  // ✅ Step 1: Validate Required Fields
+  const requiredFields: (keyof FormData)[] = [
+    "fullName",
+    "email",
+    "dob",
+    "govIdType",
+    "NIN",
+    "phone",
+    "residentialAddress",
+    "image",
+    "password",
+    "confirmPsw",
+  ];
+
+  const missingFields = requiredFields.filter((field) => !formData[field]);
+
+  if (missingFields.length > 0) {
+    console.error("Missing fields:", missingFields);
+    alert(`Please fill in all fields. Missing: ${missingFields.join(", ")}`);
+    return;
+  }
+
+  // ✅ Step 2: Validate Password Match
+  if (formData.password !== formData.confirmPsw) {
+    console.error("Passwords do not match");
+    alert("Passwords do not match.");
+    return;
+  }
+
+  setLoading(true);
+
+  try {
+    // ✅ Step 3: Upload image to Cloudinary
+    const cloudinaryUrl = await uploadToCloudinary(formData.image);
+
+    const updatedFormData = {
+      ...formData,
+      image: cloudinaryUrl,
+    };
+
+    // ✅ Step 4: Encrypt updated form data
+    const encryptedBase64 = encryptData(updatedFormData);
+    const encryptedHex = base64ToHex(encryptedBase64);
+
+    // ✅ Step 5: Write to contract
+    const hash = await writeContractAsync({
+      address: CONTRACT_ADDRESS,
+      abi,
+      functionName: "registerKyc",
+      args: [address, encryptedHex],
+    });
+
+    setTxHash(hash);
+
+    // ✅ Step 6: Send to backend
+    const response = await fetch("https://quebec-ur3w.onrender.com/api/kyc/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: updatedFormData.email,
+        NIN: updatedFormData.NIN,
+        walletAddress: address,
+        encryptedData: encryptedBase64,
+        transactionHash: hash,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Server error: ${response.status} - ${errorText}`);
     }
-    console.log(formData)
 
-    setLoading(true);
+    alert("✅ KYC submitted successfully!");
+    setIsRegistered(true);
+  } catch (err: any) {
+    console.error("KYC submission failed:", err);
+    alert("❌ Error submitting KYC: " + err.message);
+  } finally {
+    setLoading(false);
+  }
+};
 
-    try {
-      const encryptedBase64 = encryptData(formData);
-      const encryptedHex = base64ToHex(encryptedBase64);
-
-      const hash = await writeContractAsync({
-        address: CONTRACT_ADDRESS,
-        abi,
-        functionName: "registerKyc",
-        args: [address, encryptedHex],
-      });
-
-      setTxHash(hash);
-      const response = await fetch("https://quebec-ur3w.onrender.com/api/kyc/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email:formData.email,
-          NIN:formData.NIN,
-          walletAddress: address,
-          encryptedData: encryptedBase64,
-          transactionHash: hash,
-        }),
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Server error: ${response.status} - ${errorText}`);
-      }
-
-      alert("✅ KYC submitted successfully!");
-      setIsRegistered(true); // Optimistic update
-    } catch (err) {
-      console.error("KYC submission failed:", err);
-      alert("❌ Error submitting KYC");
-    } finally {
-      setLoading(false);
-    }
-  };
   const handleFaceCapture = (image: string) => {
     setFormData((prev) => ({ ...prev, image }));
   };
