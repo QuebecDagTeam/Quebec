@@ -15,7 +15,7 @@ AuthRoute.post("/register", Register)
 .delete('/delete-user/:walletAddress', deleteKYC)
 .post("/register_thirdparty", ThirdPartyReg)
 .get("/isRegistered_thirdParty/:walletAddress", isRegistered_thirdParty)
-.post("/login", Register)
+.post("/login", Login)
 .get("/isRegistered/:walletAddress", isWalletRegistered)
 .get("/isNIN/:walletAddress", isNINRegistered)
 .get("/isEmail/:walletAddress", isEmailRegistered);
