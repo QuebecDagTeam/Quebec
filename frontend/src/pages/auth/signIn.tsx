@@ -51,7 +51,7 @@ export const SignIn: React.FC = () => {
     try {
       setLoading(true);
 
-      const response = await fetch("https://quebec-ur3w.onrender.com/api/kyc/login", {
+      const response = await fetch("https://quebec-ur3w.onrender.com/api/kyc/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

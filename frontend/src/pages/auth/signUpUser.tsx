@@ -70,7 +70,7 @@ export const SignUpUser: React.FC = () => {
   const checkWalletRegistration = async (walletAddress: string) => {
     try {
       setCheckingRegistration(true);
-      const response = await fetch(`https://quebec-ur3w.onrender.com/api/kyc/isRegistered/${walletAddress}`);
+      const response = await fetch(`https://quebec-ur3w.onrender.com/api/kyc/auth/isRegistered/${walletAddress}`);
       const data = await response.json();
       setIsRegistered(data?.registered);
       if(!data){
@@ -154,7 +154,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     setTxHash(txHash);
 
     // ✅ Step 6: Send to backend
-    const response = await fetch("https://quebec-ur3w.onrender.com/api/kyc/register", {
+    const response = await fetch("https://quebec-ur3w.onrender.com/api/auth/kyc/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

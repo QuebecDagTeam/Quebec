@@ -58,7 +58,7 @@ export const SignUpThirdParty: React.FC = () => {
   const checkWalletRegistration = async (walletAddress: string) => {
     try {
       setCheckingRegistration(true);
-      const response = await fetch(`https://quebec-ur3w.onrender.com/api/kyc/isRegistered_thirdParty/${walletAddress}`);
+      const response = await fetch(`https://quebec-ur3w.onrender.com/api/kyc/auth/isRegistered_thirdParty/${walletAddress}`);
       const data = await response.json();
       setIsRegistered(data?.registered);
       if (!data) {
@@ -112,7 +112,7 @@ console.log("hello",{
           transactionHash: hash,  // ✅ sa
       })
       // Send registration to backend
-      const response = await fetch("https://quebec-ur3w.onrender.com/api/kyc/register_thirdparty", {
+      const response = await fetch("https://quebec-ur3w.onrender.com/api/kyc/auth/register_thirdparty", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
