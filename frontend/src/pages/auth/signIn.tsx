@@ -72,6 +72,7 @@ export const SignIn: React.FC = () => {
       const decoded: DecodedToken = jwtDecode(token);
 
       // Save to context + localStorage
+      console.log(decoded)
       login({
         id: decoded.id,
         walletAddress: decoded.walletAddress,

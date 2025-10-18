@@ -211,7 +211,7 @@ export const Login = async (req: Request, res: Response) => {
     const payLoad = {
       walletAddress: account.walletAddress,
       id: account.id,
-      role: account.role,
+      role: account.kyc.userType,
     };
 
     const token = jwt.sign(payLoad, ENV.JWT_SECRET, {
