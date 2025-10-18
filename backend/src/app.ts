@@ -2,7 +2,6 @@ import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import cors from "cors";
-import KYCRoute from "./routes/KYCRoutes";
 import {ConnectDB} from "./config/db"
 import UserRoute from "./routes/users";
 import ThirdPartyRoute from "./routes/thirdPart";
@@ -16,7 +15,6 @@ app.use(cors());
 
 ConnectDB(true)
 
-app.use("/api/kyc", KYCRoute);
 app.use("/api/kyc/user", UserRoute);
 app.use("/api/kyc/thirdPrty", ThirdPartyRoute);
 app.use("/api/kyc/auth", AuthRoute);
