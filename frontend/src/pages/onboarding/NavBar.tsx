@@ -54,7 +54,7 @@ export const NavBar = () => {
               {
                 user!== null ? 
                 (
-                  <Link to={`/${user}/dashboard`} className="hover:text-[#8C2A8F] transition">
+                  <Link to={`/user/dashboard`} className="hover:text-[#8C2A8F] transition">
                 Dashboard
               </Link>
                 ):
