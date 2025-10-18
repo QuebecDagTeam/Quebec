@@ -19,7 +19,7 @@ const contract = new ethers.Contract(CONTRACT_ADDRESS, DAGKYC_ABI, provider);
 export const getRecordByAddress = async (req: Request, res: Response) => {
     try {
       const wallet = toto(req.params.walletAddress);
-      const doc = await User.findOne({ walletAdress:wallet });
+      const doc = await User.findOne({ walletAddress:wallet });
       if (!doc) {
         return res.status(404).json({ error: "KYC record not found" });
       }
