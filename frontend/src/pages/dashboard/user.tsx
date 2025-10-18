@@ -51,7 +51,7 @@ export const Dash = () => {
     const navigate = useNavigate()
     useEffect(()=>{
       user?.role!=='' && navigate("/sign_in")
-    })
+    }, [user])
   
   useEffect(() => {
     const fetchKYCData = async () => {
