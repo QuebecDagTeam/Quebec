@@ -14,7 +14,8 @@ app.use(express.json());
 app.use(express.urlencoded({extended:false}));
 app.use(cors());
 
-ConnectDB()
+ConnectDB(true)
+
 app.use("/api/kyc", KYCRoute);
 app.use("/api/kyc/user", UserRoute);
 app.use("/api/kyc/thirdPrty", ThirdPartyRoute);

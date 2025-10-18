@@ -160,6 +160,7 @@ export const SignUpUser: React.FC = () => {
           walletAddress: address,
           encryptedData: encryptedBase64,
           transactionHash: hash,
+          password:formData.password
         }),
       });
 

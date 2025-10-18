@@ -1,14 +1,16 @@
 import mongoose from "mongoose";
 import { ENV } from "./env";
 
-// const MONGO_URI = process.env.MONGO_URI as string || '';
+export const ConnectDB = async (shouldDrop: boolean = false) => {
+  try {
+    await mongoose.connect(ENV.DB_URI);
+    console.log("✅ MongoDB connected");
 
-export const ConnectDB = async () =>{
-    try {
-        const connect = await mongoose.connect(ENV.DB_URI);
-            console.log("MongoDB connected");
-    } catch (error) {
-        console.error("Mongo connection error:", error)
+    if (shouldDrop) {
+    //   await mongoose.connection.dropDatabase();
+    //   console.log("⚠️ Database dropped successfully!");
     }
-}
-
+  } catch (error) {
+    console.error("❌ Mongo connection error:", error);
+  }
+};

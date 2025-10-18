@@ -1,4 +1,4 @@
-export const abi =  [
+export const abi= [
     {
       "anonymous": false,
       "inputs": [
@@ -42,7 +42,7 @@ export const abi =  [
         {
           "indexed": true,
           "internalType": "address",
-          "name": "requester",
+          "name": "requestedBy",
           "type": "address"
         },
         {
@@ -195,7 +195,7 @@ export const abi =  [
         },
         {
           "internalType": "address",
-          "name": "requester",
+          "name": "requestedBy",
           "type": "address"
         },
         {
@@ -212,6 +212,25 @@ export const abi =  [
           "internalType": "bool",
           "name": "exists",
           "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "kycId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getAuthorizedThirdParties",
+      "outputs": [
+        {
+          "internalType": "address[]",
+          "name": "",
+          "type": "address[]"
         }
       ],
       "stateMutability": "view",
@@ -252,24 +271,101 @@ export const abi =  [
       "name": "getKyc",
       "outputs": [
         {
-          "internalType": "address",
-          "name": "owner",
-          "type": "address"
-        },
+          "components": [
+            {
+              "internalType": "address",
+              "name": "owner",
+              "type": "address"
+            },
+            {
+              "internalType": "string",
+              "name": "encryptedDataHash",
+              "type": "string"
+            },
+            {
+              "internalType": "uint256",
+              "name": "createdAt",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bool",
+              "name": "exists",
+              "type": "bool"
+            }
+          ],
+          "internalType": "struct QuebecKYC.User",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
         {
-          "internalType": "string",
-          "name": "encryptedDataHash",
-          "type": "string"
-        },
+          "internalType": "address",
+          "name": "thirdParty",
+          "type": "address"
+        }
+      ],
+      "name": "getKycIdsForThirdParty",
+      "outputs": [
+        {
+          "internalType": "uint256[]",
+          "name": "",
+          "type": "uint256[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
         {
           "internalType": "uint256",
-          "name": "createdAt",
+          "name": "kycId",
           "type": "uint256"
-        },
+        }
+      ],
+      "name": "getUserAccessRequests",
+      "outputs": [
         {
-          "internalType": "bool",
-          "name": "exists",
-          "type": "bool"
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "requestId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "kycId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "requestedBy",
+              "type": "address"
+            },
+            {
+              "internalType": "string",
+              "name": "metadata",
+              "type": "string"
+            },
+            {
+              "internalType": "uint256",
+              "name": "timestamp",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bool",
+              "name": "exists",
+              "type": "bool"
+            }
+          ],
+          "internalType": "struct QuebecKYC.AccessRequest[]",
+          "name": "",
+          "type": "tuple[]"
         }
       ],
       "stateMutability": "view",
@@ -289,7 +385,7 @@ export const abi =  [
         },
         {
           "internalType": "bytes",
-          "name": "recipientEncryptedSymKey",
+          "name": "encryptedSymKey",
           "type": "bytes"
         }
       ],
@@ -323,40 +419,6 @@ export const abi =  [
       "type": "function"
     },
     {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "name": "kycs",
-      "outputs": [
-        {
-          "internalType": "address",
-          "name": "owner",
-          "type": "address"
-        },
-        {
-          "internalType": "string",
-          "name": "encryptedDataHash",
-          "type": "string"
-        },
-        {
-          "internalType": "uint256",
-          "name": "createdAt",
-          "type": "uint256"
-        },
-        {
-          "internalType": "bool",
-          "name": "exists",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
       "inputs": [],
       "name": "nextKycId",
       "outputs": [
@@ -383,19 +445,21 @@ export const abi =  [
       "type": "function"
     },
     {
+      "inputs": [],
+      "name": "registerThirdParty",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
       "inputs": [
         {
           "internalType": "string",
           "name": "encryptedDataHash",
           "type": "string"
-        },
-        {
-          "internalType": "bytes",
-          "name": "ownerEncryptedSymKey",
-          "type": "bytes"
         }
       ],
-      "name": "registerKyc",
+      "name": "registerUser",
       "outputs": [
         {
           "internalType": "uint256",
@@ -451,6 +515,59 @@ export const abi =  [
     {
       "inputs": [
         {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "thirdParties",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "createdAt",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "exists",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "thirdPartyAccess",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
           "internalType": "uint256",
           "name": "kycId",
           "type": "uint256"
@@ -462,7 +579,7 @@ export const abi =  [
         },
         {
           "internalType": "bytes",
-          "name": "recipientEncryptedSymKey",
+          "name": "newEncryptedSymKey",
           "type": "bytes"
         }
       ],
@@ -488,6 +605,63 @@ export const abi =  [
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "userAuthorizedParties",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "users",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
+        },
+        {
+          "internalType": "string",
+          "name": "encryptedDataHash",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "createdAt",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "exists",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
     }
   ]
-;

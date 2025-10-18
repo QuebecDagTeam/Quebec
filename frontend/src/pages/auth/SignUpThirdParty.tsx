@@ -188,9 +188,11 @@ console.log("hello",{
                     <Input label="Additional Details" name="detail" placeholder="Optional integration info" value={formData.detail} action={handleChange} />
                   </div>
                 </aside>
-                <Input label="Password" name="password" placeholder="************" value={formData.password} action={handleChange} />
+               <div className="px-5">
+                 <Input label="Password" name="password" placeholder="************" value={formData.password} action={handleChange} />
                   <Input label="Confirm Passowrd" name="password" placeholder="************" value={formData.confirmPsw} action={handleChange} />
 
+               </div>
                 <p className="text-xs text-center text-gray-500 mt-4">
                   Current Wallet Address: {address || "Not Connected"}
                 </p>
