@@ -6,7 +6,6 @@ import FaceCapture from "../../components/faceCapture";
 import { Link, useNavigate } from "react-router-dom";
 import uploadToCloudinary from "../../services/cloudinary";
 import { useQuebecKYC } from "../../services/contract";
-    const {registerUser} = useQuebecKYC();
 
 
 function base64ToHex(base64: string): `0x${string}` {
@@ -128,6 +127,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
   }
 
   setLoading(true);
+    const {registerUser} = useQuebecKYC();
 
   try {
     // ✅ Step 3: Upload image to Cloudinary
