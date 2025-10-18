@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-/// @title DAGKYC - encrypted KYC pointer + per-recipient encrypted symmetric key sharing
-/// @notice Everything stored on-chain is expected to be encrypted off-chain.
+/// @title QuebecKYC - Encrypted KYC Pointer with Access Control
+/// @notice All data is encrypted off-chain before storage
 contract QuebecKYC {
     uint256 public nextKycId;
     uint256 public nextRequestId;
@@ -23,127 +23,125 @@ contract QuebecKYC {
     struct AccessRequest {
         uint256 requestId;
         uint256 kycId;
-        address requestedBY;
+        address requestedBy;
         string metadata;
         uint256 timestamp;
         bool exists;
     }
 
-    // Storage mappings
-    mapping(uint256 => User) public Users;
-    mapping(address => ThirdParty) public ThirdParties;
+    // Storage
+    mapping(uint256 => User) public users;
+    mapping(address => ThirdParty) public thirdParties;
     mapping(uint256 => mapping(address => bytes)) private encryptedKeys;
     mapping(uint256 => mapping(address => bool)) public isAuthorized;
     mapping(uint256 => AccessRequest) public accessRequests;
 
-    // NEW: Tracking authorized relationships
+    // Access tracking
     mapping(address => uint256[]) public thirdPartyAccess;
     mapping(uint256 => address[]) public userAuthorizedParties;
 
     // Events
     event KycRegistered(uint256 indexed kycId, address indexed owner, string encryptedDataHash, uint256 timestamp);
     event KycUpdated(uint256 indexed kycId, address indexed owner, string encryptedDataHash, uint256 timestamp);
-    event AccessRequested(uint256 indexed requestId, uint256 indexed kycId, address indexed requestedBY, string metadata, uint256 timestamp);
+    event AccessRequested(uint256 indexed requestId, uint256 indexed kycId, address indexed requestedBy, string metadata, uint256 timestamp);
     event AccessGranted(uint256 indexed kycId, address indexed recipient, uint256 timestamp);
     event AccessRevoked(uint256 indexed kycId, address indexed recipient, uint256 timestamp);
     event EncryptedKeyUpdated(uint256 indexed kycId, address indexed recipient, uint256 timestamp);
 
     modifier onlyOwner(uint256 kycId) {
-        require(Users[kycId].exists, "KYC not found");
-        require(Users[kycId].owner == msg.sender, "Not authorized: only KYC owner");
+        require(users[kycId].exists, "KYC not found");
+        require(users[kycId].owner == msg.sender, "Not the KYC owner");
         _;
     }
 
-    // Register user
-    function Register_User(string calldata encryptedDataHash, bytes calldata ownerEncryptedSymKey, uint256 unique_ID) external returns (uint256) {
-        require(!Users[unique_ID].exists, "Already registered");
-        uint256 kycId = unique_ID;
+    /// @notice Register a user with encrypted data. KYC ID is generated automatically.
+    function registerUser(string calldata encryptedDataHash) external returns (uint256) {
+        uint256 kycId = nextKycId++;
 
-        Users[kycId] = User({
+        users[kycId] = User({
             owner: msg.sender,
             encryptedDataHash: encryptedDataHash,
             createdAt: block.timestamp,
             exists: true
         });
 
-        if (ownerEncryptedSymKey.length > 0) {
-            encryptedKeys[kycId][msg.sender] = ownerEncryptedSymKey;
-            isAuthorized[kycId][msg.sender] = true;
-            emit EncryptedKeyUpdated(kycId, msg.sender, block.timestamp);
-            emit AccessGranted(kycId, msg.sender, block.timestamp);
-        }
-
         emit KycRegistered(kycId, msg.sender, encryptedDataHash, block.timestamp);
         return kycId;
     }
 
+    /// @notice Update encrypted KYC data (only by the owner)
     function updateKyc(uint256 kycId, string calldata encryptedDataHash) external onlyOwner(kycId) {
-        Users[kycId].encryptedDataHash = encryptedDataHash;
+        users[kycId].encryptedDataHash = encryptedDataHash;
         emit KycUpdated(kycId, msg.sender, encryptedDataHash, block.timestamp);
     }
 
+    /// @notice Third party requests access to user's KYC data
     function requestAccess(uint256 kycId, string calldata metadata) external returns (uint256) {
-        require(Users[kycId].exists, "KYC not found");
-        require(ThirdParties[msg.sender].exists, "You are not a Registered ThirdParty!");
+        require(users[kycId].exists, "KYC not found");
+        require(thirdParties[msg.sender].exists, "Not a registered third party");
 
-        uint256 reqId = nextRequestId++;
-        accessRequests[reqId] = AccessRequest({
-            requestId: reqId,
+        uint256 requestId = nextRequestId++;
+
+        accessRequests[requestId] = AccessRequest({
+            requestId: requestId,
             kycId: kycId,
-            requestedBY: msg.sender,
+            requestedBy: msg.sender,
             metadata: metadata,
             timestamp: block.timestamp,
             exists: true
         });
 
-        emit AccessRequested(reqId, kycId, msg.sender, metadata, block.timestamp);
-        return reqId;
+        emit AccessRequested(requestId, kycId, msg.sender, metadata, block.timestamp);
+        return requestId;
     }
 
-    function grantAccess(uint256 kycId, address recipient, bytes calldata recipientEncryptedSymKey) external onlyOwner(kycId) {
+    /// @notice Grant access to a third party (sends encrypted symmetric key)
+    function grantAccess(uint256 kycId, address recipient, bytes calldata encryptedSymKey) external onlyOwner(kycId) {
         require(recipient != address(0), "Invalid recipient");
 
         if (!isAuthorized[kycId][recipient]) {
-            // Only push if it's the first time
             thirdPartyAccess[recipient].push(kycId);
             userAuthorizedParties[kycId].push(recipient);
         }
 
-        encryptedKeys[kycId][recipient] = recipientEncryptedSymKey;
+        encryptedKeys[kycId][recipient] = encryptedSymKey;
         isAuthorized[kycId][recipient] = true;
 
         emit EncryptedKeyUpdated(kycId, recipient, block.timestamp);
         emit AccessGranted(kycId, recipient, block.timestamp);
     }
 
+    /// @notice Revoke access from a third party
     function revokeAccess(uint256 kycId, address recipient) external onlyOwner(kycId) {
         require(isAuthorized[kycId][recipient], "Not authorized");
 
         delete encryptedKeys[kycId][recipient];
         isAuthorized[kycId][recipient] = false;
 
-        // Optional: do NOT remove from array for gas efficiency
         emit AccessRevoked(kycId, recipient, block.timestamp);
     }
 
-    function updateEncryptedKey(uint256 kycId, address recipient, bytes calldata recipientEncryptedSymKey) external onlyOwner(kycId) {
+    /// @notice Update the encrypted key for an authorized third party
+    function updateEncryptedKey(uint256 kycId, address recipient, bytes calldata newEncryptedSymKey) external onlyOwner(kycId) {
         require(recipient != address(0), "Invalid recipient");
 
-        encryptedKeys[kycId][recipient] = recipientEncryptedSymKey;
+        encryptedKeys[kycId][recipient] = newEncryptedSymKey;
         isAuthorized[kycId][recipient] = true;
 
         emit EncryptedKeyUpdated(kycId, recipient, block.timestamp);
     }
 
+    /// @notice Get encrypted symmetric key for a recipient
     function getEncryptedSymKey(uint256 kycId, address recipient) external view returns (bytes memory) {
         return encryptedKeys[kycId][recipient];
     }
 
-    function getKyc(uint256 kycId) external view onlyOwner(kycId) returns (address, string memory, uint256, bool) {
-        User storage r = Users[kycId];
-        return (r.owner, r.encryptedDataHash, r.createdAt, r.exists);
+    /// @notice View KYC data (only by owner)
+    function getKyc(uint256 kycId) external view onlyOwner(kycId) returns (User memory) {
+        return users[kycId];
     }
 
+    /// @notice Get access requests made for a user's KYC
     function getUserAccessRequests(uint256 kycId) external view returns (AccessRequest[] memory) {
         uint256 total = nextRequestId;
         uint256 count = 0;
@@ -156,32 +154,33 @@ contract QuebecKYC {
 
         AccessRequest[] memory requests = new AccessRequest[](count);
         uint256 index = 0;
+
         for (uint256 i = 0; i < total; i++) {
             if (accessRequests[i].exists && accessRequests[i].kycId == kycId) {
-                requests[index] = accessRequests[i];
-                index++;
+                requests[index++] = accessRequests[i];
             }
         }
 
         return requests;
     }
 
+    /// @notice Register a third-party data requester (KYC verifier)
     function registerThirdParty() external {
-        require(!ThirdParties[msg.sender].exists, "Already registered");
+        require(!thirdParties[msg.sender].exists, "Already registered");
 
-        ThirdParties[msg.sender] = ThirdParty({
+        thirdParties[msg.sender] = ThirdParty({
             owner: msg.sender,
             createdAt: block.timestamp,
             exists: true
         });
     }
 
-    /// 🆕 Get all kycIds that a third party is authorized to access
+    /// @notice Get list of KYC IDs a third party can access
     function getKycIdsForThirdParty(address thirdParty) external view returns (uint256[] memory) {
         return thirdPartyAccess[thirdParty];
     }
 
-    /// 🆕 Get all authorized third parties for a user
+    /// @notice Get list of third parties authorized for a specific KYC ID
     function getAuthorizedThirdParties(uint256 kycId) external view returns (address[] memory) {
         return userAuthorizedParties[kycId];
     }

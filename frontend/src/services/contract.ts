@@ -6,21 +6,37 @@ const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS as `0x${string}`;
 export const useQuebecKYC = () => {
   const { writeContractAsync } = useWriteContract();
 
-  const registerUser = async (encryptedDataHash: string, symKey: Uint8Array, uniqueId: number) => {
+  const registerUser = async (encryptedDataHash: string) => {
+    if (!encryptedDataHash) {
+      console.error("❌ Encrypted data hash is required.");
+      return;
+    }
+
     try {
       const txHash = await writeContractAsync({
         abi,
         address: CONTRACT_ADDRESS,
-        functionName: "Register_User",
-        args: [encryptedDataHash, symKey, uniqueId],
+        functionName: "registerUser",
+        args: [encryptedDataHash],
       });
-      console.log("✅ User registered with KYC ID:", uniqueId);
+      if (!txHash) {
+        alert("⚠️ Unable to complete transaction on-chain");
+        return;
+      }
+
+      console.log("✅ User registered successfully");
       return txHash;
     } catch (err) {
       console.error("❌ registerUser failed:", err);
     }
   };
+
   const updateKYC = async (kycId: number, encryptedDataHash: string) => {
+    if (!encryptedDataHash || typeof kycId !== "number") {
+      console.error("❌ KYC ID and encrypted data hash are required.");
+      return;
+    }
+
     try {
       const txHash = await writeContractAsync({
         abi,
@@ -36,6 +52,11 @@ export const useQuebecKYC = () => {
   };
 
   const requestAccess = async (kycId: number, metadata: string) => {
+    if (!metadata || typeof kycId !== "number") {
+      console.error("❌ KYC ID and metadata are required.");
+      return;
+    }
+
     try {
       const txHash = await writeContractAsync({
         abi,
@@ -51,6 +72,11 @@ export const useQuebecKYC = () => {
   };
 
   const grantAccess = async (kycId: number, recipient: string, encryptedSymKey: Uint8Array) => {
+    if (!recipient || !encryptedSymKey || typeof kycId !== "number") {
+      console.error("❌ KYC ID, recipient, and encryptedSymKey are required.");
+      return;
+    }
+
     try {
       const txHash = await writeContractAsync({
         abi,
@@ -66,6 +92,11 @@ export const useQuebecKYC = () => {
   };
 
   const revokeAccess = async (kycId: number, recipient: string) => {
+    if (!recipient || typeof kycId !== "number") {
+      console.error("❌ KYC ID and recipient are required.");
+      return;
+    }
+
     try {
       const txHash = await writeContractAsync({
         abi,
@@ -81,6 +112,11 @@ export const useQuebecKYC = () => {
   };
 
   const updateEncryptedKey = async (kycId: number, recipient: string, encryptedSymKey: Uint8Array) => {
+    if (!recipient || !encryptedSymKey || typeof kycId !== "number") {
+      console.error("❌ KYC ID, recipient, and encryptedSymKey are required.");
+      return;
+    }
+
     try {
       const txHash = await writeContractAsync({
         abi,

@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { useAccount, useWriteContract } from "wagmi";
-import { abi } from "../../constants/abi";
+import { useAccount,  } from "wagmi";
 import { encryptData } from "../../components/encrypt";
 import { Input } from "../../components/input";
 import FaceCapture from "../../components/faceCapture";
 import { Link, useNavigate } from "react-router-dom";
 import uploadToCloudinary from "../../services/cloudinary";
+import { useQuebecKYC } from "../../services/contract";
+    const {registerUser} = useQuebecKYC();
 
-const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS as `0x${string}`;
 
 function base64ToHex(base64: string): `0x${string}` {
   const raw = atob(base64);
@@ -35,7 +35,6 @@ interface FormData {
 
 export const SignUpUser: React.FC = () => {
   const { address, isConnected } = useAccount();
-  const { writeContractAsync } = useWriteContract();
 
   const [formData, setFormData] = useState<FormData>({
     fullName: "",
@@ -144,19 +143,15 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     const encryptedHex = base64ToHex(encryptedBase64);
 
     // ✅ Step 5: Write to contract
-    const hash = await writeContractAsync({
-      address: CONTRACT_ADDRESS,
-      abi,
-      functionName: "registerKyc",
-      args: [address, encryptedHex],
-    });
+    // const hash = await writeContractAsync({
+    //   address: CONTRACT_ADDRESS,
+    //   abi,
+    //   functionName: "registerKyc",
+    //   args: [address, encryptedHex],
+    // });
 
-    if(!hash){
-      alert("Unable to submit onchain transcation");
-      return
-    }
-
-    setTxHash(hash);
+    const txHash = await registerUser(encryptedHex)|| '';
+    setTxHash(txHash);
 
     // ✅ Step 6: Send to backend
     const response = await fetch("https://quebec-ur3w.onrender.com/api/kyc/register", {
@@ -167,7 +162,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         NIN: updatedFormData.NIN,
         walletAddress: address,
         encryptedData: encryptedBase64,
-        transactionHash: hash,
+        transactionHash: txHash,
       }),
     });
 
