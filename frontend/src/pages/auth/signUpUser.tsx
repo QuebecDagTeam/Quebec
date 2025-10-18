@@ -151,6 +151,11 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
       args: [address, encryptedHex],
     });
 
+    if(!hash){
+      alert("Unable to submit onchain transcation");
+      return
+    }
+
     setTxHash(hash);
 
     // ✅ Step 6: Send to backend
