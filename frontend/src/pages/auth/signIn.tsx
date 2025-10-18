@@ -80,7 +80,7 @@ export const SignIn: React.FC = () => {
         token,
       });
 
-      navigate(`${decoded?.role}/dashboard"`);
+      navigate(`/${decoded?.role}/dashboard"`);
     } catch (err) {
       console.error("Login error:", err);
       setError("Something went wrong. Please try again.");

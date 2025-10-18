@@ -6,6 +6,7 @@ import FaceCapture from "../../components/faceCapture";
 import { Link, useNavigate } from "react-router-dom";
 import uploadToCloudinary from "../../services/cloudinary";
 import { useQuebecKYC } from "../../services/contract";
+import { useUser } from "../../contexts/UserContext";
 
 function base64ToHex(base64: string): `0x${string}` {
   const raw = atob(base64);
@@ -66,6 +67,7 @@ export const SignUpUser: React.FC = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [address]);
+  const { login } = useUser(); // from context
 
   const checkWalletRegistration = async (walletAddress: string) => {
     try {
@@ -172,6 +174,12 @@ export const SignUpUser: React.FC = () => {
       setProgressStatus("✅ Registration successful!");
       alert("✅ KYC submitted successfully!");
       setIsRegistered(true);
+      login({
+        id: '',
+        walletAddress: formData.walletAddress,
+        role: "user",
+        token:'',
+      });
     } catch (err: any) {
       console.error("KYC submission failed:", err);
       setProgressStatus("❌ Error occurred.");

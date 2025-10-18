@@ -15,6 +15,7 @@ export interface IThirdParty extends Document {
     grantedAt?: Date;
     revokedAt?: Date | null;
   }>;
+  userType:string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -25,6 +26,7 @@ const ThirdPartySchema = new Schema<IThirdParty>({
   description: { type: String },
   website: { type: String },
   detail: { type: String },
+  userType: { type: String, enum: ["user", "thirdParty"], default: "thirdParty" },
 transactionHash: { type: String, required: true, unique: true },
   authorizedUsers: { type: Schema.Types.Mixed, default: [] },
 }, { timestamps: true });
