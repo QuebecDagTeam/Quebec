@@ -1,4 +1,4 @@
-export const abi= [
+export const abi =[
     {
       "anonymous": false,
       "inputs": [
@@ -445,7 +445,13 @@ export const abi= [
       "type": "function"
     },
     {
-      "inputs": [],
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "encryptedDataHash",
+          "type": "string"
+        }
+      ],
       "name": "registerThirdParty",
       "outputs": [],
       "stateMutability": "nonpayable",
@@ -536,6 +542,11 @@ export const abi= [
           "internalType": "bool",
           "name": "exists",
           "type": "bool"
+        },
+        {
+          "internalType": "string",
+          "name": "encryptedDataHash",
+          "type": "string"
         }
       ],
       "stateMutability": "view",
@@ -625,6 +636,25 @@ export const abi= [
           "internalType": "address",
           "name": "",
           "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "userKycId",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
         }
       ],
       "stateMutability": "view",
