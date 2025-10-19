@@ -36,7 +36,7 @@ export const NavBar = () => {
           </div>
         )}
         <div>
-          <p className="text-white text-[24px] font-bold">QUEBEC</p>
+          <p className="gradient-text text-[18px]">QUEBEC</p>
         </div>
 
         {/* ------------------ MOBILE & DESKTOP MENU ------------------ */}

@@ -57,10 +57,19 @@
     transition: background-position 0.5s ease-in-out, transform 0.2s ease-in-out;
 }
 
-.q{
-      background: linear-gradient(90deg, #ff00cc, #3333ff, #00f0ff);
-          border-radius: 12px;
-          width: 100%;
+.gradient-text {
+  /* 1. Apply the original gradient as the background */
+  background: linear-gradient(90deg, #ff00cc, #3333ff, #00f0ff);
+  
+  /* 2. Clip the background only to the shape of the text */
+  -webkit-background-clip: text; /* For Safari/Chrome */
+  background-clip: text;
+  
+  /* 3. Make the actual text color transparent so the background shows through */
+  color: transparent;
+  
+  /* Optional: Ensure the font is bold/large enough for the effect to be visible */
+  font-weight: 900;
 }
 
 .revoke {
