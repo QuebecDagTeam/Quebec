@@ -22,8 +22,10 @@ interface FormData {
   fullName: string;
   email: string;
   dob: string;
-  govIdType: string;
-  NIN: string;
+  ID: {
+    type: string;
+    number: string;
+  };
   phone: string;
   walletAddress: string;
   residentialAddress: string;
@@ -36,13 +38,13 @@ export const SignUpUser: React.FC = () => {
   const { address, isConnected } = useAccount();
   const { registerUser } = useQuebecKYC();
   const navigate = useNavigate();
+  const { login } = useUser();
 
   const [formData, setFormData] = useState<FormData>({
     fullName: "",
     email: "",
     dob: "",
-    govIdType: "",
-    NIN: "",
+    ID: { type: "", number: "" },
     phone: "",
     walletAddress: "",
     residentialAddress: "",
@@ -51,13 +53,22 @@ export const SignUpUser: React.FC = () => {
     confirmPsw: "",
   });
 
+  interface IREG {
+    isNIN: boolean;
+    isEmail: boolean;
+  }
+
   const [progress, setProgress] = useState(1);
   const [progressStatus, setProgressStatus] = useState<string>("Idle");
   const [txHash, setTxHash] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [isRegistered, setIsRegistered] = useState<boolean | null>(null);
   const [checkingRegistration, setCheckingRegistration] = useState(false);
-
+  const [isReg, setIsReg] = useState<IREG>({
+    isNIN: false,
+    isEmail: false,
+  });
+const [checkingReg, setCheckingReg] = useState<boolean>(false)
   useEffect(() => {
     if (address) {
       setFormData((prev) => ({ ...prev, walletAddress: address }));
@@ -65,9 +76,7 @@ export const SignUpUser: React.FC = () => {
     } else {
       setIsRegistered(null);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [address]);
-  const { login } = useUser(); // from context
 
   const checkWalletRegistration = async (walletAddress: string) => {
     try {
@@ -89,8 +98,59 @@ export const SignUpUser: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    checkReg();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formData.email, formData.ID]);
+
+  const checkReg = async () => {
+    try {
+      setCheckingReg(true);
+      const [ninRes, emailRes] = await Promise.all([
+        fetch(
+          `https://quebec-ur3w.onrender.com/api/kyc/auth/is_id/${formData.ID.type}/${formData.ID.number}`
+        ),
+        fetch(
+          `https://quebec-ur3w.onrender.com/api/kyc/auth/is_emaill/${formData.email}`
+        ),
+      ]);
+
+      const [ninData, emailData] = await Promise.all([
+        ninRes.json(),
+        emailRes.json(),
+      ]);
+
+      if (!ninData || !emailData) {
+        alert("Error checking registration status, please try again.");
+        return;
+      }
+
+      setIsReg({
+        isNIN: ninData?.registered || false,
+        isEmail: emailData?.registered || false,
+      });
+    } catch (err) {
+      console.error("Failed to check registration:", err);
+      setIsReg({ isNIN: false, isEmail: false });
+    } finally {
+      setCheckingReg(false);
+    }
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value || "" }));
+    const { name, value } = e.target;
+
+    if (name === "govIdType" || name === "NIN") {
+      setFormData((prev) => ({
+        ...prev,
+        ID: {
+          ...prev.ID,
+          [name === "govIdType" ? "type" : "number"]: value,
+        },
+      }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value || "" }));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -101,13 +161,10 @@ export const SignUpUser: React.FC = () => {
       return;
     }
 
-    // Required fields validation
     const requiredFields: (keyof FormData)[] = [
       "fullName",
       "email",
       "dob",
-      "govIdType",
-      "NIN",
       "phone",
       "residentialAddress",
       "image",
@@ -115,16 +172,16 @@ export const SignUpUser: React.FC = () => {
       "confirmPsw",
     ];
 
-    const missingFields = requiredFields.filter((field) => !formData[field]);
+    const missing = requiredFields.filter((f) => !formData[f]);
+    if (!formData.ID.type || !formData.ID.number)
+      missing.push("ID fields" as keyof FormData);
 
-    if (missingFields.length > 0) {
-      console.error("Missing fields:", missingFields);
-      alert(`Please fill in all fields. Missing: ${missingFields.join(", ")}`);
+    if (missing.length > 0) {
+      alert(`Please fill in all fields. Missing: ${missing.join(", ")}`);
       return;
     }
 
     if (formData.password !== formData.confirmPsw) {
-      console.error("Passwords do not match");
       alert("Passwords do not match.");
       return;
     }
@@ -133,40 +190,38 @@ export const SignUpUser: React.FC = () => {
     setProgressStatus("Uploading image to Cloudinary...");
 
     try {
-      // Step 3: Upload image to Cloudinary
       const cloudinaryUrl = await uploadToCloudinary(formData.image);
-const { password, ...rest } = formData;
+      const { password, confirmPsw, ...rest } = formData;
 
-const updatedFormData = {
-  ...rest,
-  image: cloudinaryUrl,
-};
+      const updatedFormData = {
+        ...rest,
+        image: cloudinaryUrl,
+      };
 
-
-      // Step 4: Encrypt updated form data
       setProgressStatus("Encrypting data...");
       const encryptedBase64 = encryptData(updatedFormData);
       const encryptedHex = base64ToHex(encryptedBase64);
 
-      // Step 5: Write to contract
       setProgressStatus("Submitting to blockchain...");
       const hash = await registerUser(encryptedHex);
-      setTxHash(hash ?? null); // Type-safe: never set undefined
+      setTxHash(hash ?? null);
 
-      // Step 6: Send to backend
       setProgressStatus("Sending to backend...");
-      const response = await fetch("https://quebec-ur3w.onrender.com/api/kyc/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: updatedFormData.email,
-          NIN: updatedFormData.NIN,
-          walletAddress: address,
-          encryptedData: encryptedBase64,
-          transactionHash: hash,
-          password:formData.password
-        }),
-      });
+      const response = await fetch(
+        "https://quebec-ur3w.onrender.com/api/kyc/auth/register",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: updatedFormData.email,
+            ID: updatedFormData.ID,
+            walletAddress: address,
+            encryptedData: encryptedBase64,
+            transactionHash: hash,
+            password: formData.password,
+          }),
+        }
+      );
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -177,24 +232,23 @@ const updatedFormData = {
       alert("✅ KYC submitted successfully!");
       setIsRegistered(true);
       login({
-        id: '',
+        id: "",
         walletAddress: formData.walletAddress,
         role: "user",
-        token:'',
+        token: "",
       });
     } catch (err: any) {
       console.error("KYC submission failed:", err);
-      setProgressStatus("❌ Error occurred.");
       alert("❌ Error submitting KYC: " + (err?.message || err));
+      setProgressStatus("❌ Error occurred.");
     } finally {
       setLoading(false);
       setTimeout(() => setProgressStatus("Idle"), 3000);
     }
   };
 
-  const handleFaceCapture = (image: string) => {
+  const handleFaceCapture = (image: string) =>
     setFormData((prev) => ({ ...prev, image }));
-  };
 
   const handleProgress = (step: number) => setProgress(step);
   const progressWidth = progress === 1 ? "50%" : "100%";
@@ -203,8 +257,10 @@ const updatedFormData = {
     if (isConnected && isRegistered === true && !checkingRegistration) {
       navigate("/sign_in");
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isConnected, isRegistered, checkingRegistration]);
+  }, [isConnected, isRegistered, checkingRegistration, navigate]);
+
+ 
+
 
   return (
     <section className="min-h-screen bg-[#000306] font-inter relative">
@@ -252,7 +308,7 @@ const updatedFormData = {
                         <select
                           id="govIdType"
                           name="govIdType"
-                          value={formData.govIdType}
+                          value={formData.ID.type}
                           onChange={handleChange}
                           className="w-full bg-[#424242] text-white py-3 px-5 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-[#71627A] transition"
                         >
@@ -263,7 +319,15 @@ const updatedFormData = {
                           <option value="Passport">Passport</option>
                         </select>
                       </div>
-                      <Input label="ID Number" name="NIN" placeholder="Enter Government ID number" value={formData?.NIN} action={handleChange} />
+                      <div className="flex justify-center flex-col gap-2 items-center">
+                      <Input label="ID Number" name="NIN" placeholder="Enter Government ID number" value={formData?.ID.number} action={handleChange} />
+                      {
+                        checkingReg  ?             
+                        <div className="animate-spin rounded-full h-5 w-5 border-t-4 border-[#8C2A8F] mx-auto" />
+                        : <span>{isReg.isNIN? "Nin taken":""}</span>
+
+                      }
+                      </div>
                     </div>
                   </aside>
 
@@ -325,7 +389,7 @@ const updatedFormData = {
 
               {/* Submit Button */}
               <div className="flex items-center justify-center w-full">
-                <button type="submit" disabled={loading || !address || progress===1} className={`mt-8 w-full px-6 py-4 rounded-xl text-lg font-bold transition duration-300 
+                <button type="submit" disabled={loading || !address || progress===1 || checkingReg} className={`mt-8 w-full px-6 py-4 rounded-xl text-lg font-bold transition duration-300 
                   ${loading || !address ||progress!==2 ? 'bg-gray-700 text-gray-400 cursor-not-allowed' : 'bg-[#8C2A8F] text-white shadow-lg shadow-bg-[#8C2A8F] '}`}>
                   {loading ? (
                     <div className="flex items-center justify-center">

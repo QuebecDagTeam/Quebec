@@ -27,11 +27,11 @@ export const ConnectButton = () => {
       // On click, open the modal to the default 'Connect' view
       
       onClick={() => open()}
-      className="bg-[#8C2A8F] hover:bg-[#8C2A8F] text-white font-bold py-[12px] px-4 rounded-full"
+      className="button"
     >
          {isConnected ?
      <p className="text-white text-sm">
-    {address?.slice(0, 6)}...{address?.slice(-4)}
+Connected: {address?.slice(0, 6)}...{address?.slice(-4)}
   </p> 
    :<p>Connect Wallet</p>}
       

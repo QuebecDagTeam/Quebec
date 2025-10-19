@@ -6,7 +6,7 @@ import deleteKYC, {
   isRegistered_thirdParty,
   ThirdPartyReg,
   isWalletRegistered,
-  isNINRegistered,
+  isIDRegistered,
   isEmailRegistered
 } from "../controllers/auth";
 
@@ -17,8 +17,8 @@ AuthRoute.post("/register", Register)
 .get("/isRegistered_thirdParty/:walletAddress", isRegistered_thirdParty)
 .post("/login", Login)
 .get("/isRegistered/:walletAddress", isWalletRegistered)
-.get("/isNIN/:walletAddress", isNINRegistered)
-.get("/isEmail/:walletAddress", isEmailRegistered);
+.get("/is_id/:type/:number", isIDRegistered)
+.get("/is_emaill/:email", isEmailRegistered);
 
 
 export default AuthRoute;

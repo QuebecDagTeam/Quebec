@@ -82,7 +82,7 @@ export const NavBar = () => {
         </div>
 
         {/* Center - Wallet / Connect */}
-        <div className="flex items-center gap-2 bg-[#8C2A8F]   justify-center  rounded-[8px]">
+        <div className="md:flex items-center gap-2 justify-center hidden ">
           
             <ConnectButton />
           

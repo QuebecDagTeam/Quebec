@@ -4,7 +4,10 @@ import mongoose, { Document, Schema } from "mongoose";
 export interface IUser extends Document {
   walletAddress: string;
   email?: string;
-  NIN?: number;
+  ID:{
+    type:string;
+    number:any
+  }
   kyc: {
     encryptedData: string;
     uniqueId: string;
@@ -28,7 +31,10 @@ export interface IUser extends Document {
 const UserSchema = new Schema<IUser>(
   {
     walletAddress: { type: String, required: true, index: true, unique: true },
-    NIN: { type:  Number},
+    ID:{
+      type:{ type: String, required: true },
+      number:{ type: String, required: true }
+    },
     email: { type: String },
     kyc: {
       encryptedData: { type: String, required: true },

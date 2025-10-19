@@ -7,8 +7,8 @@ export const ConnectDB = async (shouldDrop: boolean = false) => {
     console.log("✅ MongoDB connected");
 
     if (shouldDrop) {
-    //   await mongoose.connection.dropDatabase();
-    //   console.log("⚠️ Database dropped successfully!");
+      // await mongoose.connection.dropDatabase();
+      // console.log("⚠️ Database dropped successfully!");
     }
   } catch (error) {
     console.error("❌ Mongo connection error:", error);

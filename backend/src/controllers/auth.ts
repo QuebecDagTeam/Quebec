@@ -20,7 +20,7 @@ export default function toto(addr: string) {
   
 export const Register = async (req: Request, res: Response) => {
     try {
-      const { walletAddress, encryptedData, transactionHash, NIN, email, password } = req.body;
+      const { walletAddress, encryptedData, transactionHash, ID, email, password } = req.body;
   
       if (!walletAddress || !encryptedData || !transactionHash) {
         return res.status(400).json({ error: "Missing required fields" });
@@ -40,7 +40,7 @@ export const Register = async (req: Request, res: Response) => {
       // Create a new user entry
       const newUser = new User({
         walletAddress: toto(walletAddress),
-        NIN,
+        ID,
         email,
         password:hashedPassword,
         kyc: {
@@ -71,7 +71,13 @@ export const Register = async (req: Request, res: Response) => {
     try {
       const wallet = toto(req.params.walletAddress);
       const user = await User.findOne({ walletAddress: wallet });
-  
+      const thirdParty: any = !user ? await ThirdParty.findOne({ walletAddress:wallet }) : null;
+    // User found
+    if (user || thirdParty) {
+      return res.status(404).json({
+        message: "This wallet is already Registered",
+      });
+    }
       return res.json({ registered: !!user });
     } catch (err) {
       console.error("isWalletRegistered error:", err);
@@ -83,18 +89,28 @@ export const Register = async (req: Request, res: Response) => {
    * GET /api/kyc/is-nin-registered/:NIN
    * Returns { registered: true | false }
    */
-  export const isNINRegistered = async (req: Request, res: Response) => {
-    try {
-      const { NIN } = req.params;
-      const user = await User.findOne({ NIN });
   
-      return res.json({ registered: !!user });
-    } catch (err) {
-      console.error("isNINRegistered error:", err);
-      return res.status(500).json({ error: "Server error" });
+export const isIDRegistered = async (req: Request, res: Response) => {
+  try {
+    const { idType, idNumber } = req.params;
+
+    if (!idType || !idNumber) {
+      return res.status(400).json({ error: "Missing ID type or number" });
     }
-  };
-  
+
+    // Properly query nested fields
+    const user = await User.findOne({
+      "ID.type": idType,
+      "ID.number": idNumber,
+    });
+
+    return res.json({ registered: !!user });
+  } catch (err) {
+    console.error("isIDRegistered error:", err);
+    return res.status(500).json({ error: "Server error" });
+  }
+};
+
   /**
    * GET /api/kyc/is-email-registered/:email
    * Returns { registered: true | false }
@@ -211,7 +227,7 @@ export const Login = async (req: Request, res: Response) => {
     const payLoad = {
       walletAddress: account.walletAddress,
       id: account.id,
-      role: account.kyc.userType,
+      role: account.kyc.userType || account.userType,
     };
 
     const token = jwt.sign(payLoad, ENV.JWT_SECRET, {

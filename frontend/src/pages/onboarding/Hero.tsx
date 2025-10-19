@@ -37,11 +37,11 @@ export const HeroSection = () => {
       {/* Hero text */}
       <div>
 </div>
-      <div className="flex flex-col items-center justify-center text-white text-center flex-1 px-4 py-32">
-        <p className="text-[28px] sm:text-[36px] md:text-[48px] lg:text-[60px] font-[600] leading-tight">
+      <div className="flex flex-col items-center justify-center me text-center flex-1 px-4 py-32">
+        <p className="text-white text-[28px] sm:text-[36px] md:text-[48px] lg:text-[60px] font-[600] leading-tight">
           Your Universal Digital Identity
         </p>
-        <p className="text-[16px] sm:text-[18px] mt-4">
+        <p className="text-white text-[16px] sm:text-[18px] mt-4">
 Verify once, Access everything The secure and simple way to manage your online Identity        </p>
         <div className="mt-6">
           <ConnectButton />

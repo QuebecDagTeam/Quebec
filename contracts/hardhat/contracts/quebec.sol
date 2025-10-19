@@ -18,6 +18,7 @@ contract QuebecKYC {
         address owner;
         uint256 createdAt;
         bool exists;
+        string encryptedDataHash;
     }
 
     struct AccessRequest {
@@ -53,21 +54,28 @@ contract QuebecKYC {
         require(users[kycId].owner == msg.sender, "Not the KYC owner");
         _;
     }
+mapping(address => uint256) public userKycId;
 
     /// @notice Register a user with encrypted data. KYC ID is generated automatically.
-    function registerUser(string calldata encryptedDataHash) external returns (uint256) {
-        uint256 kycId = nextKycId++;
+   function registerUser(string calldata encryptedDataHash) external returns (uint256) {
+    require(!thirdParties[msg.sender].exists, "Already registered as third party");
+    require(userKycId[msg.sender] == 0 && (nextKycId == 0 || users[0].owner != msg.sender), "Already registered as user");
 
-        users[kycId] = User({
-            owner: msg.sender,
-            encryptedDataHash: encryptedDataHash,
-            createdAt: block.timestamp,
-            exists: true
-        });
+    uint256 kycId = nextKycId++;
+    
+    users[kycId] = User({
+        owner: msg.sender,
+        encryptedDataHash: encryptedDataHash,
+        createdAt: block.timestamp,
+        exists: true
+    });
 
-        emit KycRegistered(kycId, msg.sender, encryptedDataHash, block.timestamp);
-        return kycId;
-    }
+    userKycId[msg.sender] = kycId;
+
+    emit KycRegistered(kycId, msg.sender, encryptedDataHash, block.timestamp);
+    return kycId;
+}
+
 
     /// @notice Update encrypted KYC data (only by the owner)
     function updateKyc(uint256 kycId, string calldata encryptedDataHash) external onlyOwner(kycId) {
@@ -165,15 +173,18 @@ contract QuebecKYC {
     }
 
     /// @notice Register a third-party data requester (KYC verifier)
-    function registerThirdParty() external {
-        require(!thirdParties[msg.sender].exists, "Already registered");
+ function registerThirdParty(string calldata encryptedDataHash) external {
+    require(!thirdParties[msg.sender].exists, "Already registered as third party");
+    require(userKycId[msg.sender] == 0, "Already registered as user");
 
-        thirdParties[msg.sender] = ThirdParty({
-            owner: msg.sender,
-            createdAt: block.timestamp,
-            exists: true
-        });
-    }
+    thirdParties[msg.sender] = ThirdParty({
+        owner: msg.sender,
+        createdAt: block.timestamp,
+        exists: true,
+        encryptedDataHash: encryptedDataHash
+    });
+}
+
 
     /// @notice Get list of KYC IDs a third party can access
     function getKycIdsForThirdParty(address thirdParty) external view returns (uint256[] memory) {
