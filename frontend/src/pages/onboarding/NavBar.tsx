@@ -52,12 +52,12 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
      {/* The list of links */}
      <ul className="flex flex-col md:flex-row gap-6 lg:gap-10 text-white font-medium px-10 md:p-0">
       {/* Close Button - ONLY visible on mobile */}
-      <div onClick={() => { setIsMobileMenuOpen(false) }} className="absolute top-8 right-8 md:hidden hover:text-[#8C2A8F] cursor-pointer">
+      <div onClick={() => { setIsMobileMenuOpen(false) }} className="absolute top-8 right-8 md:hidden hover:text-[#3333ff] cursor-pointer">
        <FaTimes size={20} />
       </div>
 
       <li onClick={() => { setIsMobileMenuOpen(false) }}>
-       <Link to="/" className="hover:text-[#8C2A8F] transition">
+       <Link to="/" className="hover:text-[#3333ff] transition">
         Home
        </Link>
       </li>
@@ -65,12 +65,12 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
        {
         user !== null ?
          (
-          <Link to={`/user/dashboard`} className="hover:text-[#8C2A8F] transition">
+          <Link to={`/user/dashboard`} className="hover:text-[#3333ff] transition">
            Dashboard
           </Link>
          ) :
          (
-          <Link to={'/sign_in'} className="hover:text-[#8C2A8F] transition">
+          <Link to={'/sign_in'} className="hover:text-[#3333ff] transition">
            Dashboard
           </Link>
          )
@@ -79,13 +79,13 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
       <li onClick={() => { setIsMobileMenuOpen(false) }}>
        <button
         onClick={handleOverlayOpen}
-        className="hover:text-[#8C2A8F] transition"
+        className="hover:text-[#3333ff] transition"
        >
         SignUp
        </button>
       </li>
       <li onClick={() => { setIsMobileMenuOpen(false) }}>
-       <Link to="/sign_in" className="hover:text-[#8C2A8F] transition">
+       <Link to="/sign_in" className="hover:text-[#3333ff] transition">
         SignIn
        </Link>
       </li>

@@ -91,8 +91,8 @@ export const SignIn: React.FC = () => {
 
   return (
     <section className="min-h-screen bg-[#000306] font-inter flex flex-col items-center justify-center">
-      <h2 className="text-[#8C2A8F] text-[26px] font-[600] px-5 mb-10">Sign In</h2>
-      <p className="text-white text-[18px] font-[600] px-5">Enter Password to Continue Signing in</p>
+      <h2 className="text-[#3333ff] text-[26px] font-[600] px-5 mb-10">Sign In</h2>
+      <p className="text-white text-[14px] font-[600] px-5">Enter Password to Continue Signing in</p>
 
       <div className="w-full md:w-[50%] mt-5 px-5 lg:w-[1/2]">
         <Input
@@ -123,7 +123,7 @@ export const SignIn: React.FC = () => {
           className={`mt-8 w-full px-6 py-4 rounded-xl text-lg font-bold transition duration-300 
           ${loading || !address
               ? "bg-gray-700 text-gray-400 cursor-not-allowed"
-              : "bg-[#8C2A8F] text-white shadow-lg"
+              : "button text-white shadow-lg"
             }`}
         >
           {loading ? (

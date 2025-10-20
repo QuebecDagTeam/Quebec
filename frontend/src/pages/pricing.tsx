@@ -1,62 +1,136 @@
 import React from 'react';
+import { MdDoneAll } from 'react-icons/md';
 
 const Pricing: React.FC = () => {
-    const [index, setIndex] = React.useState<number | null>(1);
-    const handleClick = (i: number) => {
-        setIndex(i);
+  
+    const [type, setType] = React.useState<string>("month");
+    const handleType = (text:string) =>{
+      setType(text)
     }
   return (
-    <div className="py-20  bg-[#000306]  text-white text-center">
-      <h2 className="text-4xl font-semibold mb-6">QUEBEC Pricing Plans</h2>
-      <p className="text-lg text-gray-600 mb-12">
+    <div className="py-20  bg-[#000306]  text-white flex flex-col items-center ">
+      <h2 className="text-4xl font-semibold mb-6 text-center">QUEBEC Pricing Plans</h2>
+      <p className="text-lg text-gray-600 mb-12  text-center">
         Our flexible pricing plans and revenue streams are designed to grow with you.
       </p>
 
-      <div className="flex justify-center flex-wrap gap-6 py-5">
+      <div className='px-2 py-1 bg-[#424242]  text-white w-[180px] flex  justify-between rounded-[8px]'>
+        <button className={`${type==="month" && "bg-black"} px-3 py-1 rounded-[4px]`} onClick={()=>{handleType("month")}}>Monthly</button>
+        <button className={`${type==="year" && "bg-black"} px-3 py-1 rounded-[4px]`} onClick={()=>{handleType("year")}}>Yearly</button>
+      </div>
+  {
+          type==="month" &&
+      <div className="flex justify-center flex-wrap gap-6 py-5 px-5 md:px-10">
         {/* Free Plan */}
-        <div className={`rounded-[10px] border-2 boder-[#8C2A8F]  px-10 ${index===1 ? "text-white":" "}`} onClick={()=>handleClick(1)}>
+        <div className={`rounded-[10px] px-5 py-5 border-2 border-[#ff00cc] text-white `}  >
           <h3 className="text-2xl font-semibold mb-4">Free</h3>
-          <p className="text-xl font-bold mb-6">$0/month</p>
-          <ul className="text-left text-lg mb-8 space-y-4">
-            <li>Basic KYC Verification</li>
-            <li>Limited to 50 Verifications</li>
-            <li>Standard Application Access</li>
-            <li>Basic Support</li>
+          <p>Everything you need readily available</p>
+          <span className="text-[36px] font-bold mb-6">$0</span><span>/month</span>
+          <ul className="text-left text-lg mb-8 space-y-4 text-gray-300">
+            <li className='flex gap-2 items-center'><MdDoneAll/> Basic KYC Verification</li>
+            <li className='flex gap-2 items-center'><MdDoneAll/>Limited to 50 Verifications</li>
+            <li className='flex gap-2 items-center'><MdDoneAll/>Standard Application Access</li>
+            <li className='flex gap-2 items-center'><MdDoneAll/>Basic Support</li>
           </ul>
-          <button className={`bg-[#8C2A8F4D] text-[#8C2A8F] my-4  w-full py-3 rounded-[10px]`}>
+          <button className={`hover:bg-[#ff00cc] text-white border-2 border-[#ff00cc]  text-[#8C2A8F] w-full py-3 my-4 rounded-[10px]`}>
             Get Started
           </button>
         </div>
 
         {/* Basic Plan */}
-        <div className={`rounded-[10px] border-2  px-10 ${index===2 ? " bg-[#8C2A8F] boder-[#8C2A8F] text-white":"border-gray-300 "}`} onClick={()=>handleClick(2)}>
-          <h3 className="text-2xl font-semibold mb-4">Basic</h3>
-          <p className="text-xl font-bold mb-6">$98.9/month</p>
-          <ul className="text-left text-lg mb-8 space-y-4">
-            <li>Enhanced KYC Verification</li>
-            <li>Up to 500 Verifications</li>
-            <li>Standard Application Access</li>
-            <li>Standard Support</li>
+      
+        
+        <div className={`rounded-[10px] px-5 py-5 border-2 border-[#ff00cc] text-white `}  >
+          <h3 className="text-2xl font-semibold mb-4 ">Basic</h3>
+          <p>Up to 500 verification </p>
+          <span className="text-[36px] font-bold mb-6">$20</span><span>/month</span>
+          <ul className="text-left text-lg mb-8 space-y-4 text-gray-300">
+            <li className='flex gap-2 items-center'><MdDoneAll/>Enhanced KYC Verification</li>
+            <li className='flex gap-2 items-center'><MdDoneAll/>Up to 500 Verifications</li>
+            <li className='flex gap-2 items-center'><MdDoneAll/>Standard Application Access</li>
+            <li className='flex gap-2 items-center'><MdDoneAll/>Standard Support</li>
           </ul>
-          <button className={`bg-[#8C2A8F4D] text-[#8C2A8F] w-full my-4  py-3 rounded-[10px]`}>
+          <button className={`hover:bg-[#ff00cc] text-white border-2 border-[#ff00cc]  text-[#8C2A8F] w-full py-3 my-4 rounded-[10px]`}>
             Choose Plan
           </button>
         </div>
 
         {/* Premium Plan */}
-        <div className={`rounded-[10px] border-2  px-10 ${index===3 ? "  bg-[#8C2A8F] boder-[#8C2A8F] text-white":"border-gray-300 "}`} onClick={()=>handleClick(1)}>
+        <div className={`rounded-[10px] px-5 py-5 border-2 border-[#ff00cc] text-white `} >
           <h3 className="text-2xl font-semibold mb-4">Premium</h3>
-          <p className="text-xl font-bold mb-6">$199.9/month</p>
-          <ul className="text-left text-lg mb-8 space-y-4">
-            <li>Premium Application Access</li>
-            <li>Up to 1000 Verifications</li>
-            <li>Premium Support</li>
+          <p>Up to 1000 Verifications</p>
+          <span className="text-[36px] font-bold mb-6">$60</span><span>/month</span>
+          <ul className="text-left text-lg mb-8 space-y-4 text-gray-300">
+            <li className='flex gap-2 items-center'><MdDoneAll/>Premium Application Access</li>
+            <li className='flex gap-2 items-center'><MdDoneAll/>Up to 1000 Verifications</li>
+            <li className='flex gap-2 items-center'><MdDoneAll/>Standard Application Access</li>
+            <li className='flex gap-2 items-center'><MdDoneAll/>Premium Support</li>
           </ul>
-          <button className={`bg-[#8C2A8F4D] text-[#8C2A8F] w-full py-3 my-4 rounded-[10px]`}>
+          <button className={`hover:bg-[#ff00cc] text-white border-2 border-[#ff00cc]  text-[#8C2A8F] w-full py-3 my-4 rounded-[10px]`}>
             Choose Plan
           </button>
         </div>
+       
       </div>
+       }
+
+       {
+          type==="year" &&
+      <div className="flex justify-center flex-wrap gap-6 py-5 md:px-10 px-5">
+        {/* Free Plan */}
+        <div className={`rounded-[10px] px-5 py-5 border-2 border-[#ff00cc] text-white `}  >
+          <h3 className="text-2xl font-semibold mb-4">Free</h3>
+          <p>Everything you need readily available</p>
+          <span className="text-[36px] font-bold mb-6">$0</span><span>/month</span>
+          <ul className="text-left text-lg mb-8 space-y-4 text-gray-300">
+            <li className='flex gap-2 items-center'><MdDoneAll/> Basic KYC Verification</li>
+            <li className='flex gap-2 items-center'><MdDoneAll/>Limited to 50 Verifications</li>
+            <li className='flex gap-2 items-center'><MdDoneAll/>Standard Application Access</li>
+            <li className='flex gap-2 items-center'><MdDoneAll/>Basic Support</li>
+          </ul>
+          <button className={`hover:bg-[#ff00cc] text-white border-2 border-[#ff00cc]  text-[#8C2A8F] w-full py-3 my-4 rounded-[10px]`}>
+            Get Started
+          </button>
+        </div>
+
+        {/* Basic Plan */}
+      
+        
+        <div className={`rounded-[10px] px-5 py-5 border-2 border-[#ff00cc] text-white `}  >
+          <h3 className="text-2xl font-semibold mb-4 ">Basic</h3>
+          <p>Up to 500 verification </p>
+          <span className="text-[36px] font-bold mb-6">$192</span><span>/month</span>
+          <small> (20% discount)</small>
+          <ul className="text-left text-lg mb-8 space-y-4 text-gray-300">
+            <li className='flex gap-2 items-center'><MdDoneAll/>Enhanced KYC Verification</li>
+            <li className='flex gap-2 items-center'><MdDoneAll/>Up to 500 Verifications</li>
+            <li className='flex gap-2 items-center'><MdDoneAll/>Standard Application Access</li>
+            <li className='flex gap-2 items-center'><MdDoneAll/>Standard Support</li>
+          </ul>
+          <button className={`hover:bg-[#ff00cc] text-white border-2 border-[#ff00cc]  text-[#8C2A8F] w-full py-3 my-4 rounded-[10px]`}>
+            Choose Plan
+          </button>
+        </div>
+
+        {/* Premium Plan */}
+        <div className={`rounded-[10px] px-5 py-5 border-2 border-[#ff00cc] text-white `} >
+          <h3 className="text-2xl font-semibold mb-4">Premium</h3>
+          <p>Up to 1000 Verifications</p>
+          <span className="text-[36px] font-bold mb-6">$500</span><span>/month</span>
+          <small> (30% discount)</small>
+          <ul className="text-left text-lg mb-8 space-y-4 text-gray-300">
+            <li className='flex gap-2 items-center'><MdDoneAll/>Premium Application Access</li>
+            <li className='flex gap-2 items-center'><MdDoneAll/>Up to 1000 Verifications</li>
+            <li className='flex gap-2 items-center'><MdDoneAll/>Standard Application Access</li>
+            <li className='flex gap-2 items-center'><MdDoneAll/>Premium Support</li>
+          </ul>
+          <button className={`hover:bg-[#ff00cc] text-white border-2 border-[#ff00cc]  text-[#8C2A8F] w-full py-3 my-4 rounded-[10px]`}>
+            Choose Plan
+          </button>
+        </div>
+       
+      </div>
+       }
     </div>
   );
 };

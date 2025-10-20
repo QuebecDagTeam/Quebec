@@ -41,6 +41,10 @@
 .read-the-docs {
   color: #888;
 } */
+ body{
+    font-family: 'Space Grotesk', sans-serif;
+
+}
 .button {
     display: block;
     width: 100%;
@@ -51,12 +55,34 @@
     font-size: 1rem;
     font-weight: bold;
     color: #fff;
-    background: linear-gradient(90deg, #ff00cc, #3333ff, #00f0ff);
+    background: linear-gradient(90deg,  #3333ff, #00f0ff);
     background-size: 300%;
     cursor: pointer;
     transition: background-position 0.5s ease-in-out, transform 0.2s ease-in-out;
 }
+.button:hover {
+    background-position: 100% 50%;
+    transform: scale(1.05);
+}
 
+.button:active {
+    transform: scale(0.95);
+}
+.login {
+    display: block;
+    width: 100%;
+    /* margin: 10px auto; */
+    padding: 12px;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #fff;
+    background:  #ff00cc;
+    background-size: 300%;
+    cursor: pointer;
+    transition: background-position 0.5s ease-in-out, transform 0.2s ease-in-out;
+}
 .gradient-text {
   /* 1. Apply the original gradient as the background */
   background: linear-gradient(90deg, #ff00cc, #3333ff, #00f0ff);
