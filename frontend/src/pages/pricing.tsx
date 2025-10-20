@@ -22,7 +22,7 @@ const Pricing: React.FC = () => {
           type==="month" &&
       <div className="flex justify-center flex-wrap gap-6 py-5 px-5 md:px-10">
         {/* Free Plan */}
-        <div className={`rounded-[10px] px-5 py-5 border-2 border-[#ff00cc] text-white `}  >
+        <div className={`rounded-[15px] px-5 py-5 border-2 border-[#424242] text-white `}  >
           <h3 className="text-2xl font-semibold mb-4">Free</h3>
           <p>Everything you need readily available</p>
           <span className="text-[36px] font-bold mb-6">$0</span><span>/month</span>
@@ -40,7 +40,7 @@ const Pricing: React.FC = () => {
         {/* Basic Plan */}
       
         
-        <div className={`rounded-[10px] px-5 py-5 border-2 border-[#ff00cc] text-white `}  >
+        <div className={`rounded-[15px] px-5 py-5 border-2 border-[#424242] text-white `}  >
           <h3 className="text-2xl font-semibold mb-4 ">Basic</h3>
           <p>Up to 500 verification </p>
           <span className="text-[36px] font-bold mb-6">$20</span><span>/month</span>
@@ -56,7 +56,7 @@ const Pricing: React.FC = () => {
         </div>
 
         {/* Premium Plan */}
-        <div className={`rounded-[10px] px-5 py-5 border-2 border-[#ff00cc] text-white `} >
+        <div className={`rounded-[15px] px-5 py-5 border-2 border-[#424242] text-white `} >
           <h3 className="text-2xl font-semibold mb-4">Premium</h3>
           <p>Up to 1000 Verifications</p>
           <span className="text-[36px] font-bold mb-6">$60</span><span>/month</span>
@@ -78,7 +78,7 @@ const Pricing: React.FC = () => {
           type==="year" &&
       <div className="flex justify-center flex-wrap gap-6 py-5 md:px-10 px-5">
         {/* Free Plan */}
-        <div className={`rounded-[10px] px-5 py-5 border-2 border-[#ff00cc] text-white `}  >
+        <div className={`rounded-[15px] px-5 py-5 border-2 border-[#424242] text-white `}  >
           <h3 className="text-2xl font-semibold mb-4">Free</h3>
           <p>Everything you need readily available</p>
           <span className="text-[36px] font-bold mb-6">$0</span><span>/month</span>
@@ -96,7 +96,7 @@ const Pricing: React.FC = () => {
         {/* Basic Plan */}
       
         
-        <div className={`rounded-[10px] px-5 py-5 border-2 border-[#ff00cc] text-white `}  >
+        <div className={`rounded-[15px] px-5 py-5 border-2 border-[#424242] text-white `}  >
           <h3 className="text-2xl font-semibold mb-4 ">Basic</h3>
           <p>Up to 500 verification </p>
           <span className="text-[36px] font-bold mb-6">$192</span><span>/month</span>
@@ -113,7 +113,7 @@ const Pricing: React.FC = () => {
         </div>
 
         {/* Premium Plan */}
-        <div className={`rounded-[10px] px-5 py-5 border-2 border-[#ff00cc] text-white `} >
+        <div className={`rounded-[15px] px-5 py-5 border-2 border-[#424242] text-white `} >
           <h3 className="text-2xl font-semibold mb-4">Premium</h3>
           <p>Up to 1000 Verifications</p>
           <span className="text-[36px] font-bold mb-6">$500</span><span>/month</span>

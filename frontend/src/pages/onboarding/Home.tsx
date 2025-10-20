@@ -3,6 +3,9 @@ import { About } from "./AboutUs"
 import { Feartures } from "./Features"
 import { HeroSection } from "./Hero"
 import {NavBar} from "./NavBar"
+import { Team } from "./team"
+import { Faq } from "./Faq"
+import { Contact } from "./Contact"
 
 export const Home = () => {
     return(
@@ -14,6 +17,9 @@ export const Home = () => {
         <Feartures/>
                 <About/>
                 <Pricing/>
+                <Team/>
+                <Faq/>
+                <Contact/>
 
         </section>
     )
