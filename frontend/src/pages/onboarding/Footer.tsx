@@ -42,7 +42,7 @@ export const Footer = () => {
             <a href="https://linkedin.com" target="_blank" className="hover:text-indigo-400 transition">
               <FaLinkedin/>
             </a>
-            <a href="https://github.com" target="_blank" className="hover:text-indigo-400 transition">
+            <a href="https://github.com/QuebecDagTeam/Quebec" target="_blank" className="hover:text-indigo-400 transition">
               <FaGithub/>
             </a>
           </div>
