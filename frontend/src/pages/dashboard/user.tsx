@@ -194,29 +194,28 @@ export const Dash = () => {
 
 
 
-export const Sidebar = ({name}:any) => {
+export const Sidebar = ({ name }: any) => {
   const [active, setActive] = useState("dashboard");
 
   return (
-    <aside className="bg-[#2F2F2F] md:w-1/4 hidden md:block sticky md:static top-0 left-0  flex flex-col justify-between text-white z-50">
-      
+    <aside className="hidden md:flex md:flex-col bg-[#2F2F2F] text-white w-[260px] h-screen sticky top-0 left-0 overflow-y-auto">
       {/* Top: Logo + Navigation */}
       <div>
-        {/* Logo */}
         <div className="flex items-center gap-4 px-6 py-6">
           <img src={Logo} className="w-[48px] h-[48px] rounded-full" alt="Logo" />
           <p className="text-[20px] font-semibold">QUEBEC</p>
         </div>
 
-        {/* Nav Items */}
         <nav className="mt-4 px-5">
           {navItems.map((item) => (
             <Link
-            to={`/${item.path}`}
+              to={`/${item.path}`}
               key={item.name}
               onClick={() => setActive(item.path)}
-              className={`flex items-center gap-4 cursor-pointer eounded-[8px] md:px-4 lg:px-9 py-4 transition-all ${
-                active === item.path ? "me text-white" : "text-gray-300 hover:bg-[#3a3a3a]"
+              className={`flex items-center gap-4 rounded-[8px] md:px-4 lg:px-9 py-4 transition-all ${
+                active === item.path
+                  ? "me text-white"
+                  : "text-gray-300 hover:bg-[#3a3a3a]"
               }`}
             >
               {item.icon}
@@ -226,19 +225,17 @@ export const Sidebar = ({name}:any) => {
         </nav>
       </div>
 
-      {/* Bottom: User Info + Log Out */}
-      <div className="px-6 pb-6">
-        {/* User Info */}
+      {/* Bottom: User Info + Logout */}
+      <div className="px-6 pb-6 mt-auto">
         <div className="flex lg:flex-row flex-col items-start gap-3 mb-4">
           <img
             src={UserImg}
             alt="User"
             className="w-[32px] h-[32px] rounded-full object-cover"
           />
-          <p className="text-[15px] font-medium">{name} </p>
+          <p className="text-[15px] font-medium">{name}</p>
         </div>
 
-        {/* Logout */}
         <div className="flex items-center gap-3 text-red-500 cursor-pointer hover:text-red-600 transition">
           <MdLogout size={20} />
           <span className="text-[15px] font-medium">Log Out</span>
