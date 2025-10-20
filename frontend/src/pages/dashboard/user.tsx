@@ -97,7 +97,7 @@ export const Dash = () => {
         
         {/* Header */}
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl lg:text-3xl font-semibold text-gradient">Welcome {Data?.fullName}</h1>
+          <h1 className="text-2xl lg:text-3xl font-semibold gradient-text ">Welcome {Data?.fullName}</h1>
           <Link to='/notifications'> <FaBell size={28} /></Link>
         </div>
 
@@ -122,7 +122,7 @@ export const Dash = () => {
             {/* Profile Image + Button */}
             <div className="flex items-center justify-between mb-6">
               <img src={User} className="w-[100px] h-[100px] rounded-full object-cover" alt="User" />
-              <button className="bg-[#8C2A8F] px-4 py-2 rounded text-sm">Edit Profile</button>
+              <button className="me px-4 py-2 rounded text-sm">Edit Profile</button>
             </div>
 
             {/* KYC Form */}
@@ -198,7 +198,7 @@ export const Sidebar = ({name}:any) => {
   const [active, setActive] = useState("dashboard");
 
   return (
-    <aside className="bg-[#2F2F2F] md:w-1/4 hidden md:block fixed md:static top-0 left-0 h-screen flex flex-col justify-between text-white z-50">
+    <aside className="bg-[#2F2F2F] md:w-1/4 hidden md:block sticky md:static top-0 left-0  flex flex-col justify-between text-white z-50">
       
       {/* Top: Logo + Navigation */}
       <div>
@@ -216,7 +216,7 @@ export const Sidebar = ({name}:any) => {
               key={item.name}
               onClick={() => setActive(item.path)}
               className={`flex items-center gap-4 cursor-pointer eounded-[8px] md:px-4 lg:px-9 py-4 transition-all ${
-                active === item.path ? "bg-[#8C2A8F] text-white" : "text-gray-300 hover:bg-[#3a3a3a]"
+                active === item.path ? "me text-white" : "text-gray-300 hover:bg-[#3a3a3a]"
               }`}
             >
               {item.icon}
@@ -268,7 +268,7 @@ export const MobileFooterNav = () => {
           key={item.name}
           onClick={() => setActive(item.path)}
           className={`flex flex-col items-center justify-center flex-1 py-1 ${
-            active === item.path ? "text-white bg-[#8C2A8F] rounded-md" : "text-gray-400"
+            active === item.path ? "text-white me rounded-md" : "text-gray-400"
           }`}
         >
           {item.icon}
