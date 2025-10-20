@@ -99,6 +99,7 @@ const [checkingReg, setCheckingReg] = useState<boolean>(false)
   };
 
   useEffect(() => {
+    !checkingRegistration && 
     checkReg();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formData.email, formData.ID]);

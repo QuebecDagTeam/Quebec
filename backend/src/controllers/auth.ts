@@ -76,6 +76,7 @@ export const Register = async (req: Request, res: Response) => {
     if (user || thirdParty) {
       return res.status(404).json({
         message: "This wallet is already Registered",
+        registered: !!user 
       });
     }
       return res.json({ registered: !!user });
