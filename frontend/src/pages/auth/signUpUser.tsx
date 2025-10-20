@@ -111,7 +111,7 @@ const [checkingReg, setCheckingReg] = useState<boolean>(false)
           `https://quebec-ur3w.onrender.com/api/kyc/auth/is_id/${formData.ID.type}/${formData.ID.number}`
         ),
         fetch(
-          `https://quebec-ur3w.onrender.com/api/kyc/auth/is_emaill/${formData.email}`
+          `https://quebec-ur3w.onrender.com/api/kyc/auth/is_email/${formData.email}`
         ),
       ]);
 

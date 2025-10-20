@@ -5,16 +5,17 @@ import { Input } from "../../components/input";
 import { Link, useNavigate } from "react-router-dom";
 import { useQuebecKYC } from "../../services/contract"; // like in user signup
 import { useUser } from "../../contexts/UserContext";
+import { encryptData } from "../../components/encrypt";
 
-// function base64ToHex(base64: string): `0x${string}` {
-//   const raw = atob(base64);
-//   let hex = "";
-//   for (let i = 0; i < raw.length; i++) {
-//     const h = raw.charCodeAt(i).toString(16).padStart(2, "0");
-//     hex += h;
-//   }
-//   return `0x${hex}`;
-// }
+function base64ToHex(base64: string): `0x${string}` {
+  const raw = atob(base64);
+  let hex = "";
+  for (let i = 0; i < raw.length; i++) {
+    const h = raw.charCodeAt(i).toString(16).padStart(2, "0");
+    hex += h;
+  }
+  return `0x${hex}`;
+}
 
 interface FormData {
   appName: string;
@@ -114,13 +115,13 @@ export const SignUpThirdParty: React.FC = () => {
 
     try {
       // remove password before encryption
-      // const { password, confirmPsw, } = formData;
-      // const encryptedBase64 = encryptData(safeData);
-      // const encryptedHex = base64ToHex(encryptedBase64);
+      const { password, confirmPsw, ...safeData} = formData;
+      const encryptedBase64 = encryptData(safeData);
+      const encryptedHex = base64ToHex(encryptedBase64);
 
       // send to blockchain
       setProgressStatus("Registering on blockchain...");
-      const hash = await registerThirdParty(); // ✅ custom contract fn
+      const hash = await registerThirdParty(encryptedHex); // ✅ custom contract fn
       setTxHash(hash ?? null);
 
       // send to backend
@@ -193,7 +194,7 @@ export const SignUpThirdParty: React.FC = () => {
 
             <form
               onSubmit={handleSubmit}
-              className="w-full rounded-2xl max-w-4xl mx-auto space-y-8 border-2 border-[#3333ff] p-6"
+              className="w-full rounded-2xl max-w-4xl mx-auto space-y-8  p-6"
             >
               <div className="text-white">
                 <h2 className="text-xl font-semibold mb-4">App Details</h2>

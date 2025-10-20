@@ -131,13 +131,13 @@ export const useQuebecKYC = () => {
     }
   };
 
-  const registerThirdParty = async () => {
+  const registerThirdParty = async (encryptedHex:string) => {
     try {
       const txHash = await writeContractAsync({
         abi,
         address: CONTRACT_ADDRESS,
         functionName: "registerThirdParty",
-        args: [],
+        args: [encryptedHex],
       });
       console.log("✅ Third party registered");
       return txHash;
