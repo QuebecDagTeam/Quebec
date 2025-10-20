@@ -1,5 +1,4 @@
 import Logo from "../../assets/logo.jpg";
-import User from "../../assets/user.jpg";
 import { Input } from "../../components/input";
 import {
   MdDashboard,
