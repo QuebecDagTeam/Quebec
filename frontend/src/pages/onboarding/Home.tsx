@@ -4,8 +4,9 @@ import { Feartures } from "./Features"
 import { HeroSection } from "./Hero"
 import {NavBar} from "./NavBar"
 import { Team } from "./team"
-import { Faq } from "./Faq"
 import { Contact } from "./Contact"
+import { Faq } from "./Faq"
+import { Footer } from "./Footer"
 
 export const Home = () => {
     return(
@@ -20,7 +21,7 @@ export const Home = () => {
                 <Team/>
                 <Faq/>
                 <Contact/>
-
+                <Footer/>
         </section>
     )
 }
