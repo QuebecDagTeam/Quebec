@@ -1,3 +1,5 @@
+import { FaGithub, FaLinkedin, FaTwitter } from "react-icons/fa";
+
 export const Footer = () => {
   return (
     <footer className="w-full bg-gray-900 text-gray-300 py-10 px-6 md:px-20">
@@ -35,13 +37,13 @@ export const Footer = () => {
           <h3 className="text-lg font-semibold text-white mb-3">Connect</h3>
           <div className="flex items-center gap-4">
             <a href="https://x.com" target="_blank" className="hover:text-indigo-400 transition">
-              <i className="fa-brands fa-x-twitter text-xl"></i>
+              <FaTwitter/>
             </a>
             <a href="https://linkedin.com" target="_blank" className="hover:text-indigo-400 transition">
-              <i className="fa-brands fa-linkedin text-xl"></i>
+              <FaLinkedin/>
             </a>
             <a href="https://github.com" target="_blank" className="hover:text-indigo-400 transition">
-              <i className="fa-brands fa-github text-xl"></i>
+              <FaGithub/>
             </a>
           </div>
         </div>
