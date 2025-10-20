@@ -111,7 +111,7 @@ const [checkingReg, setCheckingReg] = useState<boolean>(false)
           `https://quebec-ur3w.onrender.com/api/kyc/auth/is_id/${formData.ID.type}/${formData.ID.number}`
         ),
         fetch(
-          `https://quebec-ur3w.onrender.com/api/kyc/auth/is_emaill/${formData.email}`
+          `https://quebec-ur3w.onrender.com/api/kyc/auth/is_email/${formData.email}`
         ),
       ]);
 
@@ -268,7 +268,7 @@ const [checkingReg, setCheckingReg] = useState<boolean>(false)
         {(checkingRegistration || isRegistered === null) && isConnected && (
           <div className="fixed inset-0 bg-black bg-opacity-80 text-white z-50 flex items-center justify-center">
             <div className="text-center space-y-4">
-              <div className="animate-spin rounded-full h-10 w-10 border-t-4 border-[#8C2A8F] mx-auto" />
+              <div className="animate-spin rounded-full h-10 w-10 border-t-4 border-[#3333ff] mx-auto" />
               <p className="text-xl font-semibold">Checking registration status...</p>
             </div>
           </div>
@@ -278,7 +278,7 @@ const [checkingReg, setCheckingReg] = useState<boolean>(false)
           <>
             {progress === 1 && (
               <>
-                <h1 className="text-3xl sm:text-4xl font-extrabold mb-8 text-center text-[#8C2A8F]">
+                <h1 className="text-3xl sm:text-4xl font-extrabold mb-8 text-center text-[#3333ff]">
                   Decentralized KYC Registration
                 </h1>
                 <p className="text-gray-400 text-lg mb-4 text-center">
@@ -287,7 +287,7 @@ const [checkingReg, setCheckingReg] = useState<boolean>(false)
                 <div className="flex items-center justify-center">
                   <div className="w-full h-4 bg-gray-200 max-w-4xl rounded-full overflow-hidden mb-10">
                     <div
-                      className="h-full bg-[#8C2A8F] transition-all duration-300"
+                      className="h-full bg-[#3333ff] transition-all duration-300"
                       style={{ width: progressWidth }}
                     />
                   </div>
@@ -298,7 +298,7 @@ const [checkingReg, setCheckingReg] = useState<boolean>(false)
             <form onSubmit={handleSubmit} className="w-full max-w-4xl mx-auto space-y-8">
               {progress === 1 && (
                 <div className="text-white">
-                  <aside className="p-6 border border-[#71627A] rounded-2xl mb-8">
+                  <aside className="p-6 border border-[#3333ff] rounded-2xl mb-8">
                     <h2 className="text-xl font-semibold mb-4">Personal Details</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <Input label="Full Name" name="fullName" placeholder="Enter your full name" value={formData.fullName} action={handleChange} />
@@ -310,7 +310,7 @@ const [checkingReg, setCheckingReg] = useState<boolean>(false)
                           name="govIdType"
                           value={formData.ID.type}
                           onChange={handleChange}
-                          className="w-full bg-[#424242] text-white py-3 px-5 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-[#71627A] transition"
+                          className="w-full bg-[#424242] text-white py-3 px-5 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-[#3333ff] transition"
                         >
                           <option value="" disabled>Select ID Type</option>
                           <option value="NIN">NIN (National ID)</option>
@@ -323,7 +323,7 @@ const [checkingReg, setCheckingReg] = useState<boolean>(false)
                       <Input label="ID Number" name="NIN" placeholder="Enter Government ID number" value={formData?.ID.number} action={handleChange} />
                       {
                         checkingReg  ?             
-                        <div className="animate-spin rounded-full h-5 w-5 border-t-4 border-[#8C2A8F] mx-auto" />
+                        <div className="animate-spin rounded-full h-5 w-5 border-t-4 border-[#3333ff] mx-auto" />
                         : <span>{isReg.isNIN? "Nin taken":""}</span>
 
                       }
@@ -331,10 +331,19 @@ const [checkingReg, setCheckingReg] = useState<boolean>(false)
                     </div>
                   </aside>
 
-                  <aside className="p-6 border border-[#71627A] rounded-2xl">
+                  <aside className="p-6 border border-[#3333ff] rounded-2xl">
                     <h2 className="text-xl font-semibold mb-4">Contact Information</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <Input label="Email Address" name="email" type="email" placeholder="Enter your email" value={formData.email} action={handleChange} />
+                      <div className="flex items-center flex-col gap-2">
+                        <Input label="Email Address" name="email" type="email" placeholder="Enter your email" value={formData.email} action={handleChange} />
+                        {
+                        checkingReg  ?             
+                        <div className="animate-spin rounded-full h-5 w-5 border-t-4 border-[#3333ff] mx-auto" />
+                        : <span>{isReg.isEmail? "Nin taken":""}</span>
+
+                      }
+                      </div>
+                      
                       <Input label="Phone Number" name="phone" type="tel" placeholder="+234..." value={formData.phone} action={handleChange} />
                     </div>
                     <div className="mt-6">
@@ -354,21 +363,21 @@ const [checkingReg, setCheckingReg] = useState<boolean>(false)
               {progress === 2 && (
                 <div>
                   <div className="py-5">
-                    <p className="text-[26px] font-[600] text-[#8C2A8F] mb-2">Facial Verification</p>
+                    <p className="text-[26px] font-[600] text-[#3333ff] mb-2">Facial Verification</p>
                     <p className="text-white">Let’s verify it’s you. Position your head within the frame and hold still while we scan.</p>
                   </div>
-                  <div className="flex gap-8 md:flex-row flex-col items-center justify-center md:px-0 px-5">
+                  <div className="flex gap-8 md:flex-row flex-col items-center justify-center md:px-0 px-[5px]">
                     <FaceCapture onCapture={handleFaceCapture}/>
-                    <div className="md:bg-[#2F2F2F] gap-2 md:gap-8 w-full md:w-1/3 px-[10px] md:px-[30px] py-[20px] flex-col rounded-[8px] flex items-center justify-center">
-                      <div className="bg-[#424242] w-full h-auto text-white p-5 rounded-[15px]">
+                    <div className="md:bg-[#2F2F2F] gap-2 md:gap-8 w-full md:w-2/3 px-[5px] md:px-[10px] md:px-[30px] py-[20px] flex-col rounded-[6px] md:rounded-[8px] flex items-center justify-center">
+                      <div className="bg-[#424242] w-full h-auto text-white p-5 rounded-[10px] md:rounded-[15px]">
                         <p className="md:text-[18px] text-center">Good Lighting</p>
                         <p className="md:text-[14px] text-[12px] text-center ">Ensure you’re in a well lit area</p>
                       </div>
-                      <div className="bg-[#424242] w-full h-auto text-white p-5 rounded-[15px]">
+                      <div className="bg-[#424242] w-full h-auto text-white p-5 rounded-[10px]  md:rounded-[15px]">
                         <p className="md:text-[18px] text-center">Stay Still</p>
                         <p className="md:text-[14px] text-[12px] text-center ">Minimize movement while scanning</p>
                       </div>
-                      <div className="bg-[#424242] w-full h-auto text-white p-5 rounded-[15px]">
+                      <div className="bg-[#424242] w-full h-auto text-white p-5 rounded-[10px]  md:rounded-[15px]">
                         <p className="md:text-[18px] text-center">Face Visibility</p>
                         <p className="md:text-[14px] text-[12px] text-center ">Ensure your face is fully visible</p>
                       </div>
@@ -383,14 +392,14 @@ const [checkingReg, setCheckingReg] = useState<boolean>(false)
 
               {/* Navigation Buttons */}
               <div className="flex justify-between items-center md:gap-4">
-                <button type="button" className={`${progress ==1 ? "bg-[#BDBDBD]":"bg-[#8C2A8F] text-white"} px-6 py-3  rounded-full text-black font-medium"`} disabled={progress === 1} onClick={() => handleProgress(1)}>Back</button>
-                <button type="button" className={` ${progress ==1 ? "bg-[#8C2A8F]":"bg-gray-300 text-black"} px-6 py-3 rounded-full text-white font-medium"`} disabled={progress === 2} onClick={() => handleProgress(2)}>Next</button>
+                <button type="button" className={`${progress ==1 ? "bg-[#BDBDBD]":"bg-[#3333ff] text-white"} px-6 py-3  rounded-full text-black font-medium"`} disabled={progress === 1} onClick={() => handleProgress(1)}>Back</button>
+                <button type="button" className={` ${progress ==1 ? "bg-[#3333ff]":"bg-gray-300 text-black"} px-6 py-3 rounded-full text-white font-medium"`} disabled={progress === 2} onClick={() => handleProgress(2)}>Next</button>
               </div>
 
               {/* Submit Button */}
               <div className="flex items-center justify-center w-full">
                 <button type="submit" disabled={loading || !address || progress===1 || checkingReg} className={`mt-8 w-full px-6 py-4 rounded-xl text-lg font-bold transition duration-300 
-                  ${loading || !address ||progress!==2 ? 'bg-gray-700 text-gray-400 cursor-not-allowed' : 'bg-[#8C2A8F] text-white shadow-lg shadow-bg-[#8C2A8F] '}`}>
+                  ${loading || !address ||progress!==2 ? 'bg-gray-700 text-gray-400 cursor-not-allowed' : 'bg-[#3333ff] text-white shadow-lg shadow-bg-[#3333ff] '}`}>
                   {loading ? (
                     <div className="flex items-center justify-center">
                       <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -436,7 +445,7 @@ const [checkingReg, setCheckingReg] = useState<boolean>(false)
             <h3 className="text-lg font-semibold animate-pulse">{progressStatus}</h3>
             <div className="w-64 bg-gray-700 h-2 rounded-full overflow-hidden">
               <div
-                className="bg-[#8C2A8F] h-full transition-all duration-500"
+                className="bg-[#3333ff] h-full transition-all duration-500"
                 style={{
                   width:
                     progressStatus.includes("Uploading")

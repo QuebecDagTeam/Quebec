@@ -179,7 +179,7 @@ export const SignUpThirdParty: React.FC = () => {
         {(checkingRegistration || isRegistered === null) && isConnected && (
           <div className="fixed inset-0 bg-black bg-opacity-80 text-white z-50 flex items-center justify-center">
             <div className="text-center space-y-4">
-              <div className="animate-spin rounded-full h-10 w-10 border-t-4 border-[#8C2A8F] mx-auto" />
+              <div className="animate-spin rounded-full h-10 w-10 border-t-4 border-[#3333ff] mx-auto" />
               <p className="text-xl font-semibold">Checking registration status...</p>
             </div>
           </div>
@@ -187,13 +187,13 @@ export const SignUpThirdParty: React.FC = () => {
 
         {isConnected && isRegistered === false && (
           <>
-            <h1 className="text-3xl sm:text-4xl font-extrabold mb-8 text-center text-[#8C2A8F]">
+            <h1 className="text-3xl sm:text-4xl font-extrabold mb-8 text-center text-[#3333ff]">
               Register Your Third Party App
             </h1>
 
             <form
               onSubmit={handleSubmit}
-              className="w-full rounded-2xl max-w-4xl mx-auto space-y-8 border border-[#71627A] p-6"
+              className="w-full rounded-2xl max-w-4xl mx-auto space-y-8 border border-[#3333ff] p-6"
             >
               <div className="text-white">
                 <h2 className="text-xl font-semibold mb-4">App Details</h2>
@@ -257,7 +257,7 @@ export const SignUpThirdParty: React.FC = () => {
                   ${
                     loading || !address
                       ? "bg-gray-700 text-gray-400 cursor-not-allowed"
-                      : "bg-[#8C2A8F] text-white shadow-lg shadow-bg-[#8C2A8F]"
+                      : "bg-[#3333ff] text-white shadow-lg shadow-bg-[#3333ff]"
                   }`}
               >
                 {loading ? "Submitting..." : "Submit"}
@@ -279,7 +279,7 @@ export const SignUpThirdParty: React.FC = () => {
             </h2>
             <p className="text-gray-400">
               No further action is required. You might want to go to{" "}
-              <Link to="/thirdparty/dashboard" className="underline text-[#8C2A8F]">
+              <Link to="/thirdparty/dashboard" className="underline text-[#3333ff]">
                 dashboard
               </Link>
               .
@@ -304,7 +304,7 @@ export const SignUpThirdParty: React.FC = () => {
             </h3>
             <div className="w-64 bg-gray-700 h-2 rounded-full overflow-hidden">
               <div
-                className="bg-[#8C2A8F] h-full transition-all duration-500"
+                className="bg-[#3333ff] h-full transition-all duration-500"
                 style={{
                   width: progressStatus.includes("Encrypting")
                     ? "40%"

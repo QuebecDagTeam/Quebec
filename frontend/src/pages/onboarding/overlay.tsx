@@ -14,7 +14,7 @@ export const Overlay: React.FC<OverlayProps> = ({ onClose }) => {
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="cursor-pointer w-10 h-10 rounded-full flex items-center text-white fixed top-2 md:top-10 right-4 md:right-10 justify-center bg-[#8C2A8F]"
+          className="cursor-pointer w-10 h-10 rounded-full flex items-center text-white fixed top-2 md:top-10 right-4 md:right-10 justify-center bg-[#3333ff]"
         >
           <FaTimes />
         </button>
@@ -47,13 +47,13 @@ export const Overlay: React.FC<OverlayProps> = ({ onClose }) => {
             to="/sign_up/user"
             className="flex items-start gap-4 border border-[#2F2F2F] rounded-lg p-4 hover:bg-[#111111] transition"
           >
-            <div className="text-[#8C2A8F] mt-1">
+            <div className="text-[#3333ff] mt-1">
               <FaUser size={20} />
             </div>
             <div className="flex-1">
               <div className="flex items-center justify-between">
                 <p className="font-semibold text-[16px]">Continue as User</p>
-                <FaArrowRight className="text-[#8C2A8F]" />
+                <FaArrowRight className="text-[#3333ff]" />
               </div>
               <p className="text-[12px] text-gray-300 mt-1">
                 Manage your digital identity, control your data, and share your
@@ -67,7 +67,7 @@ export const Overlay: React.FC<OverlayProps> = ({ onClose }) => {
             to="/sign_up/third_party"
             className="flex items-start gap-4 border border-[#2F2F2F] rounded-lg p-4 hover:bg-[#111111] transition"
           >
-            <div className="text-[#8C2A8F] mt-1">
+            <div className="text-[#3333ff] mt-1">
               <FaUserEdit size={20} />
             </div>
             <div className="flex-1">
@@ -75,7 +75,7 @@ export const Overlay: React.FC<OverlayProps> = ({ onClose }) => {
                 <p className="font-semibold text-[16px]">
                   Continue as Third Party
                 </p>
-                <FaArrowRight className="text-[#8C2A8F]" />
+                <FaArrowRight className="text-[#3333ff]" />
               </div>
               <p className="text-[12px] text-gray-300 mt-1">
                 Integrate with Quebec to verify user identities with their

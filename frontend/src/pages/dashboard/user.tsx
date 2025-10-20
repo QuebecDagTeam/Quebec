@@ -97,7 +97,7 @@ export const Dash = () => {
         
         {/* Header */}
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl lg:text-3xl font-semibold text-[#8C2A8F]">Welcome {Data?.fullName}</h1>
+          <h1 className="text-2xl lg:text-3xl font-semibold text-gradient">Welcome {Data?.fullName}</h1>
           <Link to='/notifications'> <FaBell size={28} /></Link>
         </div>
 
