@@ -324,7 +324,7 @@ const [checkingReg, setCheckingReg] = useState<boolean>(false)
                       {
                         checkingReg  ?             
                         <div className="animate-spin rounded-full h-5 w-5 border-t-4 border-[#3333ff] mx-auto" />
-                        : <span>{isReg.isNIN? "Nin taken":""}</span>
+                        : <small className="text-red-500">{isReg.isNIN? "This ID is already Registered in our system":""}</small>
 
                       }
                       </div>
@@ -339,7 +339,7 @@ const [checkingReg, setCheckingReg] = useState<boolean>(false)
                         {
                         checkingReg  ?             
                         <div className="animate-spin rounded-full h-5 w-5 border-t-4 border-[#3333ff] mx-auto" />
-                        : <span>{isReg.isEmail? "Nin taken":""}</span>
+                        : <span>{isReg.isEmail? "This ID is already Registered in our system":""}</span>
 
                       }
                       </div>

@@ -34,7 +34,7 @@ export const Team = () => {
   return (
     <section className="w-full py-16 bg-black">
       <div className="text-center mb-10 px-4">
-        <h2 className="text-3xl md:text-4xl font-bold text-gray-800">Our Team</h2>
+        <h2 className="text-3xl md:text-4xl font-bold text-white">Our Team</h2>
         <p className="text-gray-600 mt-2 text-lg">
           Meet the brilliant minds behind <span className="font-semibold text-indigo-600">Quebec</span>
         </p>

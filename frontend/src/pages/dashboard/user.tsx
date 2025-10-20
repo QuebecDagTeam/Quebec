@@ -10,7 +10,7 @@ import {
   MdSupport,
   MdLogout,
 } from "react-icons/md";
-import UserImg from "../../assets/user.jpg";
+// import UserImg from "../../assets/user.jpg";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { decryptData } from "../../components/encrypt";
@@ -22,11 +22,15 @@ interface KYCData {
   fullName: string;
   email: string;
   dob: string;
-  govIdType: string;
+  ID: {
+    type:string;
+    number:any
+  };
   NIN: string;
   phone: string;
   walletAddress: string;
   residentialAddress: string;
+  image:string
 }
 
 
@@ -84,12 +88,11 @@ export const Dash = () => {
   
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
-
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-[#000306] text-white">
       
       {/* Sidebar */}
-      <Sidebar name={Data?.fullName}/>
+      <Sidebar name={Data?.fullName || ""}  image={Data?.image|| ""}/>
       <MobileFooterNav/>
 
       {/* Main Content */}
@@ -121,7 +124,7 @@ export const Dash = () => {
 
             {/* Profile Image + Button */}
             <div className="flex items-center justify-between mb-6">
-              <img src={User} className="w-[100px] h-[100px] rounded-full object-cover" alt="User" />
+              <img src={Data?.image} className="w-[100px] h-[100px] rounded-full object-cover" alt="User" />
               <button className="me px-4 py-2 rounded text-sm">Edit Profile</button>
             </div>
 
@@ -131,7 +134,11 @@ export const Dash = () => {
               <div className="space-y-4">
                 <Input label="Full Name" placeholder="Enter Full Name" value={Data?.fullName || ''} name="fullName" action={() => {}} />
                 <Input label="Date of Birth" placeholder="Enter Date of Birth" value={Data?.dob || ''} name="dob" action={() => {}} />
-                <Input label="Government ID Type" placeholder="Enter Government ID Type" value={Data?.NIN || ''} name="govIdType" action={() => {}} />
+                <Input label="Date of Birth" placeholder="Enter Date of Birth" value={Data?.email || ''} name="dob" action={() => {}} />
+                <Input label="Government ID Type" placeholder="Enter Government ID Type" value={Data?.ID?.type || ''} name="govIdType" action={() => {}} />
+                <Input label="Government ID Type" placeholder="Enter Government ID Type" value={Data?.ID?.number || ''} name="govIdType" action={() => {}} />
+                <Input label="Government ID Type" placeholder="Enter Government ID Type" value={Data?.phone || ''} name="govIdType" action={() => {}} />
+                <Input label="Government ID Type" placeholder="Enter Government ID Type" value={Data?.residentialAddress || ''} name="govIdType" action={() => {}} />
               </div>
             </div>
           </div>
@@ -144,11 +151,11 @@ export const Dash = () => {
         </section>
         <section>
             <p>Access History</p>
-            <div className="overflow-x-auto mt-8">
+            <div className="overflow-x-auto mt-8 pb-20">
   <table className="min-w-full text-sm text-left rounded overflow-hidden">
     
     {/* Table Head */}
-    <thead className="bg-[#424242] text-white">
+    <thead className="bg-[#424242] text-white ">
       <tr>
         <th className="px-4 py-3">Application</th>
         <th className="px-4 py-3">Date</th>
@@ -192,10 +199,25 @@ export const Dash = () => {
 
 
 
+interface ISide_Bar{
+  name:string,
+  image:string
+}
 
 
-export const Sidebar = ({ name }: any) => {
+export const Sidebar = ({ name, image }: ISide_Bar) => {
   const [active, setActive] = useState("dashboard");
+  const {login} = useUser();
+  const navigate = useNavigate()
+  const handleLogout = () =>{
+    navigate('/')
+    login({
+        id: '',
+        walletAddress: '',
+        role: '',
+        token:'',
+      });  
+    }
 
   return (
     <aside className="hidden md:flex md:flex-col bg-[#2F2F2F] text-white w-[260px] h-screen sticky top-0 left-0 overflow-y-auto">
@@ -229,7 +251,7 @@ export const Sidebar = ({ name }: any) => {
       <div className="px-6 pb-6 mt-auto">
         <div className="flex lg:flex-row flex-col items-start gap-3 mb-4">
           <img
-            src={UserImg}
+            src={image}
             alt="User"
             className="w-[32px] h-[32px] rounded-full object-cover"
           />
@@ -238,7 +260,7 @@ export const Sidebar = ({ name }: any) => {
 
         <div className="flex items-center gap-3 text-red-500 cursor-pointer hover:text-red-600 transition">
           <MdLogout size={20} />
-          <span className="text-[15px] font-medium">Log Out</span>
+          <span className="text-[15px] font-medium" onClick={()=>{handleLogout()}}>Log Out</span>
         </div>
       </div>
     </aside>

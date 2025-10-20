@@ -181,7 +181,7 @@ export const Sidebar = () => {
   const [active, setActive] = useState("dashboard");
 
   return (
-    <aside className="bg-[#2F2F2F] md:w-1/4 hidden md:block fixed md:static top-0 left-0 h-screen flex flex-col justify-between text-white z-50">
+    <aside className="hidden md:flex md:flex-col bg-[#2F2F2F] text-white w-[260px] h-screen sticky top-0 left-0 overflow-y-auto">
       
       {/* Top: Logo + Navigation */}
       <div>

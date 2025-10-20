@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import Hero from "../../assets/hero-g1.png";
 import { ConnectButton } from "../../components/connectBTN";
 export const HeroSection = () => {
@@ -18,7 +19,7 @@ export const HeroSection = () => {
             Verify once, Access Everytime and for Life.        </p>
           <div className="mt-1 hidden md:flex flex-col lg:flex-row gap-2 ">
             <ConnectButton />
-            <button className="login text-white text-sm">Login</button>
+            <Link to="/sign_in" className="login text-white text-sm text-center">Login</Link>
           </div>
           <div>
             {/* <img src={Hero2}/>         */}
@@ -26,10 +27,9 @@ export const HeroSection = () => {
         </div>
         <img src={Hero} className="flex-1 w-full md:w-1/2 bg-blur-sm" />
         <div className="mt-1 md:hidden flex flex-col w-full gap-2 px-3 mb-3">
-          <ConnectButton />
-          <button className="login text-white text-sm">Login</button>
+          <ConnectButton/>
+          <Link to="/sign_in/" className="login text-white text-sm text-center">Login</Link>
         </div>
-
       </aside>
     </section>
 
