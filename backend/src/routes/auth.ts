@@ -17,8 +17,8 @@ AuthRoute.post("/register", Register)
 .get("/isRegistered_thirdParty/:walletAddress", isRegistered_thirdParty)
 .post("/login", Login)
 .get("/isRegistered/:walletAddress", isWalletRegistered)
-.get("/is_id/:type/:number", isIDRegistered)
-.get("/is_emaill/:email", isEmailRegistered);
+.get("/is_id/:idType/:idNumber", isIDRegistered)
+.get("/is_email/:email", isEmailRegistered);
 
 
 export default AuthRoute;

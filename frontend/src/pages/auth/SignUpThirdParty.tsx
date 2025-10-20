@@ -193,7 +193,7 @@ export const SignUpThirdParty: React.FC = () => {
 
             <form
               onSubmit={handleSubmit}
-              className="w-full rounded-2xl max-w-4xl mx-auto space-y-8 border border-[#3333ff] p-6"
+              className="w-full rounded-2xl max-w-4xl mx-auto space-y-8 border-2 border-[#3333ff] p-6"
             >
               <div className="text-white">
                 <h2 className="text-xl font-semibold mb-4">App Details</h2>

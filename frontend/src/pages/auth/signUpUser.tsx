@@ -111,7 +111,7 @@ const [checkingReg, setCheckingReg] = useState<boolean>(false)
           `https://quebec-ur3w.onrender.com/api/kyc/auth/is_id/${formData.ID.type}/${formData.ID.number}`
         ),
         fetch(
-          `https://quebec-ur3w.onrender.com/api/kyc/auth/is_email/${formData.email}`
+          `https://quebec-ur3w.onrender.com/api/kyc/auth/is_emaill/${formData.email}`
         ),
       ]);
 
@@ -298,7 +298,7 @@ const [checkingReg, setCheckingReg] = useState<boolean>(false)
             <form onSubmit={handleSubmit} className="w-full max-w-4xl mx-auto space-y-8">
               {progress === 1 && (
                 <div className="text-white">
-                  <aside className="p-6 border border-[#3333ff] rounded-2xl mb-8">
+                  <aside className="p-6 rounded-2xl mb-8">
                     <h2 className="text-xl font-semibold mb-4">Personal Details</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <Input label="Full Name" name="fullName" placeholder="Enter your full name" value={formData.fullName} action={handleChange} />
@@ -331,7 +331,7 @@ const [checkingReg, setCheckingReg] = useState<boolean>(false)
                     </div>
                   </aside>
 
-                  <aside className="p-6 border border-[#3333ff] rounded-2xl">
+                  <aside className="p-6  rounded-2xl">
                     <h2 className="text-xl font-semibold mb-4">Contact Information</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="flex items-center flex-col gap-2">
