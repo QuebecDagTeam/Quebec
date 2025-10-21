@@ -15,6 +15,7 @@ import { decryptData } from "../../components/encrypt";
 import { useAccount } from "wagmi";
 import { FaBell } from "react-icons/fa";
 import { useUser } from "../../contexts/UserContext";
+import { Notify } from "../notifications";
 
 interface KYCData {
   fullName: string;
@@ -49,7 +50,7 @@ export const Dash = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [id, setId] = useState<string | null>(null);
-
+  const [show, setShow] = useState<boolean>(false)
   useEffect(() => {
     if (!user?.role || !user?.token) {
       navigate("/sign_in");
@@ -93,7 +94,28 @@ export const Dash = () => {
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
 
+
+  // const handleShow = () => {
+  //   setShow(true)
+  // }
   return (
+    <>
+   {show && (
+  <div
+    className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-start z-50 overflow-hidden"
+    onClick={() => setShow(false)} // close when clicking outside
+  >
+    <div
+      className={`mt-20 w-[90%] md:w-[400px] bg-[#1f1f1f] rounded-xl shadow-lg overflow-hidden transform transition-all duration-500 ease-in-out ${
+        show ? 'translate-y-0 opacity-100' : '-translate-y-10 opacity-0'
+      }`}
+      onClick={(e) => e.stopPropagation()} // prevents close when clicking inside
+    >
+      <Notify />
+    </div>
+  </div>
+)}
+
     <div className="flex flex-col md:flex-row min-h-screen bg-[#000306] text-white">
       {/* Sidebar */}
       <Sidebar name={Data?.fullName || ""} image={Data?.image || ""} />
@@ -106,9 +128,9 @@ export const Dash = () => {
           <h1 className="text-2xl lg:text-3xl font-semibold gradient-text ">
             Welcome {Data?.fullName}
           </h1>
-          <Link to="/notifications">
+          <button onClick={()=>setShow(true)}>
             <FaBell size={28} />
-          </Link>
+          </button>
         </div>
 
         {/* KYC Profile Section */}
@@ -120,7 +142,7 @@ export const Dash = () => {
                 <p className="text-sm text-[#5FFF92] font-medium text-[12px]">
                   Wallet Address
                 </p>
-                <p className="text-lg font-semibold text-[12px]">{address}</p>
+                <small className="text-sm font-semibold md:text-[12px] text-[10px]">{address}</small>
               </div>
               <div>
                 <p className="text-sm text-[#5FFF92] font-medium text-[12px]">
@@ -209,6 +231,7 @@ export const Dash = () => {
         </section>
       </main>
     </div>
+     </>
   );
 };
 

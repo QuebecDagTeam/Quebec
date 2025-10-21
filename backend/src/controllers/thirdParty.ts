@@ -46,9 +46,9 @@ export const requestAccess = async (req: Request, res: Response) => {
 
     // 2️⃣ Find the third-party app making the request
     const thirdPartyApp = await ThirdParty.findOne({ walletAddress: address });
-    // if (!thirdPartyApp) {
-    //   return res.status(404).json({ error: "Third-party app not found" });
-    // }
+    if (!thirdPartyApp) {
+      return res.status(404).json({ error: "Third-party app not found" });
+    }
 
     // 3️⃣ Create a new notification document
     const notification = new NotificationModel({
