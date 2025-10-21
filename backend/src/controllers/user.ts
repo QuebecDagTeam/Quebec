@@ -135,9 +135,9 @@ export const updateNotification = async (req: AuthenticatedRequest, res: Respons
  */
 export const controlAccess = async (req: AuthenticatedRequest, res: Response): Promise<Response> => {
   try {
-    const { uniqueId, recipient, txHash, walletAddress, accessType } = req.body;
+    const { uniqueId, recipient,  walletAddress, accessType } = req.body;
 
-    if (!uniqueId || !recipient || !txHash || !walletAddress || !accessType) {
+    if (!uniqueId || !recipient  || !walletAddress || !accessType) {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
@@ -175,7 +175,6 @@ export const controlAccess = async (req: AuthenticatedRequest, res: Response): P
       });
     }
 
-    userDoc.kyc.transactionHash = txHash;
     await userDoc.save();
 
     const thirdPartyDoc = await ThirdParty.findOne({ walletAddress: recipient });
