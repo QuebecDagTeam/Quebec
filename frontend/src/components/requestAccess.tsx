@@ -10,7 +10,7 @@ export const RequestAccess: React.FC<Props> = ({ thirdPartyAddress }) => {
   const [id, setID] = useState<string>("");
 
   const handleRequestAccess = async (e?: React.FormEvent) => {
-    if (e) e.preventDefault(); // ✅ prevent page reload
+    if (e) e.preventDefault();
 
     if (!thirdPartyAddress || !id.trim()) {
       setMessage("Missing uniqueId or thirdPartyAddress");
@@ -23,8 +23,14 @@ export const RequestAccess: React.FC<Props> = ({ thirdPartyAddress }) => {
 
     try {
       const res = await fetch(
-        `https://quebec-ur3w.onrender.com/api/kyc/request/${id}/${thirdPartyAddress}`,
-        { method: "POST" }
+        `https://quebec-ur3w.onrender.com/api/kyc/thirdParty/request/${thirdPartyAddress}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ uniqueId: id }), // ✅ send ID as body
+        }
       );
 
       if (!res.ok) {
@@ -57,7 +63,7 @@ export const RequestAccess: React.FC<Props> = ({ thirdPartyAddress }) => {
   };
 
   return (
-    <div className="bg-[#333]  p-4 rounded-lg text-white w-full max-w-md">
+    <div className="bg-[#333] p-4 rounded-lg text-white w-full max-w-md">
       <form onSubmit={handleRequestAccess} className="space-y-3">
         <input
           type="text"

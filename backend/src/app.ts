@@ -16,7 +16,7 @@ app.use(cors());
 ConnectDB(true)
 
 app.use("/api/kyc/user", UserRoute);
-app.use("/api/kyc/thirdPrty", ThirdPartyRoute);
+app.use("/api/kyc/thirdParty", ThirdPartyRoute);
 app.use("/api/kyc/auth", AuthRoute);
 
 
