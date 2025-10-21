@@ -6,6 +6,6 @@ import {
 } from "../controllers/thirdParty";
 
 const ThirdPartyRoute = express.Router();
-ThirdPartyRoute.post("/request/:uniqueId/:adress", requestAccess)
+ThirdPartyRoute.post("/request/:address", requestAccess)
 .get('/record/:address', getThirdPartyRecord)
 export default ThirdPartyRoute;
