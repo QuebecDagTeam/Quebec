@@ -9,7 +9,6 @@ import {
   MdSupport,
   MdLogout,
 } from "react-icons/md";
-// import UserImg from "../../assets/user.jpg";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { decryptData } from "../../components/encrypt";
@@ -22,17 +21,15 @@ interface KYCData {
   email: string;
   dob: string;
   ID: {
-    type:string;
-    number:any
+    type: string;
+    number: any;
   };
   NIN: string;
   phone: string;
   walletAddress: string;
   residentialAddress: string;
-  image:string
+  image: string;
 }
-
-
 
 const navItems = [
   { name: "Dashboard", icon: <MdDashboard size={24} />, path: "dashboard" },
@@ -42,36 +39,46 @@ const navItems = [
   { name: "Settings", icon: <MdSettings size={24} />, path: "settings" },
   { name: "Support", icon: <MdSupport size={24} />, path: "support" },
 ];
+
 export const Dash = () => {
-      const { address } = useAccount();
+  const { address } = useAccount();
+  const { user } = useUser();
+  const navigate = useNavigate();
 
   const [Data, setDecryptedData] = useState<KYCData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [id, setId] = useState<string | null>(null);
 
-    const {user} = useUser();
-    const navigate = useNavigate()
-    useEffect(()=>{
-      user?.role==='' && navigate("/sign_in")
-    }, [user])
-  
+  useEffect(() => {
+    if (!user?.role || !user?.token) {
+      navigate("/sign_in");
+    }
+  }, [user, navigate]);
+
   useEffect(() => {
     const fetchKYCData = async () => {
+      if (!address || !user?.token) return;
+
       try {
-        const response = await fetch(`https://quebec-ur3w.onrender.com/api/kyc/user/${address}`);
+        const response = await fetch(
+          `https://quebec-ur3w.onrender.com/api/kyc/user/${address}`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${user.token}`,
+            },
+          }
+        );
 
         if (!response.ok) {
-          throw new Error('Failed to fetch KYC data');
+          throw new Error("Failed to fetch KYC data");
         }
 
         const data = await response.json();
-
-        // Decrypt the data
         setId(data?.kycDetails?.uniqueId || null);
-        console.log(data)
+
         const decrypted = decryptData(data?.kycDetails?.encryptedData);
-        console.log("Decrypted Data:", decrypted);
         setDecryptedData(decrypted);
         setLoading(false);
       } catch (error: any) {
@@ -81,53 +88,62 @@ export const Dash = () => {
     };
 
     fetchKYCData();
-  }, [address]);
+  }, [address, user?.token]);
 
-
-  
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
+
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-[#000306] text-white">
-      
       {/* Sidebar */}
-      <Sidebar name={Data?.fullName || ""}  image={Data?.image|| ""}/>
-      <MobileFooterNav/>
+      <Sidebar name={Data?.fullName || ""} image={Data?.image || ""} />
+      <MobileFooterNav />
 
       {/* Main Content */}
       <main className="flex-1 mt-[5px] md:mt-[20px] lg:mt-0 w-full px-6 lg:px-5 py-10">
-        
         {/* Header */}
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl lg:text-3xl font-semibold gradient-text ">Welcome {Data?.fullName}</h1>
-          <Link to='/notifications'> <FaBell size={28} /></Link>
+          <h1 className="text-2xl lg:text-3xl font-semibold gradient-text ">
+            Welcome {Data?.fullName}
+          </h1>
+          <Link to="/notifications">
+            <FaBell size={28} />
+          </Link>
         </div>
 
-        {/* Content Sections */}
+        {/* KYC Profile Section */}
         <section className="flex flex-col lg:flex-row gap-10 mt-10">
-          
           {/* Profile Card */}
           <div className="bg-[#2F2F2F] rounded-lg p-6 flex-1">
-            
-            {/* Top Info */}
             <div className="flex flex-col sm:flex-row justify-between gap-4 mb-6">
               <div>
-                <p className="text-sm text-[#5FFF92] font-medium text-[12px]">Wallet Address</p>
+                <p className="text-sm text-[#5FFF92] font-medium text-[12px]">
+                  Wallet Address
+                </p>
                 <p className="text-lg font-semibold text-[12px]">{address}</p>
               </div>
               <div>
-                <p className="text-sm text-[#5FFF92] font-medium text-[12px]">Unique ID</p>
-                <p className="text-lg font-semibold text-[12px]">{id|| ''}</p>
+                <p className="text-sm text-[#5FFF92] font-medium text-[12px]">
+                  Unique ID
+                </p>
+                <p className="text-lg font-semibold text-[12px]">{id || ""}</p>
               </div>
             </div>
 
-            {/* Profile Image + Button */}
+            {/* Image */}
             <div className="flex items-center justify-between mb-6">
-              <img src={Data?.image} className="w-[100px] h-[100px] rounded-full object-cover" alt="User" />
-              <button className="me px-4 py-2 rounded text-sm">Edit Profile</button>
+              <img
+                src={Data?.image}
+                className="w-[100px] h-[100px] rounded-full object-cover"
+                alt="User"
+              />
+              <button className="me px-4 py-2 rounded text-sm">
+                Edit Profile
+              </button>
             </div>
 
-            {/* KYC Form */}
+            {/* KYC Info */}
+                        {/* KYC Form */}
             <div>
               <p className="font-semibold mb-4">Stored KYC Data</p>
               <div className="space-y-4">
@@ -148,79 +164,76 @@ export const Dash = () => {
             {/* Add access controls here */}
           </div>
         </section>
+
+        {/* Access History */}
         <section>
-            <p>Access History</p>
-            <div className="overflow-x-auto mt-8 pb-20">
-  <table className="min-w-full text-sm text-left rounded overflow-hidden">
-    
-    {/* Table Head */}
-    <thead className="bg-[#424242] text-white ">
-      <tr>
-        <th className="px-4 py-3">Application</th>
-        <th className="px-4 py-3">Date</th>
-        <th className="px-4 py-3">Time</th>
-        <th className="px-4 py-3">Action</th>
-      </tr>
-    </thead>
-
-    {/* Table Body */}
-    <tbody className="text-white">
-      <tr className="bg-[#6A5F5F33]">
-        <td className="px-4 py-3">FinTech</td>
-        <td className="px-4 py-3">15-08-2023</td>
-        <td className="px-4 py-3">8:00 PM</td>
-        <td className="px-4 py-3 text-red-500 font-semibold">Access Revoked</td>
-      </tr>
-
-      <tr className="bg-[#6A5F5F33]">
-        <td className="px-4 py-3">E-commerce</td>
-        <td className="px-4 py-3">15-08-2023</td>
-        <td className="px-4 py-3">8:00 PM</td>
-        <td className="px-4 py-3 text-green-500 font-semibold">Access Granted</td>
-      </tr>
-
-      <tr className="bg-[#6A5F5F33]">
-        <td className="px-4 py-3">Social Media Platform</td>
-        <td className="px-4 py-3">15-08-2023</td>
-        <td className="px-4 py-3">8:00 PM</td>
-        <td className="px-4 py-3 text-green-500 font-semibold">Access Granted</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-{/* <KYCComponent userAddress="0x68c9313f05d95Ed6A0D3715EadDcCd35A81FDEc8"/>
-<KYCDelete walletAddress="0x68c9313f05d95Ed6A0D3715EadDcCd35A81FDEc8"/> */}
+          <p>Access History</p>
+          <div className="overflow-x-auto mt-8 pb-20">
+            <table className="min-w-full text-sm text-left rounded overflow-hidden">
+              <thead className="bg-[#424242] text-white">
+                <tr>
+                  <th className="px-4 py-3">Application</th>
+                  <th className="px-4 py-3">Date</th>
+                  <th className="px-4 py-3">Time</th>
+                  <th className="px-4 py-3">Action</th>
+                </tr>
+              </thead>
+              <tbody className="text-white">
+                <tr className="bg-[#6A5F5F33]">
+                  <td className="px-4 py-3">FinTech</td>
+                  <td className="px-4 py-3">15-08-2023</td>
+                  <td className="px-4 py-3">8:00 PM</td>
+                  <td className="px-4 py-3 text-red-500 font-semibold">
+                    Access Revoked
+                  </td>
+                </tr>
+                <tr className="bg-[#6A5F5F33]">
+                  <td className="px-4 py-3">E-commerce</td>
+                  <td className="px-4 py-3">15-08-2023</td>
+                  <td className="px-4 py-3">8:00 PM</td>
+                  <td className="px-4 py-3 text-green-500 font-semibold">
+                    Access Granted
+                  </td>
+                </tr>
+                <tr className="bg-[#6A5F5F33]">
+                  <td className="px-4 py-3">Social Media Platform</td>
+                  <td className="px-4 py-3">15-08-2023</td>
+                  <td className="px-4 py-3">8:00 PM</td>
+                  <td className="px-4 py-3 text-green-500 font-semibold">
+                    Access Granted
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </section>
       </main>
     </div>
   );
 };
 
-
-
-interface ISide_Bar{
-  name:string,
-  image:string
+interface ISide_Bar {
+  name: string;
+  image: string;
 }
-
 
 export const Sidebar = ({ name, image }: ISide_Bar) => {
   const [active, setActive] = useState("dashboard");
-  const {login} = useUser();
-  const navigate = useNavigate()
-  const handleLogout = () =>{
-    navigate('/')
+  const { login } = useUser();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    navigate("/");
     login({
-        id: '',
-        walletAddress: '',
-        role: '',
-        token:'',
-      });  
-    }
+      id: "",
+      walletAddress: "",
+      role: "",
+      token: "",
+    });
+  };
 
   return (
     <aside className="hidden md:flex md:flex-col bg-[#2F2F2F] text-white w-[260px] h-screen sticky top-0 left-0 overflow-y-auto">
-      {/* Top: Logo + Navigation */}
       <div>
         <div className="flex items-center gap-4 px-6 py-6">
           <img src={Logo} className="w-[48px] h-[48px] rounded-full" alt="Logo" />
@@ -246,7 +259,6 @@ export const Sidebar = ({ name, image }: ISide_Bar) => {
         </nav>
       </div>
 
-      {/* Bottom: User Info + Logout */}
       <div className="px-6 pb-6 mt-auto">
         <div className="flex lg:flex-row flex-col items-start gap-3 mb-4">
           <img
@@ -257,16 +269,17 @@ export const Sidebar = ({ name, image }: ISide_Bar) => {
           <p className="text-[15px] font-medium">{name}</p>
         </div>
 
-        <div className="flex items-center gap-3 text-red-500 cursor-pointer hover:text-red-600 transition">
+        <div
+          className="flex items-center gap-3 text-red-500 cursor-pointer hover:text-red-600 transition"
+          onClick={handleLogout}
+        >
           <MdLogout size={20} />
-          <span className="text-[15px] font-medium" onClick={()=>{handleLogout()}}>Log Out</span>
+          <span className="text-[15px] font-medium">Log Out</span>
         </div>
       </div>
     </aside>
   );
 };
-
-
 
 const mobileNavItems = [
   { name: "Dashboard", icon: <MdDashboard size={24} />, path: "dashboard" },

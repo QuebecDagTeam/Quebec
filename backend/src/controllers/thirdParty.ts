@@ -44,7 +44,7 @@ export const getThirdPartyRecord = async (req: Request, res: Response) => {
       const notification = new NotificationModel({
         walletAddress: user.walletAddress,
         from: thirdPartyApp?.appName || "Unknown App",
-        to: uniqueId,
+        uniqueId,
         type: "access_request",
         message: `Access request from ${thirdPartyApp?.appName || "Unknown App"}`,
       });

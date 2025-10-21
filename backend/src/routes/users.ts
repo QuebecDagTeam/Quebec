@@ -6,11 +6,12 @@ import deleteKYC, {
   updateNotification,
   controlAccess,
 } from "../controllers/user";
+import { authMiddleware } from "../middleware.ts/authMiddleware";
 
 const UserRoute = express.Router()
-UserRoute.get('/:walletAddress', getRecordByAddress)
-.delete('/delete/:walletAddress', deleteKYC)
-.get("/notifications/:to", getNotification)
-.patch("/read", updateNotification)
-.patch("/control_access", controlAccess);
+UserRoute.get('/:walletAddress', authMiddleware, getRecordByAddress)
+.delete('/delete/:walletAddress', authMiddleware, deleteKYC)
+.get("/notifications/:walletAddress/:uniqueId", authMiddleware, getNotification)
+.patch("/read", authMiddleware, updateNotification)
+.patch("/control_access/:walletAddress", authMiddleware, controlAccess);
 export default UserRoute;

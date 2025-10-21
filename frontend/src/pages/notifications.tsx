@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useAccount } from "wagmi";
+import { useUser } from "../contexts/UserContext";
 
 interface Notification {
   _id: string;
@@ -15,7 +16,8 @@ interface Notification {
 
 export const Notify: React.FC = () => {
   const { address } = useAccount();
-
+  const { user } = useUser(); // ✅ get user (for token)
+  
   const [uniqueId, setUniqueId] = useState<string>("");
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -24,30 +26,53 @@ export const Notify: React.FC = () => {
   // ✅ Fetch KYC Data (to get uniqueId)
   useEffect(() => {
     const fetchKYCData = async () => {
-      if (!address) return;
+      if (!address || !user?.token) return;
       try {
-        const res = await fetch(`https://quebec-ur3w.onrender.com/api/kyc/user/${address}`);
+        const res = await fetch(
+          `https://quebec-ur3w.onrender.com/api/kyc/user/${address}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${user?.token}`, // ✅ Bearer token added
+            },
+          }
+        );
+
         if (!res.ok) throw new Error("Failed to fetch KYC data");
+
         const data = await res.json();
         setUniqueId(data?.kycDetails?.uniqueId || "");
       } catch (error: any) {
         setMessage(error.message || "Error fetching KYC data");
       }
     };
+
     fetchKYCData();
-  }, [address]);
+  }, [address, user?.token]);
 
   // ✅ Fetch Notifications for this uniqueId
   useEffect(() => {
     const fetchNotifications = async () => {
-      if (!uniqueId) return;
+      if (!uniqueId || !user?.token) return;
       setLoading(true);
       try {
-        const res = await fetch(`https://quebec-ur3w.onrender.com/api/kyc/notifications/${uniqueId}`);
+        const res = await fetch(
+          `https://quebec-ur3w.onrender.com/api/kyc/notifications/${address}/${uniqueId}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${user?.token}`, // ✅ Bearer token added
+            },
+          }
+        );
+
         if (!res.ok) {
           setNotifications([]);
           return;
         }
+
         const data = await res.json();
         setNotifications(data.notifications || []);
       } catch (error: any) {
@@ -57,11 +82,12 @@ export const Notify: React.FC = () => {
         setLoading(false);
       }
     };
+
     fetchNotifications();
-  }, [uniqueId]);
+  }, [uniqueId, address, user?.token]);
 
   return (
-    <section className="bg-[#000000] min-h-screen text-white p-6 max-w-3xl mx-auto font-inter flex flex-col Items-start justify-start">
+    <section className="bg-[#000000] min-h-screen text-white p-6 max-w-3xl mx-auto font-inter flex flex-col items-start justify-start">
       <div>
         <p className="text-[18px] font-[600] mb-3">Notifications</p>
       </div>
