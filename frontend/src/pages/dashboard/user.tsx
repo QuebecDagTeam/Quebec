@@ -40,7 +40,11 @@ const navItems = [
   { name: "Settings", icon: <MdSettings size={24} />, path: "settings" },
   { name: "Support", icon: <MdSupport size={24} />, path: "support" },
 ];
-
+interface ITABLE {
+  appName:string;
+  date:any;
+  status:string
+}
 export const Dash = () => {
   const { address } = useAccount();
   const { user } = useUser();
@@ -50,7 +54,9 @@ export const Dash = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [id, setId] = useState<string | null>(null);
-  const [show, setShow] = useState<boolean>(false)
+  const [show, setShow] = useState<boolean>(false);
+  const [tableData, setTableData] = useState<ITABLE[]>([]);
+
   useEffect(() => {
     if (!user?.role || !user?.token) {
       navigate("/sign_in");
@@ -62,6 +68,9 @@ export const Dash = () => {
       if (!address || !user?.token) return;
 
       try {
+        setLoading(true);
+        setError(null);
+
         const response = await fetch(
           `https://quebec-ur3w.onrender.com/api/kyc/user/${address}`,
           {
@@ -72,18 +81,18 @@ export const Dash = () => {
           }
         );
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch KYC data");
-        }
+        if (!response.ok) throw new Error("Failed to fetch KYC data");
 
         const data = await response.json();
-        setId(data?.kycDetails?.uniqueId || null);
+        console.log("Fetched KYC:", data);
 
+        setId(data?.kycDetails?.uniqueId || null);
+        setTableData(data?.thirdarty || []); // ✅ handle if null or undefined
         const decrypted = decryptData(data?.kycDetails?.encryptedData);
         setDecryptedData(decrypted);
-        setLoading(false);
-      } catch (error: any) {
-        setError(error.message);
+      } catch (err: any) {
+        setError(err.message || "An error occurred while fetching data");
+      } finally {
         setLoading(false);
       }
     };
@@ -91,149 +100,155 @@ export const Dash = () => {
     fetchKYCData();
   }, [address, user?.token]);
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error}</p>;
-
-
-  // const handleShow = () => {
-  //   setShow(true)
-  // }
   return (
     <>
-   {show && (
-  <div
-    className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-start z-50 overflow-hidden"
-    onClick={() => setShow(false)} // close when clicking outside
-  >
-    <div
-      className={`mt-20 w-[90%] md:w-[400px] bg-[#1f1f1f] rounded-xl shadow-lg overflow-hidden transform transition-all duration-500 ease-in-out ${
-        show ? 'translate-y-0 opacity-100' : '-translate-y-10 opacity-0'
-      }`}
-      onClick={(e) => e.stopPropagation()} // prevents close when clicking inside
-    >
-      <Notify />
-    </div>
-  </div>
-)}
-
-    <div className="flex flex-col md:flex-row min-h-screen bg-[#000306] text-white">
-      {/* Sidebar */}
-      <Sidebar name={Data?.fullName || ""} image={Data?.image || ""} />
-      <MobileFooterNav />
-
-      {/* Main Content */}
-      <main className="flex-1 mt-[5px] md:mt-[20px] lg:mt-0 w-full px-6 lg:px-5 py-10">
-        {/* Header */}
-        <div className="flex justify-between items-center">
-          <h1 className="text-2xl lg:text-3xl font-semibold gradient-text ">
-            Welcome {Data?.fullName}
-          </h1>
-          <button onClick={()=>setShow(true)}>
-            <FaBell size={28} />
-          </button>
+      {/* Notification overlay */}
+      {show && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-start z-50"
+          onClick={() => setShow(false)}
+        >
+          <div
+            className={`mt-20 w-[90%] md:w-[400px] bg-[#1f1f1f] rounded-xl shadow-lg transition-all duration-500 ease-in-out`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Notify />
+          </div>
         </div>
+      )}
 
-        {/* KYC Profile Section */}
-        <section className="flex flex-col lg:flex-row gap-10 mt-10">
-          {/* Profile Card */}
-          <div className="bg-[#2F2F2F] rounded-lg p-6 flex-1">
-            <div className="flex flex-col sm:flex-row justify-between gap-4 mb-6">
-              <div>
-                <p className="text-sm text-[#5FFF92] font-medium text-[12px]">
-                  Wallet Address
-                </p>
-                <small className="text-sm font-semibold md:text-[12px] text-[10px]">{address}</small>
-              </div>
-              <div>
-                <p className="text-sm text-[#5FFF92] font-medium text-[12px]">
-                  Unique ID
-                </p>
-                <p className="text-lg font-semibold text-[12px]">{id || ""}</p>
-              </div>
-            </div>
+      <div className="flex flex-col md:flex-row min-h-screen bg-[#000306] text-white">
+        {/* Sidebar */}
+        <Sidebar name={Data?.fullName || ""} image={Data?.image || ""} />
+        <MobileFooterNav />
 
-            {/* Image */}
-            <div className="flex items-center justify-between mb-6">
-              <img
-                src={Data?.image}
-                className="w-[100px] h-[100px] rounded-full object-cover"
-                alt="User"
-              />
-              <button className="me px-4 py-2 rounded text-sm">
-                Edit Profile
-              </button>
-            </div>
-
-            {/* KYC Info */}
-                        {/* KYC Form */}
-            <div>
-              <p className="font-semibold mb-4">Stored KYC Data</p>
-              <div className="space-y-4">
-                <Input label="Full Name" placeholder="Enter Full Name" value={Data?.fullName || ''} name="fullName" action={() => {}} />
-                <Input label="Date of Birth" placeholder="Enter Date of Birth" value={Data?.dob || ''} name="dob" action={() => {}} />
-                <Input label="Date of Birth" placeholder="Enter Date of Birth" value={Data?.email || ''} name="dob" action={() => {}} />
-                <Input label="Government ID Type" placeholder="Enter Government ID Type" value={Data?.ID?.type || ''} name="govIdType" action={() => {}} />
-                <Input label="Government ID Type" placeholder="Enter Government ID Type" value={Data?.ID?.number || ''} name="govIdType" action={() => {}} />
-                <Input label="Government ID Type" placeholder="Enter Government ID Type" value={Data?.phone || ''} name="govIdType" action={() => {}} />
-                <Input label="Government ID Type" placeholder="Enter Government ID Type" value={Data?.residentialAddress || ''} name="govIdType" action={() => {}} />
-              </div>
-            </div>
+        {/* Main Content */}
+        <main className="flex-1 mt-[5px] md:mt-[20px] lg:mt-0 w-full px-6 lg:px-5 py-10">
+          {/* Header */}
+          <div className="flex justify-between items-center">
+            <h1 className="text-2xl lg:text-3xl font-semibold gradient-text">
+              Welcome {Data?.fullName || "User"}
+            </h1>
+            <button onClick={() => setShow(true)}>
+              <FaBell size={28} />
+            </button>
           </div>
 
-          {/* Access Management */}
-          <div className="bg-[#2F2F2F] rounded-lg p-6 w-full lg:w-1/3">
-            <p className="text-lg font-semibold mb-4">Access Management</p>
-            {/* Add access controls here */}
-          </div>
-        </section>
+          {/* Handle Global Loading/Error */}
+          {loading && (
+            <div className="mt-10 text-center text-gray-400 animate-pulse">
+              Fetching your data...
+            </div>
+          )}
+          {error && (
+            <div className="mt-10 text-center text-red-500">
+              ⚠️ {error}
+            </div>
+          )}
 
-        {/* Access History */}
-        <section>
-          <p>Access History</p>
-          <div className="overflow-x-auto mt-8 pb-20">
-            <table className="min-w-full text-sm text-left rounded overflow-hidden">
-              <thead className="bg-[#424242] text-white">
-                <tr>
-                  <th className="px-4 py-3">Application</th>
-                  <th className="px-4 py-3">Date</th>
-                  <th className="px-4 py-3">Time</th>
-                  <th className="px-4 py-3">Action</th>
-                </tr>
-              </thead>
-              <tbody className="text-white">
-                <tr className="bg-[#6A5F5F33]">
-                  <td className="px-4 py-3">FinTech</td>
-                  <td className="px-4 py-3">15-08-2023</td>
-                  <td className="px-4 py-3">8:00 PM</td>
-                  <td className="px-4 py-3 text-red-500 font-semibold">
-                    Access Revoked
-                  </td>
-                </tr>
-                <tr className="bg-[#6A5F5F33]">
-                  <td className="px-4 py-3">E-commerce</td>
-                  <td className="px-4 py-3">15-08-2023</td>
-                  <td className="px-4 py-3">8:00 PM</td>
-                  <td className="px-4 py-3 text-green-500 font-semibold">
-                    Access Granted
-                  </td>
-                </tr>
-                <tr className="bg-[#6A5F5F33]">
-                  <td className="px-4 py-3">Social Media Platform</td>
-                  <td className="px-4 py-3">15-08-2023</td>
-                  <td className="px-4 py-3">8:00 PM</td>
-                  <td className="px-4 py-3 text-green-500 font-semibold">
-                    Access Granted
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
-      </main>
-    </div>
-     </>
+          {!loading && !error && (
+            <>
+              {/* KYC Profile Section */}
+              <section className="flex flex-col lg:flex-row gap-10 mt-10">
+                {/* Profile Card */}
+                <div className="bg-[#2F2F2F] rounded-lg p-6 flex-1">
+                  <div className="flex flex-col sm:flex-row justify-between gap-4 mb-6">
+                    <div>
+                      <p className="text-sm text-[#5FFF92] font-medium">Wallet Address</p>
+                      <small className="md:text-sm text-[10px] ">{address}</small>
+                    </div>
+                    <div>
+                      <p className="text-sm text-[#5FFF92] font-medium">Unique ID</p>
+                      <p className="text-sm ">{id || "N/A"}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between mb-6">
+                    <img
+                      src={Data?.image}
+                      className="w-[100px] h-[100px] rounded-full object-cover"
+                      alt="User"
+                    />
+                    <button className="me px-4 py-2 rounded text-sm">Edit Profile</button>
+                  </div>
+
+                  <div>
+                    <p className="font-semibold mb-4">Stored KYC Data</p>
+                    <div className="space-y-4">
+                      <Input placeholder="" label="Full Name" value={Data?.fullName || ""} name="fullName" action={() => {}} />
+                      <Input placeholder="" label="Date of Birth" value={Data?.dob || ""} name="dob" action={() => {}} />
+                      <Input placeholder="" label="Email" value={Data?.email || ""} name="email" action={() => {}} />
+                      <Input placeholder="" label="ID Type" value={Data?.ID?.type || ""} name="idType" action={() => {}} />
+                      <Input placeholder="" label="ID Number" value={Data?.ID?.number || ""} name="idNumber" action={() => {}} />
+                      <Input placeholder="" label="Phone" value={Data?.phone || ""} name="phone" action={() => {}} />
+                      <Input placeholder="" label="Address" value={Data?.residentialAddress || ""} name="residentialAddress" action={() => {}} />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Access Management */}
+                <div className="bg-[#2F2F2F] rounded-lg p-6 w-full lg:w-1/3">
+                  <p className="text-lg font-semibold mb-4">Access Management</p>
+                  <p className="text-sm text-gray-400">Manage third-party access permissions.</p>
+                </div>
+              </section>
+
+              {/* Access History Table */}
+              <section>
+                <p className="mt-10 text-lg font-semibold">Access History</p>
+                <div className="overflow-x-auto mt-8 pb-20">
+                  {tableData.length === 0 ? (
+                    <p className="text-gray-400 text-center py-5">No access history found.</p>
+                  ) : (
+                    <table className="min-w-full text-sm text-left rounded overflow-hidden">
+                      <thead className="bg-[#424242] text-white">
+                        <tr>
+                          <th className="px-4 py-3">App Name</th>
+                          <th className="px-4 py-3">Date</th>
+                          <th className="px-4 py-3">Status</th>
+                          <th className="px-4 py-3">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {tableData.map((row, i) => (
+                          <tr key={i} className="bg-[#6A5F5F33] border-b border-[#333]">
+                            <td className="px-4 py-3">{row.appName}</td>
+                            <td className="px-4 py-3">{new Date(row.date).toLocaleDateString()}</td>
+                            <td
+                              className={`px-4 py-3 font-semibold ${
+                                row.status === "Granted"
+                                  ? "text-green-500"
+                                  : "text-red-500"
+                              }`}
+                            >
+                              {row.status}
+                            </td>
+                            <td className="px-4 py-3">
+                              <button
+                                className={`font-semibold ${
+                                  row.status === "Granted"
+                                    ? "text-red-500 hover:text-red-600"
+                                    : "text-green-500 hover:text-green-600"
+                                }`}
+                              >
+                                {row.status === "Granted" ? "Revoke access" : "Grant access"}
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
+                </div>
+              </section>
+            </>
+          )}
+        </main>
+      </div>
+    </>
   );
 };
+
 
 interface ISide_Bar {
   name: string;
