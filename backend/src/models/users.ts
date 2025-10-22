@@ -23,6 +23,7 @@ export interface IUser extends Document {
     grantedAt?: Date;
     revokedAt?: Date | null;
   }>;
+  appName:string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -47,6 +48,7 @@ const UserSchema = new Schema<IUser>(
     whitelistedThirdParties: [
       {
         thirdPartyAddress: { type: String, required: true },
+        appName:{type: String, required: true },
         kycId: { type: String, required: true }, // Reference to KYC unique ID
         status: { type: String, enum: ["granted", "revoked"], required: true },
         grantedAt: { type: Date },

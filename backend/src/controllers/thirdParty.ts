@@ -52,7 +52,7 @@ export const requestAccess = async (req: Request, res: Response) => {
 
     // 3️⃣ Create a new notification document
     const notification = new NotificationModel({
-      from: thirdPartyApp.walletAddress, // requester’s wallet address
+      from: thirdPartyApp.appName, // requester’s wallet address
       to: user.walletAddress,
       uniqueId,
       type: "access_request",

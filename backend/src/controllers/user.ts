@@ -48,6 +48,7 @@ export const getRecordByAddress = async (req: AuthenticatedRequest, res: Respons
       email: doc.email,
       ownerAddress: doc.walletAddress,
       kycDetails: doc.kyc,
+      thirdParty:doc.whitelistedThirdParties,
       createdAt: doc.createdAt,
     });
   } catch (err) {
@@ -157,6 +158,7 @@ export const controlAccess = async (req: AuthenticatedRequest, res: Response): P
     let entry = userDoc.whitelistedThirdParties.find(
       (party: any) => party.kycId === uniqueId && party.thirdPartyAddress === recipient
     );
+    const thirdPartyDoc = await ThirdParty.findOne({ walletAddress: recipient });
 
     if (entry) {
       if (entry.status === accessType) {
@@ -168,6 +170,7 @@ export const controlAccess = async (req: AuthenticatedRequest, res: Response): P
     } else {
       userDoc.whitelistedThirdParties.push({
         thirdPartyAddress: recipient,
+        appName:thirdPartyDoc.appName,
         kycId: uniqueId,
         status: accessType,
         grantedAt: accessType === "granted" ? now : null,
@@ -177,7 +180,6 @@ export const controlAccess = async (req: AuthenticatedRequest, res: Response): P
 
     await userDoc.save();
 
-    const thirdPartyDoc = await ThirdParty.findOne({ walletAddress: recipient });
     if (thirdPartyDoc) {
       let authUser = thirdPartyDoc.authorizedUsers.find((u: any) => u.kycId === uniqueId);
       if (authUser) {
