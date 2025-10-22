@@ -256,7 +256,7 @@ export const Sidebar = ({ name, image }: ISide_Bar) => {
   };
 
   return (
-    <aside className="hidden md:flex md:flex-col bg-[#2F2F2F] text-white w-[260px] h-screen sticky top-0 left-0 overflow-y-auto">
+    <aside className="hidden md:flex md:flex-col bg-[#2F2F2F] text-white w-[260px] h-screen sticky top-0 left-0 overflow-y-hidden">
       <div>
         <div className="flex items-center gap-4 px-6 py-6">
           <img src={Logo} className="w-[48px] h-[48px] rounded-full" alt="Logo" />
