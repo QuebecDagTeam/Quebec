@@ -179,7 +179,7 @@ export const controlAccess = async (req: AuthenticatedRequest, res: Response): P
 
     const thirdPartyDoc = await ThirdParty.findOne({ walletAddress: recipient });
     if (thirdPartyDoc) {
-      let authUser = thirdPartyDoc.authorizedUsers.find((u: any) => u.kycId === Number(uniqueId));
+      let authUser = thirdPartyDoc.authorizedUsers.find((u: any) => u.kycId === uniqueId);
       if (authUser) {
         authUser.accessStatus = accessType;
         authUser.grantedAt = accessType === "granted" ? now : authUser.grantedAt;

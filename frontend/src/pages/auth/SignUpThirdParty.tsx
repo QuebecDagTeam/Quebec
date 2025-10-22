@@ -137,7 +137,6 @@ export const SignUpThirdParty: React.FC = () => {
             description: formData.description,
             website: formData.website,
             walletAddress: formData.walletAddress,
-            transactionHash: hash,
             password: formData.password, // only sent to backend
           }),
         }

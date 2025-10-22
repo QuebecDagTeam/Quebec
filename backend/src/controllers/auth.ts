@@ -35,7 +35,7 @@ export const Register = async (req: Request, res: Response) => {
       // Generate a unique KYC ID
       const uniqueId = `KYC-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
       const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+      const hashedPassword = await bcrypt.hash(password, salt);
 
       // Create a new user entry
       const newUser = new User({
@@ -140,10 +140,11 @@ export const ThirdPartyReg = async (req: Request, res: Response) => {
       website,
       walletAddress,
       transactionHash,
+      password
     } = req.body;
   
     // Simple validation
-    if (!appName || !description || !walletAddress || !transactionHash) {
+    if (!appName || !description || !walletAddress || !transactionHash || password) {
       return res.status(400).json({ error: "Missing required fields" });
     }
   
@@ -153,7 +154,10 @@ export const ThirdPartyReg = async (req: Request, res: Response) => {
       if (existingUser) {
         return res.status(400).json({ error: "User already registered" });
       }
-  
+
+      const uniqueId = `KYC-TP-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(password, salt);
       // Save the new KYC record to the database
       const newKyc = new ThirdParty({
         appName,
@@ -161,7 +165,7 @@ export const ThirdPartyReg = async (req: Request, res: Response) => {
         description,
         website,
         walletAddress,
-        transactionHash,
+        password:hashedPassword
       });
   
       await newKyc.save();
